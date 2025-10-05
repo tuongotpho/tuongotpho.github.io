@@ -1,6 +1,7 @@
 // Khởi tạo các biến toàn cục
 let cart = [];
 let cartTotal = 0;
+let loadingElements = {}; // Object để lưu trữ các trạng thái loading
 
 // Hàm khởi tạo khi trang web tải xong
 document.addEventListener('DOMContentLoaded', function() {
@@ -9,10 +10,36 @@ document.addEventListener('DOMContentLoaded', function() {
     initCart();
     initContactForm();
     initSmoothScroll();
+    initMobileMenu();
 
     // Hiển thị animation khi tải trang
     animateOnLoad();
 });
+
+// Hàm hiển thị trạng thái loading cho element
+function showLoading(element, text = 'Đang xử lý...') {
+    if (element) {
+        // Lưu trạng thái ban đầu
+        loadingElements[element] = {
+            originalHTML: element.innerHTML,
+            originalDisabled: element.disabled
+        };
+        
+        // Thêm hiệu ứng loading
+        element.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${text}`;
+        element.disabled = true;
+    }
+}
+
+// Hàm ẩn trạng thái loading cho element
+function hideLoading(element) {
+    if (element && loadingElements[element]) {
+        // Khôi phục trạng thái ban đầu
+        element.innerHTML = loadingElements[element].originalHTML;
+        element.disabled = loadingElements[element].originalDisabled;
+        delete loadingElements[element];
+    }
+}
 
 // Hàm khởi tạo hiệu ứng cuộn
 function initScrollEffects() {
@@ -51,38 +78,83 @@ function initScrollEffects() {
 
 // Hàm khởi tạo giỏ hàng
 function initCart() {
-    // Tải giỏ hàng từ localStorage nếu có
-    const savedCart = localStorage.getItem('chiliSauceCart');
-    if (savedCart) {
-        cart = JSON.parse(savedCart);
+    try {
+        // Tải giỏ hàng từ localStorage nếu có
+        const savedCart = localStorage.getItem('chiliSauceCart');
+        if (savedCart) {
+            cart = JSON.parse(savedCart);
+            updateCartDisplay();
+        }
+    } catch (error) {
+        console.error('Lỗi khi tải giỏ hàng từ localStorage:', error);
+        showNotification('Có lỗi xảy ra khi tải giỏ hàng. Vui lòng thử lại.', 'warning');
+        // Khởi tạo giỏ hàng trống nếu có lỗi
+        cart = [];
         updateCartDisplay();
     }
 }
 
 // Hàm khởi tạo form liên hệ
 function initContactForm() {
-    const contactForm = document.getElementById('contactForm');
+    try {
+        const contactForm = document.getElementById('contactForm');
 
-    if (contactForm) {
-        contactForm.addEventListener('submit', function(e) {
-            e.preventDefault();
+        if (contactForm) {
+            contactForm.addEventListener('submit', function(e) {
+                e.preventDefault();
 
-            // Lấy dữ liệu từ form
-            const formData = new FormData(contactForm);
-            const name = formData.get('name');
-            const email = formData.get('email');
-            const phone = formData.get('phone');
-            const message = formData.get('message');
+                // Hiển thị trạng thái loading cho nút submit
+                const submitButton = contactForm.querySelector('button[type="submit"]');
+                showLoading(submitButton, 'Đang gửi...');
 
-            // Hiển thị thông báo thành công
-            showNotification(`Cảm ơn ${name}! Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất.`, 'success');
+                // Lấy dữ liệu từ form
+                const formData = new FormData(contactForm);
+                const name = formData.get('name');
+                const email = formData.get('email');
+                const phone = formData.get('phone');
+                const message = formData.get('message');
 
-            // Reset form
-            contactForm.reset();
+                // Kiểm tra dữ liệu đầu vào
+                if (!name || !email || !phone) {
+                    showNotification('Vui lòng điền đầy đủ thông tin bắt buộc.', 'warning');
+                    hideLoading(submitButton);
+                    return;
+                }
 
-            // Lưu thông tin liên hệ (trong thực tế sẽ gửi đến server)
-            saveContactInfo({ name, email, phone, message });
-        });
+                // Kiểm tra định dạng email
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    showNotification('Vui lòng nhập email đúng định dạng.', 'warning');
+                    hideLoading(submitButton);
+                    return;
+                }
+
+                // Kiểm tra định dạng số điện thoại (ít nhất 10 số)
+                const phoneRegex = /[\d\s\-\+\(\)]{10,}/;
+                if (!phoneRegex.test(phone)) {
+                    showNotification('Vui lòng nhập số điện thoại đúng định dạng.', 'warning');
+                    hideLoading(submitButton);
+                    return;
+                }
+
+                // Hiển thị thông báo thành công
+                showNotification(`Cảm ơn ${name}! Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất.`, 'success');
+
+                // Reset form
+                contactForm.reset();
+
+                // Lưu thông tin liên hệ (trong thực tế sẽ gửi đến server)
+                saveContactInfo({ name, email, phone, message });
+
+                // Ẩn trạng thái loading sau một khoảng thời gian
+                setTimeout(() => {
+                    hideLoading(submitButton);
+                }, 1000);
+            });
+        }
+    } catch (error) {
+        console.error('Lỗi khi khởi tạo form liên hệ:', error);
+        showNotification('Có lỗi xảy ra với form liên hệ. Vui lòng thử lại.', 'warning');
     }
 }
 
@@ -132,74 +204,103 @@ function animateOnLoad() {
 
 // Hàm thêm sản phẩm vào giỏ hàng
 function addToCart(productName, price) {
-    // Tìm sản phẩm trong giỏ hàng
-    const existingProduct = cart.find(item => item.name === productName);
+    try {
+        // Tìm nút đã được click để hiển thị loading
+        const clickedButton = event.target;
+        showLoading(clickedButton, 'Đang thêm...');
+        
+        // Tìm sản phẩm trong giỏ hàng
+        const existingProduct = cart.find(item => item.name === productName);
 
-    if (existingProduct) {
-        existingProduct.quantity += 1;
-    } else {
-        cart.push({
-            name: productName,
-            price: price,
-            quantity: 1
+        if (existingProduct) {
+            existingProduct.quantity += 1;
+        } else {
+            cart.push({
+                name: productName,
+                price: price,
+                quantity: 1
+            });
+        }
+
+        // Cập nhật tổng tiền
+        cartTotal += price;
+
+        // Lưu giỏ hàng vào localStorage
+        localStorage.setItem('chiliSauceCart', JSON.stringify(cart));
+
+        // Cập nhật hiển thị giỏ hàng
+        updateCartDisplay();
+
+        // Hiển thị thông báo
+        showNotification(`${productName} đã được thêm vào giỏ hàng!`, 'success');
+
+        // Hiệu ứng rung cho nút thêm vào giỏ
+        const buttons = document.querySelectorAll('.btn-buy');
+        buttons.forEach(btn => {
+            btn.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                btn.style.transform = 'scale(1)';
+            }, 150);
         });
-    }
-
-    // Cập nhật tổng tiền
-    cartTotal += price;
-
-    // Lưu giỏ hàng vào localStorage
-    localStorage.setItem('chiliSauceCart', JSON.stringify(cart));
-
-    // Cập nhật hiển thị giỏ hàng
-    updateCartDisplay();
-
-    // Hiển thị thông báo
-    showNotification(`${productName} đã được thêm vào giỏ hàng!`, 'success');
-
-    // Hiệu ứng rung cho nút thêm vào giỏ
-    const buttons = document.querySelectorAll('.btn-buy');
-    buttons.forEach(btn => {
-        btn.style.transform = 'scale(0.95)';
+        
+        // Ẩn hiệu ứng loading sau một khoảng thời gian
         setTimeout(() => {
-            btn.style.transform = 'scale(1)';
-        }, 150);
-    });
+            hideLoading(clickedButton);
+        }, 500);
+    } catch (error) {
+        console.error('Lỗi khi thêm sản phẩm vào giỏ hàng:', error);
+        showNotification('Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng. Vui lòng thử lại.', 'warning');
+        // Ẩn trạng thái loading nếu có lỗi
+        const clickedButton = event.target;
+        if (clickedButton) {
+            hideLoading(clickedButton);
+        }
+    }
 }
 
 // Hàm cập nhật hiển thị giỏ hàng
 function updateCartDisplay() {
-    const cartItems = document.getElementById('cartItems');
-    const cartTotalElement = document.getElementById('cartTotal');
+    try {
+        const cartItems = document.getElementById('cartItems');
+        const cartTotalElement = document.getElementById('cartTotal');
 
-    if (cart.length === 0) {
-        cartItems.innerHTML = '<p>Giỏ hàng trống</p>';
-        cartTotalElement.textContent = '0';
-        return;
+        if (!cartItems || !cartTotalElement) {
+            console.error('Không tìm thấy phần tử hiển thị giỏ hàng');
+            return;
+        }
+
+        if (cart.length === 0) {
+            cartItems.innerHTML = '<p>Giỏ hàng trống</p>';
+            cartTotalElement.textContent = '0';
+            return;
+        }
+
+        let cartHTML = '';
+        cart.forEach((item, index) => {
+            cartHTML += `
+                <div class="cart-item">
+                    <div class="cart-item-info">
+                        <h4>${item.name}</h4>
+                        <p>₫${item.price.toLocaleString()}</p>
+                    </div>
+                    <div class="cart-item-controls">
+                        <button class="quantity-btn" onclick="updateQuantity(${index}, -1)">-</button>
+                        <span class="quantity">${item.quantity}</span>
+                        <button class="quantity-btn" onclick="updateQuantity(${index}, 1)">+</button>
+                        <button class="remove-btn" onclick="removeFromCart(${index})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+
+        cartItems.innerHTML = cartHTML;
+        cartTotalElement.textContent = cartTotal.toLocaleString();
+    } catch (error) {
+        console.error('Lỗi khi cập nhật hiển thị giỏ hàng:', error);
+        showNotification('Có lỗi xảy ra khi cập nhật giỏ hàng. Vui lòng thử lại.', 'warning');
     }
-
-    let cartHTML = '';
-    cart.forEach((item, index) => {
-        cartHTML += `
-            <div class="cart-item">
-                <div class="cart-item-info">
-                    <h4>${item.name}</h4>
-                    <p>₫${item.price.toLocaleString()}</p>
-                </div>
-                <div class="cart-item-controls">
-                    <button class="quantity-btn" onclick="updateQuantity(${index}, -1)">-</button>
-                    <span class="quantity">${item.quantity}</span>
-                    <button class="quantity-btn" onclick="updateQuantity(${index}, 1)">+</button>
-                    <button class="remove-btn" onclick="removeFromCart(${index})">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            </div>
-        `;
-    });
-
-    cartItems.innerHTML = cartHTML;
-    cartTotalElement.textContent = cartTotal.toLocaleString();
 }
 
 // Hàm cập nhật số lượng sản phẩm
@@ -251,6 +352,12 @@ function checkout() {
         return;
     }
 
+    // Hiển thị trạng thái loading cho nút thanh toán
+    const checkoutButton = document.querySelector('.modal-footer .btn-primary');
+    if (checkoutButton) {
+        showLoading(checkoutButton, 'Đang xử lý...');
+    }
+
     // Hiển thị thông tin thanh toán
     let orderSummary = '📋 ĐƠN HÀNG CỦA BẠN:\n\n';
     cart.forEach(item => {
@@ -267,6 +374,13 @@ function checkout() {
     localStorage.removeItem('chiliSauceCart');
     updateCartDisplay();
     closeCart();
+
+    // Ẩn trạng thái loading sau một khoảng thời gian
+    if (checkoutButton) {
+        setTimeout(() => {
+            hideLoading(checkoutButton);
+        }, 1000);
+    }
 }
 
 // Hàm hiển thị thông báo
@@ -328,18 +442,23 @@ function scrollToAbout() {
 
 // Hàm lưu thông tin liên hệ
 function saveContactInfo(contactInfo) {
-    // Lấy danh sách liên hệ đã lưu
-    let contacts = JSON.parse(localStorage.getItem('chiliSauceContacts') || '[]');
+    try {
+        // Lấy danh sách liên hệ đã lưu
+        let contacts = JSON.parse(localStorage.getItem('chiliSauceContacts') || '[]');
 
-    // Thêm liên hệ mới
-    contacts.push({
-        ...contactInfo,
-        date: new Date().toISOString(),
-        id: Date.now()
-    });
+        // Thêm liên hệ mới
+        contacts.push({
+            ...contactInfo,
+            date: new Date().toISOString(),
+            id: Date.now()
+        });
 
-    // Lưu lại
-    localStorage.setItem('chiliSauceContacts', JSON.stringify(contacts));
+        // Lưu lại
+        localStorage.setItem('chiliSauceContacts', JSON.stringify(contacts));
+    } catch (error) {
+        console.error('Lỗi khi lưu thông tin liên hệ:', error);
+        showNotification('Có lỗi xảy ra khi lưu thông tin liên hệ.', 'warning');
+    }
 }
 
 // Hàm hiển thị số lượng sản phẩm trong giỏ hàng trên header
@@ -516,3 +635,34 @@ document.addEventListener('DOMContentLoaded', function() {
 const style = document.createElement('style');
 style.textContent = notificationCSS;
 document.head.appendChild(style);
+
+// Hàm khởi tạo mobile menu
+function initMobileMenu() {
+    const hamburger = document.getElementById('hamburger');
+    const navMenu = document.getElementById('nav-menu');
+
+    if (hamburger && navMenu) {
+        hamburger.addEventListener('click', function() {
+            navMenu.classList.toggle('active');
+            hamburger.classList.toggle('active');
+        });
+
+        // Đóng menu khi click vào link
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                navMenu.classList.remove('active');
+                hamburger.classList.remove('active');
+            });
+        });
+
+        // Đóng menu khi click ra ngoài
+        document.addEventListener('click', function(event) {
+            const isClickInsideNav = navMenu.contains(event.target) || hamburger.contains(event.target);
+            if (!isClickInsideNav && navMenu.classList.contains('active')) {
+                navMenu.classList.remove('active');
+                hamburger.classList.remove('active');
+            }
+        });
+    }
+}
