@@ -1,90 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:xhtml="http://www.w3.org/1999/xhtml"
-        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
-        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
-    
-    <!-- Trang chủ -->
-    <url>
-        <loc>https://tuongotpho.github.io/</loc>
-        <lastmod>2025-10-05</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>1.0</priority>
-        
-        <!-- Thêm hình ảnh từ trang chủ -->
-        <image:image>
-            <image:loc>https://lh3.google.com/u/0/d/1IRmPbYbiutJmZTAkmncSx84DdORSJyYG=w2560-h1265-iv1?auditContext=prefetch</image:loc>
-            <image:caption>Logo Tương Ớt Bông Ớt</image:caption>
-        </image:image>
-        
-        <image:image>
-            <image:loc>https://via.placeholder.com/1200x630/FF6B6B/ffffff?text=Tuong+Ot+Bong+Ot</image:loc>
-            <image:caption>Ảnh Open Graph Tương Ớt Bông Ớt</image:caption>
-        </image:image>
-        
-        <image:image>
-            <image:loc>https://via.placeholder.com/800x600/FF6B6B/ffffff?text=Tuong+Ot</image:loc>
-            <image:caption>Ảnh sản phẩm tương ớt</image:caption>
-        </image:image>
-        
-        <image:image>
-            <image:loc>https://images.unsplash.com/photo-1583227438793-c6b366c9e702?w=1920&h=1080&fit=crop</image:loc>
-            <image:caption>Nền trang hero tương ớt</image:caption>
-        </image:image>
-    </url>
-    
-    <!-- Các section trên trang chủ -->
-    <url>
-        <loc>https://tuongotpho.github.io/#about</loc>
-        <lastmod>2025-10-05</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.9</priority>
-    </url>
-    
-    <url>
-        <loc>https://tuongotpho.github.io/#pricing</loc>
-        <lastmod>2025-10-05</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.9</priority>
-    </url>
-    
-    <url>
-        <loc>https://tuongotpho.github.io/#contact</loc>
-        <lastmod>2025-10-05</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.9</priority>
-    </url>
-    
-    <!-- Trang liên hệ Zalo -->
-    <url>
-        <loc>https://zalo.me/0982722036</loc>
-        <lastmod>2025-10-05</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.7</priority>
-    </url>
-    
-    <!-- Trang Facebook -->
-    <url>
-        <loc>https://www.facebook.com/tuongotcaynguyenchatbongot</loc>
-        <lastmod>2025-10-05</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.7</priority>
-    </url>
-    
-    <!-- Bản đồ Google -->
-    <url>
-        <loc>https://maps.google.com/?cid=0x3135ab1c16db8245:0x2ece78466781b970</loc>
-        <lastmod>2025-10-05</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.6</priority>
-    </url>
-    
-    <!-- Trang gửi form liên hệ -->
-    <url>
-        <loc>https://formspree.io/f/xjkaoowg</loc>
-        <lastmod>2025-10-05</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.5</priority>
-    </url>
-    
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://tuongotpho.github.io/</loc>
+    <lastmod>2025-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://tuongotpho.github.io/#about</loc>
+    <lastmod>2025-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://tuongotpho.github.io/#pricing</loc>
+    <lastmod>2025-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://tuongotpho.github.io/#contact</loc>
+    <lastmod>2025-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
 </urlset>
