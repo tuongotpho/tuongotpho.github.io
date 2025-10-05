@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tương Ớt Siêu Cay Nguyên Chất - Đốt Cháy Vị Giác!</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <i class="fas fa-pepper-hot"></i>
+                <span>Tương Ớt Siêu Cay</span>
+            </div>
+            <div class="nav-menu">
+                <a href="#home" class="nav-link">Trang Chủ</a>
+                <a href="#products" class="nav-link">Sản Phẩm</a>
+                <a href="#about" class="nav-link">Giới Thiệu</a>
+                <a href="#contact" class="nav-link">Liên Hệ</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1 class="hero-title">
+                    <span class="title-main">Tương Ớt Siêu Cay</span>
+                    <span class="title-sub">Nguyên Chất 100%</span>
+                </h1>
+                <p class="hero-description">
+                    Đốt cháy vị giác với tương ớt siêu cay được chế biến từ ớt tươi nguyên chất.
+                    Không chất bảo quản, không màu nhân tạo - chỉ có vị cay thuần khiết!
+                </p>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary" onclick="scrollToProducts()">
+                        <i class="fas fa-shopping-cart"></i>
+                        Mua Ngay
+                    </button>
+                    <button class="btn btn-secondary" onclick="scrollToAbout()">
+                        <i class="fas fa-info-circle"></i>
+                        Tìm Hiểu Thêm
+                    </button>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-number">500+</span>
+                        <span class="stat-label">Khách Hàng</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">50K+</span>
+                        <span class="stat-label">Chai Đã Bán</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">4.9★</span>
+                        <span class="stat-label">Đánh Giá</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-image">
+                <div class="product-showcase">
+                    <div class="product-bottle">
+                        <div class="bottle-label">
+                            <div class="label-header">SIÊU CAY</div>
+                            <div class="label-text">TƯƠNG ỚT<br>NGUYÊN CHẤT</div>
+                            <div class="label-footer">100% TỰ NHIÊN</div>
+                        </div>
+                        <div class="bottle-cap"></div>
+                    </div>
+                    <div class="chili-peppers">
+                        <i class="fas fa-pepper-hot pepper-1"></i>
+                        <i class="fas fa-pepper-hot pepper-2"></i>
+                        <i class="fas fa-pepper-hot pepper-3"></i>
+                        <i class="fas fa-fire fire-1"></i>
+                        <i class="fas fa-fire fire-2"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <i class="fas fa-chevron-down"></i>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section id="products" class="products">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Sản Phẩm Nổi Bật</h2>
+                <p class="section-subtitle">Chọn lựa hoàn hảo cho những tín đồ yêu thích vị cay</p>
+            </div>
+            <div class="products-grid">
+                <div class="product-card">
+                    <div class="product-image">
+                        <div class="product-bottle-small red">
+                            <div class="bottle-label">
+                                <div class="label-header">EXTRA HOT</div>
+                                <div class="label-text">SIÊU CAY</div>
+                            </div>
+                        </div>
+                        <div class="spicy-level">
+                            <i class="fas fa-pepper-hot"></i>
+                            <i class="fas fa-pepper-hot"></i>
+                            <i class="fas fa-pepper-hot"></i>
+                            <i class="fas fa-pepper-hot"></i>
+                            <i class="fas fa-pepper-hot"></i>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">Tương Ớt Siêu Cay Đặc Biệt</h3>
+                        <p class="product-description">Độ cay cực mạnh, dành cho những người đam mê thử thách</p>
+                        <div class="product-price">
+                            <span class="price-original">₫45,000</span>
+                            <span class="price-sale">₫35,000</span>
+                        </div>
+                        <button class="btn btn-buy" onclick="addToCart('Tương Ớt Siêu Cay Đặc Biệt', 35000)">
+                            <i class="fas fa-cart-plus"></i>
+                            Thêm Vào Giỏ
+                        </button>
+                    </div>
+                </div>
+
+                <div class="product-card featured">
+                    <div class="product-badge">Bán Chạy Nhất</div>
+                    <div class="product-image">
+                        <div class="product-bottle-small green">
+                            <div class="bottle-label">
+                                <div class="label-header">HOT</div>
+                                <div class="label-text">TRUYỀN THỐNG</div>
+                            </div>
+                        </div>
+                        <div class="spicy-level">
+                            <i class="fas fa-pepper-hot"></i>
+                            <i class="fas fa-pepper-hot"></i>
+                            <i class="fas fa-pepper-hot"></i>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">Tương Ớt Truyền Thống</h3>
+                        <p class="product-description">Vị cay vừa phải, phù hợp với mọi bữa ăn gia đình</p>
+                        <div class="product-price">
+                            <span class="price-original">₫30,000</span>
+                            <span class="price-sale">₫25,000</span>
+                        </div>
+                        <button class="btn btn-buy" onclick="addToCart('Tương Ớt Truyền Thống', 25000)">
+                            <i class="fas fa-cart-plus"></i>
+                            Thêm Vào Giỏ
+                        </button>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div class="product-image">
+                        <div class="product-bottle-small orange">
+                            <div class="bottle-label">
+                                <div class="label-header">MEDIUM</div>
+                                <div class="label-text">NHẸ NHÀNG</div>
+                            </div>
+                        </div>
+                        <div class="spicy-level">
+                            <i class="fas fa-pepper-hot"></i>
+                            <i class="fas fa-pepper-hot"></i>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">Tương Ớt Vị Nhẹ</h3>
+                        <p class="product-description">Dành cho người mới bắt đầu làm quen với vị cay</p>
+                        <div class="product-price">
+                            <span class="price-original">₫28,000</span>
+                            <span class="price-sale">₫22,000</span>
+                        </div>
+                        <button class="btn btn-buy" onclick="addToCart('Tương Ớt Vị Nhẹ', 22000)">
+                            <i class="fas fa-cart-plus"></i>
+                            Thêm Vào Giỏ
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text">
+                    <h2 class="section-title">Về Tương Ớt Siêu Cay</h2>
+                    <p class="about-description">
+                        Với hơn 10 năm kinh nghiệm trong lĩnh vực sản xuất gia vị, chúng tôi tự hào mang đến
+                        những sản phẩm tương ớt chất lượng cao, được chế biến từ những nguyên liệu tự nhiên
+                        tuyển chọn kỹ càng.
+                    </p>
+                    <div class="features">
+                        <div class="feature">
+                            <i class="fas fa-leaf feature-icon"></i>
+                            <div class="feature-text">
+                                <h4>100% Nguyên Chất</h4>
+                                <p>Không chất bảo quản, không màu nhân tạo</p>
+                            </div>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-fire feature-icon"></i>
+                            <div class="feature-text">
+                                <h4>Độ Cay Đỉnh Cao</h4>
+                                <p>Ớt tươi được chọn lọc kỹ càng</p>
+                            </div>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-heart feature-icon"></i>
+                            <div class="feature-text">
+                                <h4>Sản Xuất Trong Nước</h4>
+                                <p>Hỗ trợ nông dân địa phương</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-image">
+                    <div class="ingredients-showcase">
+                        <div class="ingredient-item">
+                            <i class="fas fa-pepper-hot"></i>
+                            <span>Ớt Tươi</span>
+                        </div>
+                        <div class="ingredient-item">
+                            <i class="fas fa-flask"></i>
+                            <span>Giấm Tự Nhiên</span>
+                        </div>
+                        <div class="ingredient-item">
+                            <i class="fas fa-salt"></i>
+                            <span>Muối Biển</span>
+                        </div>
+                        <div class="ingredient-item">
+                            <i class="fas fa-leaf"></i>
+                            <span>Không Chất Bảo Quản</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials">
+        <div class="container">
+            <h2 class="section-title">Khách Hàng Nói Gì Về Chúng Tôi</h2>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="testimonial-text">
+                        "Tương ớt siêu cay này thực sự rất chất lượng! Vị cay rất thuần khiết và không bị hóa chất như các loại khác trên thị trường."
+                    </p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">T</div>
+                        <div class="author-info">
+                            <h4>Thu Hà</h4>
+                            <p>Hà Nội</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="testimonial-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="testimonial-text">
+                        "Mình đã thử rất nhiều loại tương ớt nhưng đây là loại cay nhất và ngon nhất. Rất đáng đồng tiền!"
+                    </p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">M</div>
+                        <div class="author-info">
+                            <h4>Minh Tuấn</h4>
+                            <p>TP.HCM</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="testimonial-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="testimonial-text">
+                        "Giao hàng nhanh, đóng gói cẩn thận. Tương ớt rất tươi và cay xé lưỡi. Sẽ ủng hộ dài lâu!"
+                    </p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">L</div>
+                        <div class="author-info">
+                            <h4>Lan Anh</h4>
+                            <p>Đà Nẵng</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Liên Hệ Với Chúng Tôi</h2>
+                <p class="section-subtitle">Để lại thông tin để được tư vấn và đặt hàng</p>
+            </div>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt contact-icon"></i>
+                        <div class="contact-text">
+                            <h4>Địa Chỉ</h4>
+                            <p>123 Đường Ớt Cay, Quận 1, TP.HCM</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-phone contact-icon"></i>
+                        <div class="contact-text">
+                            <h4>Điện Thoại</h4>
+                            <p>0123 456 789</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope contact-icon"></i>
+                        <div class="contact-text">
+                            <h4>Email</h4>
+                            <p>info@tuongotsieucay.vn</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-clock contact-icon"></i>
+                        <div class="contact-text">
+                            <h4>Giờ Làm Việc</h4>
+                            <p>8:00 - 18:00 (Thứ 2 - Chủ nhật)</p>
+                        </div>
+                    </div>
+                </div>
+                <form class="contact-form" id="contactForm">
+                    <div class="form-group">
+                        <input type="text" id="name" name="name" placeholder="Họ và tên" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="email" name="email" placeholder="Email" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="tel" id="phone" name="phone" placeholder="Số điện thoại" required>
+                    </div>
+                    <div class="form-group">
+                        <textarea id="message" name="message" placeholder="Lời nhắn" rows="5"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i>
+                        Gửi Tin Nhắn
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-brand">
+                        <i class="fas fa-pepper-hot"></i>
+                        <span>Tương Ớt Siêu Cay</span>
+                    </div>
+                    <p class="footer-description">
+                        Mang đến những sản phẩm tương ớt chất lượng cao với vị cay thuần khiết từ thiên nhiên.
+                    </p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-zalo"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4 class="footer-title">Sản Phẩm</h4>
+                    <ul class="footer-links">
+                        <li><a href="#products">Tương Ớt Siêu Cay</a></li>
+                        <li><a href="#products">Tương Ớt Truyền Thống</a></li>
+                        <li><a href="#products">Tương Ớt Vị Nhẹ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4 class="footer-title">Hỗ Trợ</h4>
+                    <ul class="footer-links">
+                        <li><a href="#about">Giới Thiệu</a></li>
+                        <li><a href="#contact">Liên Hệ</a></li>
+                        <li><a href="#">Chính Sách Đổi Trả</a></li>
+                        <li><a href="#">Vận Chuyển</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Tương Ớt Siêu Cay. Tất cả quyền được bảo lưu.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cart Modal -->
+    <div id="cartModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Giỏ Hàng</h3>
+                <span class="close" onclick="closeCart()">&times;</span>
+            </div>
+            <div class="modal-body" id="cartItems">
+                <p>Giỏ hàng trống</p>
+            </div>
+            <div class="modal-footer">
+                <div class="cart-total">
+                    <span>Tổng cộng: ₫<span id="cartTotal">0</span></span>
+                </div>
+                <button class="btn btn-primary" onclick="checkout()">Thanh Toán</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
