@@ -4,17 +4,75 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tương Ớt Siêu Cay Nguyên Chất - Đốt Cháy Vị Giác!</title>
+    <meta name="description" content="Tương ớt siêu cay nguyên chất 100%, không chất bảo quản, không màu nhân tạo - chỉ có vị cay thuần khiết!">
+    <meta name="keywords" content="tương ớt, tương ớt siêu cay, gia vị, ớt tươi, sản phẩm tự nhiên">
+    <meta name="author" content="Tương Ớt Siêu Cay">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://tuongotpho.github.io">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://tuongotpho.github.io">
+    <meta property="og:title" content="Tương Ớt Siêu Cay Nguyên Chất - Đốt Cháy Vị Giác!">
+    <meta property="og:description" content="Tương ớt siêu cay nguyên chất 100%, không chất bảo quản, không màu nhân tạo - chỉ có vị cay thuần khiết!">
+    <meta property="og:image" content="https://tuongotpho.github.io/images/product-showcase.jpg">
+    <meta property="og:image:alt" content="Tương Ớt Siêu Cay - Sản phẩm tự nhiên">
+    <meta property="og:site_name" content="Tương Ớt Siêu Cay">
+    <meta property="og:locale" content="vi_VN">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://tuongotpho.github.io">
+    <meta name="twitter:title" content="Tương Ớt Siêu Cay Nguyên Chất - Đốt Cháy Vị Giác!">
+    <meta name="twitter:description" content="Tương ớt siêu cay nguyên chất 100%, không chất bảo quản, không màu nhân tạo - chỉ có vị cay thuần khiết!">
+    <meta name="twitter:image" content="https://tuongotpho.github.io/images/product-showcase.jpg">
+    <meta name="twitter:image:alt" content="Tương Ớt Siêu Cay - Sản phẩm tự nhiên">
+    
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@30;400;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: https:;">
+    
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Tương Ớt Siêu Cay",
+        "description": "Tương ớt siêu cay nguyên chất 100%, không chất bảo quản, không màu nhân tạo - chỉ có vị cay thuần khiết!",
+        "url": "https://tuongotpho.github.io",
+        "logo": "https://tuongotpho.github.io/images/logo.png",
+        "image": "https://tuongotpho.github.io/images/product-showcase.jpg",
+        "telephone": "0982722036",
+        "email": "info@tuongotsieucay.vn",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "123 Đường Ớt Cay",
+            "addressLocality": "Quận 1",
+            "addressRegion": "TP.HCM",
+            "postalCode": "700000",
+            "addressCountry": "VN"
+        },
+        "openingHoursSpecification": {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+            "opens": "08:00",
+            "closes": "18:00"
+        },
+        "sameAs": [
+            "https://www.facebook.com/tuongotcaynguyenchatbongot",
+            "https://www.instagram.com/tuongotsieucay",
+            "https://zalo.me/0982722036"
+        ]
+    }
+    </script>
 </head>
 <body>
     <!-- Header -->
     <header class="header">
         <nav class="navbar">
             <div class="nav-brand">
-                <i class="fas fa-pepper-hot"></i>
+                <i class="fas fa-pepper-hot" aria-label="Biểu tượng ớt"></i>
                 <span>Tương Ớt Siêu Cay</span>
             </div>
             <div class="nav-menu" id="nav-menu">
@@ -23,7 +81,7 @@
                 <a href="#about" class="nav-link">Giới Thiệu</a>
                 <a href="#contact" class="nav-link">Liên Hệ</a>
             </div>
-            <div class="hamburger" id="hamburger">
+            <div class="hamburger" id="hamburger" aria-label="Menu điều hướng">
                 <span class="bar"></span>
                 <span class="bar"></span>
                 <span class="bar"></span>
@@ -45,11 +103,11 @@
                 </p>
                 <div class="hero-buttons">
                     <button class="btn btn-primary" onclick="scrollToProducts()">
-                        <i class="fas fa-shopping-cart"></i>
+                        <i class="fas fa-shopping-cart" aria-label="Mua ngay"></i>
                         Mua Ngay
                     </button>
                     <button class="btn btn-secondary" onclick="scrollToAbout()">
-                        <i class="fas fa-info-circle"></i>
+                        <i class="fas fa-info-circle" aria-label="Tìm hiểu thêm"></i>
                         Tìm Hiểu Thêm
                     </button>
                 </div>
@@ -70,7 +128,7 @@
             </div>
             <div class="hero-image">
                 <div class="product-showcase">
-                    <div class="product-bottle">
+                    <div class="product-bottle" data-image="tương ớt siêu cay" aria-label="Chai tương ớt siêu cay">
                         <div class="bottle-label">
                             <div class="label-header">SIÊU CAY</div>
                             <div class="label-text">TƯƠNG ỚT<br>NGUYÊN CHẤT</div>
@@ -79,16 +137,16 @@
                         <div class="bottle-cap"></div>
                     </div>
                     <div class="chili-peppers">
-                        <i class="fas fa-pepper-hot pepper-1"></i>
-                        <i class="fas fa-pepper-hot pepper-2"></i>
-                        <i class="fas fa-pepper-hot pepper-3"></i>
-                        <i class="fas fa-fire fire-1"></i>
-                        <i class="fas fa-fire fire-2"></i>
+                        <i class="fas fa-pepper-hot pepper-1" aria-label="Ớt"></i>
+                        <i class="fas fa-pepper-hot pepper-2" aria-label="Ớt"></i>
+                        <i class="fas fa-pepper-hot pepper-3" aria-label="Ớt"></i>
+                        <i class="fas fa-fire fire-1" aria-label="Lửa"></i>
+                        <i class="fas fa-fire fire-2" aria-label="Lửa"></i>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="scroll-indicator">
+        <div class="scroll-indicator" aria-label="Cuộn xuống">
             <i class="fas fa-chevron-down"></i>
         </div>
     </section>
@@ -103,18 +161,18 @@
             <div class="products-grid">
                 <div class="product-card">
                     <div class="product-image">
-                        <div class="product-bottle-small red">
+                        <div class="product-bottle-small red" data-image="tương ớt siêu cay đặc biệt">
                             <div class="bottle-label">
                                 <div class="label-header">EXTRA HOT</div>
                                 <div class="label-text">SIÊU CAY</div>
                             </div>
                         </div>
                         <div class="spicy-level">
-                            <i class="fas fa-pepper-hot"></i>
-                            <i class="fas fa-pepper-hot"></i>
-                            <i class="fas fa-pepper-hot"></i>
-                            <i class="fas fa-pepper-hot"></i>
-                            <i class="fas fa-pepper-hot"></i>
+                            <i class="fas fa-pepper-hot" aria-label="Ớt"></i>
+                            <i class="fas fa-pepper-hot" aria-label="Ớt"></i>
+                            <i class="fas fa-pepper-hot" aria-label="Ớt"></i>
+                            <i class="fas fa-pepper-hot" aria-label="Ớt"></i>
+                            <i class="fas fa-pepper-hot" aria-label="Ớt"></i>
                         </div>
                     </div>
                     <div class="product-info">
@@ -125,7 +183,7 @@
                             <span class="price-sale">₫35,000</span>
                         </div>
                         <button class="btn btn-buy" onclick="addToCart('Tương Ớt Siêu Cay Đặc Biệt', 35000)">
-                            <i class="fas fa-cart-plus"></i>
+                            <i class="fas fa-cart-plus" aria-label="Thêm vào giỏ"></i>
                             Thêm Vào Giỏ
                         </button>
                     </div>
@@ -134,18 +192,17 @@
                 <div class="product-card featured">
                     <div class="product-badge">Bán Chạy Nhất</div>
                     <div class="product-image">
-                        <div class="product-bottle-small green">
+                        <div class="product-bottle-small green" data-image="tương ớt truyền thống">
                             <div class="bottle-label">
                                 <div class="label-header">HOT</div>
                                 <div class="label-text">TRUYỀN THỐNG</div>
                             </div>
                         </div>
                         <div class="spicy-level">
-                            <i class="fas fa-pepper-hot"></i>
-                            <i class="fas fa-pepper-hot"></i>
-                            <i class="fas fa-pepper-hot"></i>
+                            <i class="fas fa-pepper-hot" aria-label="Ớt"></i>
+                            <i class="fas fa-pepper-hot" aria-label="Ớt"></i>
+                            <i class="fas fa-pepper-hot" aria-label="Ớt"></i>
                         </div>
-                    </div>
                     <div class="product-info">
                         <h3 class="product-name">Tương Ớt Truyền Thống</h3>
                         <p class="product-description">Vị cay vừa phải, phù hợp với mọi bữa ăn gia đình</p>
@@ -154,7 +211,7 @@
                             <span class="price-sale">₫25,000</span>
                         </div>
                         <button class="btn btn-buy" onclick="addToCart('Tương Ớt Truyền Thống', 25000)">
-                            <i class="fas fa-cart-plus"></i>
+                            <i class="fas fa-cart-plus" aria-label="Thêm vào giỏ"></i>
                             Thêm Vào Giỏ
                         </button>
                     </div>
@@ -181,7 +238,7 @@
                             <span class="price-sale">₫22,000</span>
                         </div>
                         <button class="btn btn-buy" onclick="addToCart('Tương Ớt Vị Nhẹ', 22000)">
-                            <i class="fas fa-cart-plus"></i>
+                            <i class="fas fa-cart-plus" aria-label="Thêm vào giỏ"></i>
                             Thêm Vào Giỏ
                         </button>
                     </div>
@@ -203,21 +260,21 @@
                     </p>
                     <div class="features">
                         <div class="feature">
-                            <i class="fas fa-leaf feature-icon"></i>
+                            <i class="fas fa-leaf feature-icon" aria-label="100% Nguyên Chất"></i>
                             <div class="feature-text">
                                 <h4>100% Nguyên Chất</h4>
                                 <p>Không chất bảo quản, không màu nhân tạo</p>
                             </div>
                         </div>
                         <div class="feature">
-                            <i class="fas fa-fire feature-icon"></i>
+                            <i class="fas fa-fire feature-icon" aria-label="Độ Cay Đỉnh Cao"></i>
                             <div class="feature-text">
                                 <h4>Độ Cay Đỉnh Cao</h4>
                                 <p>Ớt tươi được chọn lọc kỹ càng</p>
                             </div>
                         </div>
                         <div class="feature">
-                            <i class="fas fa-heart feature-icon"></i>
+                            <i class="fas fa-heart feature-icon" aria-label="Sản Xuất Trong Nước"></i>
                             <div class="feature-text">
                                 <h4>Sản Xuất Trong Nước</h4>
                                 <p>Hỗ trợ nông dân địa phương</p>
@@ -228,19 +285,19 @@
                 <div class="about-image">
                     <div class="ingredients-showcase">
                         <div class="ingredient-item">
-                            <i class="fas fa-pepper-hot"></i>
+                            <i class="fas fa-pepper-hot" aria-label="Ớt tươi"></i>
                             <span>Ớt Tươi</span>
                         </div>
                         <div class="ingredient-item">
-                            <i class="fas fa-flask"></i>
+                            <i class="fas fa-flask" aria-label="Giấm tự nhiên"></i>
                             <span>Giấm Tự Nhiên</span>
                         </div>
                         <div class="ingredient-item">
-                            <i class="fas fa-salt"></i>
+                            <i class="fas fa-salt" aria-label="Muối biển"></i>
                             <span>Muối Biển</span>
                         </div>
                         <div class="ingredient-item">
-                            <i class="fas fa-leaf"></i>
+                            <i class="fas fa-leaf" aria-label="Không chất bảo quản"></i>
                             <span>Không Chất Bảo Quản</span>
                         </div>
                     </div>
@@ -256,11 +313,11 @@
             <div class="testimonials-grid">
                 <div class="testimonial-card">
                     <div class="testimonial-rating">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star" aria-label="Sao đánh giá"></i>
+                        <i class="fas fa-star" aria-label="Sao đánh giá"></i>
+                        <i class="fas fa-star" aria-label="Sao đánh giá"></i>
+                        <i class="fas fa-star" aria-label="Sao đánh giá"></i>
+                        <i class="fas fa-star" aria-label="Sao đánh giá"></i>
                     </div>
                     <p class="testimonial-text">
                         "Tương ớt siêu cay này thực sự rất chất lượng! Vị cay rất thuần khiết và không bị hóa chất như các loại khác trên thị trường."
@@ -276,11 +333,11 @@
 
                 <div class="testimonial-card">
                     <div class="testimonial-rating">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star" aria-label="Sao đánh giá"></i>
+                        <i class="fas fa-star" aria-label="Sao đánh giá"></i>
+                        <i class="fas fa-star" aria-label="Sao đánh giá"></i>
+                        <i class="fas fa-star" aria-label="Sao đánh giá"></i>
+                        <i class="fas fa-star" aria-label="Sao đánh giá"></i>
                     </div>
                     <p class="testimonial-text">
                         "Mình đã thử rất nhiều loại tương ớt nhưng đây là loại cay nhất và ngon nhất. Rất đáng đồng tiền!"
@@ -327,28 +384,27 @@
             <div class="contact-content">
                 <div class="contact-info">
                     <div class="contact-item">
-                        <i class="fas fa-map-marker-alt contact-icon"></i>
+                        <i class="fas fa-map-marker-alt contact-icon" aria-label="Địa chỉ"></i>
                         <div class="contact-text">
                             <h4>Địa Chỉ</h4>
                             <p>123 Đường Ớt Cay, Quận 1, TP.HCM</p>
                         </div>
                     </div>
                     <div class="contact-item">
-                        <i class="fas fa-phone contact-icon"></i>
+                        <i class="fas fa-phone contact-icon" aria-label="Điện thoại"></i>
                         <div class="contact-text">
                             <h4>Điện Thoại</h4>
-                            <p>0123 456 789</p>
+                            <p>0982722036</p>
                         </div>
-                    </div>
                     <div class="contact-item">
-                        <i class="fas fa-envelope contact-icon"></i>
+                        <i class="fas fa-envelope contact-icon" aria-label="Email"></i>
                         <div class="contact-text">
                             <h4>Email</h4>
                             <p>info@tuongotsieucay.vn</p>
                         </div>
                     </div>
                     <div class="contact-item">
-                        <i class="fas fa-clock contact-icon"></i>
+                        <i class="fas fa-clock contact-icon" aria-label="Giờ làm việc"></i>
                         <div class="contact-text">
                             <h4>Giờ Làm Việc</h4>
                             <p>8:00 - 18:00 (Thứ 2 - Chủ nhật)</p>
@@ -369,7 +425,7 @@
                         <textarea id="message" name="message" placeholder="Lời nhắn" rows="5"></textarea>
                     </div>
                     <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-paper-plane"></i>
+                        <i class="fas fa-paper-plane" aria-label="Gửi tin nhắn"></i>
                         Gửi Tin Nhắn
                     </button>
                 </form>
@@ -383,16 +439,16 @@
             <div class="footer-content">
                 <div class="footer-section">
                     <div class="footer-brand">
-                        <i class="fas fa-pepper-hot"></i>
+                        <i class="fas fa-pepper-hot" aria-label="Biểu tượng ớt"></i>
                         <span>Tương Ớt Siêu Cay</span>
                     </div>
                     <p class="footer-description">
                         Mang đến những sản phẩm tương ớt chất lượng cao với vị cay thuần khiết từ thiên nhiên.
                     </p>
                     <div class="social-links">
-                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-zalo"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f" aria-label="Liên kết Facebook"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram" aria-label="Liên kết Instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-zalo" aria-label="Liên kết Zalo"></i></a>
                     </div>
                 </div>
                 <div class="footer-section">
@@ -413,7 +469,7 @@
                     </ul>
                 </div>
             </div>
-            <div class="footer-bottom">
+            <div class="footer-bottom" aria-label="Bản quyền">
                 <p>&copy; 2024 Tương Ớt Siêu Cay. Tất cả quyền được bảo lưu.</p>
             </div>
         </div>
@@ -424,7 +480,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Giỏ Hàng</h3>
-                <span class="close" onclick="closeCart()">&times;</span>
+                <span class="close" onclick="closeCart()" aria-label="Đóng giỏ hàng">&times;</span>
             </div>
             <div class="modal-body" id="cartItems">
                 <p>Giỏ hàng trống</p>
@@ -433,7 +489,10 @@
                 <div class="cart-total">
                     <span>Tổng cộng: ₫<span id="cartTotal">0</span></span>
                 </div>
-                <button class="btn btn-primary" onclick="checkout()">Thanh Toán</button>
+                <button class="btn btn-primary" onclick="checkout()">
+                    <i class="fas fa-credit-card" aria-label="Thanh toán"></i>
+                    Thanh Toán
+                </button>
             </div>
         </div>
     </div>

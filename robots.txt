@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://tuongotpho.github.io/sitemap.xml
