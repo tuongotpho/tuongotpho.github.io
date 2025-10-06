@@ -6,7 +6,7 @@
     <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/5495/5495588.png">
     <meta name="description" content="Tương ớt cay nguyên chất Bông ớt - Thơm ngon, đậm đà, không chất bảo quản. Chai 350ml: 35.000đ, Chai 500ml: 50.000đ. Giao hàng tận nơi tại Hà Nội. Giao hàng toàn quốc">
     <meta name="keywords" content="tương ớt, tương ớt ngon, tương ớt Hà Nội, tương ớt không chất bảo quản, mua tương ớt, tương ớt siêu cay, tương ớt nguyên chất, tương ớt phở, tương ớt bắc">
-    <meta name="author" content="Bông ớt - siêu cay - 0982722036">
+    <meta name="author" content="Tương ớt Bông ớt">
     <meta property="og:title" content="Tương Ớt Đặc Biệt Bông Ớt - Hương Vị Quê Nhà">
     <meta property="og:description" content="Tương ớt cay nguyên chất - Thơm ngon, đậm đà, an toàn tuyệt đối. Giá chỉ từ 35.000đ">
     <meta property="og:type" content="product">
@@ -96,8 +96,10 @@
         }
         
         :root {
-            --primary: #FF6B6B;
-            --secondary: #FFA500;
+            --primary: #CC0000; /* Đỏ ớt đậm */
+            --primary-rgb: 204, 0, 0; /* Giá trị RGB của primary */
+            --secondary: #333333; /* Xám đậm */
+            --secondary-rgb: 51, 51, 51; /* Giá trị RGB của secondary */
             --dark: #2C3E50;
             --light: #ECF0F1;
             --white: #FFFFFF;
@@ -113,7 +115,7 @@
         
         /* Header */
         header {
-            background: var(--dark); /* Thay đổi màu nền header */
+            background: var(--dark); /* Đổi màu nền header thành màu dark */
             color: var(--white);
             padding: 1rem 0;
             position: fixed;
@@ -194,8 +196,8 @@
         }
         
         .cta-btn {
-            padding: 0.5rem 1rem; /* Giảm padding */
-            font-size: 1rem; /* Giảm kích thước font */
+            padding: 1rem 2.5rem;
+            font-size: 1.2rem;
             border: none;
             border-radius: 50px;
             cursor: pointer;
@@ -322,7 +324,7 @@
         }
         
         .price-tag {
-            font-size: 1.2rem;
+            font-size: 1.4rem; /* Tăng kích thước chữ */
             color: var(--dark);
             margin-bottom: 0.5rem;
         }
@@ -370,47 +372,47 @@
         }
         
         .wholesale-note {
-            background: linear-gradient(135deg, var(--primary), var(--secondary)); /* Thay đổi màu nền */
-            color: var(--white); /* Đổi màu chữ */
-            padding: 2.5rem; /* Tăng padding */
-            border-radius: 20px; /* Tăng bo tròn góc */
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+
+            color: var(--dark); /* Chữ màu đậm */
+            padding: 2.5rem;
+            border-radius: 15px;
             text-align: center;
-            margin-top: 3rem; /* Tăng margin-top */
-            border: 2px solid var(--primary); /* Thêm border */
-            box-shadow: 0 10px 30px rgba(255,107,107,0.3); /* Box-shadow nổi bật */
-            transition: all 0.3s ease-in-out;
-            transform: scale(1.02); /* Hiệu ứng phóng to nhẹ */
+            margin-top: 3rem;
+            border: none; /* Bỏ viền */
+            box-shadow: none; /* Bỏ đổ bóng */
+            position: relative;
+            overflow: hidden;
         }
 
-        .wholesale-note:hover {
-            transform: scale(1.05); /* Phóng to hơn khi hover */
-            box-shadow: 0 15px 40px rgba(255,107,107,0.5);
+        .wholesale-note::before {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 2rem;
+            opacity: 0.7;
+            color: var(--primary); /* Màu icon */
         }
 
         .wholesale-note h3 {
-            font-size: 1.8rem; /* Tăng kích thước font tiêu đề */
-            color: var(--white); /* Đổi màu chữ */
+            color: var(--white); /* Tiêu đề màu trắng */
             margin-bottom: 1rem;
+            font-size: 1.8rem;
+            text-shadow: none;
         }
 
         .wholesale-note p {
-            font-size: 1.1rem; /* Tăng kích thước font nội dung */
-            line-height: 1.8;
+            color: var(--white); /* Mô tả màu trắng */
+            font-size: 1.1rem;
             margin-bottom: 1.5rem;
-        }
-
-        .wholesale-note .cta-btn { /* Điều chỉnh màu nút bên trong */
-            background: var(--white) !important;
-            color: var(--primary) !important;
         }
         
         /* Contact Section */
         .contact-grid {
-            display: flex; /* Sử dụng flexbox */
-            flex-wrap: wrap; /* Cho phép xuống dòng trên màn hình nhỏ */
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 3rem;
             margin-top: 3rem;
-            align-items: stretch; /* Đảm bảo các item có cùng chiều cao */
         }
         
         .contact-info {
@@ -418,7 +420,6 @@
             padding: 2rem;
             border-radius: 15px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            flex: 1; /* Để chiếm không gian bằng nhau */
         }
         
         .info-item {
@@ -441,7 +442,6 @@
             padding: 2rem;
             border-radius: 15px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            flex: 1; /* Để chiếm không gian bằng nhau */
         }
         
         .form-group {
@@ -571,14 +571,7 @@
             }
             
             .contact-grid {
-                flex-direction: column; /* Xếp chồng các phần tử theo chiều dọc */
-                gap: 2rem; /* Tăng khoảng cách giữa các phần tử khi xếp chồng */
-            }
-
-            .contact-info,
-            .contact-form {
-                flex: none; /* Bỏ thuộc tính flex để chúng chiếm toàn bộ chiều rộng */
-                width: 100%; /* Đảm bảo chiếm toàn bộ chiều rộng */
+                grid-template-columns: 1fr;
             }
             
             .header-content {
@@ -611,29 +604,17 @@
             .section-title {
                 font-size: 2rem;
             }
-
-            /* Điều chỉnh kích thước phần Gửi Yêu Cầu trên mobile */
-            .contact-form {
-                padding: 1.5rem; /* Giảm padding */
-            }
-
-            .contact-form .form-group {
-                margin-bottom: 1rem; /* Giảm margin-bottom */
-            }
-
-            .contact-form .submit-btn {
-                padding: 0.8rem 2rem; /* Giảm padding nút submit */
-                font-size: 1rem; /* Giảm font-size nút submit */
-            }
         }
         
-
+    </style>
 </head>
 <body>
     <!-- Header -->
     <header>
         <div class="header-content">
-            <div class="logo">🌶️ Bông Ớt Siêu Cay 0982722036</div>
+            <div class="logo">🌶️ Bông Ớt siêu cay</div>
+            <div class="hotline">
+            </div>
         </div>
     </header>
 
@@ -680,7 +661,7 @@
         <h2 class="section-title">Bảng Giá Sản Phẩm</h2>
         <div class="pricing-grid">
             <div class="price-card">
-                <div class="price-tag">Chai Nhỏ</div>
+                <div class="price-tag">⭐ Chai Nhỏ</div>
                 <h3>350ml</h3>
                 <div class="price">35.000đ</div>
                 <ul class="price-features">
@@ -709,7 +690,7 @@
         <div class="wholesale-note">
             <h3>🎁 Mua Buôn - Giá Ưu Đãi</h3>
             <p>Quý khách mua số lượng lớn vui lòng liên hệ trực tiếp để được tư vấn và nhận giá tốt nhất!</p>
-            <a href="tel:0982722036" class="cta-btn btn-primary" style="margin-top: 1rem; display: inline-block;">Liên Hệ Ngay</a>
+            <a href="tel:0982722036" class="cta-btn" style="background: var(--white); color: var(--primary); margin-top: 1rem; display: inline-block;">Liên Hệ Ngay</a>
         </div>
     </section>
 
@@ -744,8 +725,7 @@
                     <div class="info-icon">🚚</div>
                     <div>
                         <strong>Giao hàng:</strong><br>
-                        Miễn phí nội thành Hà Nội (đơn từ 100.000đ)<br>
-                        Giao hàng toàn quốc
+                        Miễn phí nội thành Hà Nội (đơn từ 100.000đ)
                     </div>
                 </div>
             </div>
@@ -884,10 +864,10 @@
             const currentScroll = window.pageYOffset;
             
             if (currentScroll > 100) {
-                header.style.background = 'rgba(44, 62, 80, 0.95)'; /* Màu nền header khi cuộn */
+                header.style.background = 'rgba(44, 62, 80, 0.95)'; /* Màu dark đậm hơn khi cuộn */
                 header.style.backdropFilter = 'blur(10px)';
             } else {
-                header.style.background = 'var(--dark)'; /* Màu nền header ban đầu */
+                header.style.background = 'var(--dark)'; /* Màu dark mặc định */
                 header.style.backdropFilter = 'none';
             }
             
@@ -896,4 +876,3 @@
     </script>
 </body>
 </html>
-
