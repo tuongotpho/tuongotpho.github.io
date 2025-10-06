@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/1868/1868926.png">
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/5495/5495588.png">
     <meta name="description" content="Tương ớt cay nguyên chất Bông ớt - Thơm ngon, đậm đà, không chất bảo quản. Chai 350ml: 35.000đ, Chai 500ml: 50.000đ. Giao hàng tận nơi tại Hà Nội. Giao hàng toàn quốc">
     <meta name="keywords" content="tương ớt, tương ớt ngon, tương ớt Hà Nội, tương ớt không chất bảo quản, mua tương ớt, tương ớt siêu cay, tương ớt nguyên chất, tương ớt phở, tương ớt bắc">
-    <meta name="author" content="Tương ớt Bông ớt">
+    <meta name="author" content="Bông ớt - siêu cay - 0982722036">
     <meta property="og:title" content="Tương Ớt Đặc Biệt Bông Ớt - Hương Vị Quê Nhà">
     <meta property="og:description" content="Tương ớt cay nguyên chất - Thơm ngon, đậm đà, an toàn tuyệt đối. Giá chỉ từ 35.000đ">
     <meta property="og:type" content="product">
@@ -113,7 +113,7 @@
         
         /* Header */
         header {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: var(--dark); /* Thay đổi màu nền header */
             color: var(--white);
             padding: 1rem 0;
             position: fixed;
@@ -165,21 +165,22 @@
             background: linear-gradient(135deg, rgba(255,107,107,0.9), rgba(255,165,0,0.9)),
                         url('https://images.unsplash.com/photo-1583227438793-c6b366c9e702?w=1920&h=1080&fit=crop') center/cover;
             color: var(--white);
-            padding: 150px 2rem 100px;
+            padding: 120px 1rem 80px; /* Tăng padding-top để tránh cắt chữ */
             text-align: center;
             position: relative;
         }
         
         .hero h1 {
             font-size: 3.5rem;
-            margin-bottom: 1rem;
+            margin-top: -30px; /* Điều chỉnh margin-top để đẩy chữ lên */
+            margin-bottom: 0.5rem; /* Giảm margin-bottom */
             text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
             animation: fadeInDown 1s;
         }
         
         .hero p {
             font-size: 1.5rem;
-            margin-bottom: 2rem;
+            margin-bottom: 1rem; /* Giảm margin-bottom */
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
             animation: fadeInUp 1s;
         }
@@ -193,8 +194,8 @@
         }
         
         .cta-btn {
-            padding: 1rem 2.5rem;
-            font-size: 1.2rem;
+            padding: 0.5rem 1rem; /* Giảm padding */
+            font-size: 1rem; /* Giảm kích thước font */
             border: none;
             border-radius: 50px;
             cursor: pointer;
@@ -369,20 +370,47 @@
         }
         
         .wholesale-note {
-            background: var(--light);
-            padding: 2rem;
-            border-radius: 15px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary)); /* Thay đổi màu nền */
+            color: var(--white); /* Đổi màu chữ */
+            padding: 2.5rem; /* Tăng padding */
+            border-radius: 20px; /* Tăng bo tròn góc */
             text-align: center;
-            margin-top: 2rem;
-            border-left: 5px solid var(--primary);
+            margin-top: 3rem; /* Tăng margin-top */
+            border: 2px solid var(--primary); /* Thêm border */
+            box-shadow: 0 10px 30px rgba(255,107,107,0.3); /* Box-shadow nổi bật */
+            transition: all 0.3s ease-in-out;
+            transform: scale(1.02); /* Hiệu ứng phóng to nhẹ */
+        }
+
+        .wholesale-note:hover {
+            transform: scale(1.05); /* Phóng to hơn khi hover */
+            box-shadow: 0 15px 40px rgba(255,107,107,0.5);
+        }
+
+        .wholesale-note h3 {
+            font-size: 1.8rem; /* Tăng kích thước font tiêu đề */
+            color: var(--white); /* Đổi màu chữ */
+            margin-bottom: 1rem;
+        }
+
+        .wholesale-note p {
+            font-size: 1.1rem; /* Tăng kích thước font nội dung */
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .wholesale-note .cta-btn { /* Điều chỉnh màu nút bên trong */
+            background: var(--white) !important;
+            color: var(--primary) !important;
         }
         
         /* Contact Section */
         .contact-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+            display: flex; /* Sử dụng flexbox */
+            flex-wrap: wrap; /* Cho phép xuống dòng trên màn hình nhỏ */
             gap: 3rem;
             margin-top: 3rem;
+            align-items: stretch; /* Đảm bảo các item có cùng chiều cao */
         }
         
         .contact-info {
@@ -390,6 +418,7 @@
             padding: 2rem;
             border-radius: 15px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            flex: 1; /* Để chiếm không gian bằng nhau */
         }
         
         .info-item {
@@ -412,6 +441,7 @@
             padding: 2rem;
             border-radius: 15px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            flex: 1; /* Để chiếm không gian bằng nhau */
         }
         
         .form-group {
@@ -528,16 +558,27 @@
         
         /* Responsive */
         @media (max-width: 768px) {
+            .header-content .logo {
+                font-size: 1.4rem; /* Giảm kích thước logo trên mobile */
+            }
+
             .hero h1 {
-                font-size: 2rem;
+                font-size: 1.8rem; /* Giảm kích thước tiêu đề hero trên mobile */
             }
             
             .hero p {
-                font-size: 1.1rem;
+                font-size: 1rem; /* Giảm kích thước mô tả hero trên mobile */
             }
             
             .contact-grid {
-                grid-template-columns: 1fr;
+                flex-direction: column; /* Xếp chồng các phần tử theo chiều dọc */
+                gap: 2rem; /* Tăng khoảng cách giữa các phần tử khi xếp chồng */
+            }
+
+            .contact-info,
+            .contact-form {
+                flex: none; /* Bỏ thuộc tính flex để chúng chiếm toàn bộ chiều rộng */
+                width: 100%; /* Đảm bảo chiếm toàn bộ chiều rộng */
             }
             
             .header-content {
@@ -546,84 +587,135 @@
             }
             
             .hotline {
-                flex-direction: column;
-                width: 100%;
+                flex-direction: row; /* Đảm bảo các nút nằm ngang */
+                width: auto;
+                justify-content: center;
+                gap: 0.5rem; /* Giảm khoảng cách giữa các nút */
             }
-            
+
             .hotline-btn {
-                width: 100%;
-                text-align: center;
+                width: 40px; /* Kích thước nút nhỏ hơn */
+                height: 40px; /* Kích thước nút nhỏ hơn */
+                padding: 0; /* Loại bỏ padding */
+                font-size: 1.2rem; /* Giảm kích thước icon */
+                border-radius: 50%; /* Đảm bảo hình tròn */
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .hotline-btn span {
+                display: none; /* Ẩn văn bản */
             }
             
             .section-title {
                 font-size: 2rem;
             }
-        }
-        
-        /* Floating Action Buttons */
-        .floating-buttons {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            z-index: 999;
-        }
-        
-        .float-btn {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-            text-decoration: none;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            transition: all 0.3s;
-            animation: pulse 2s infinite;
-        }
-        
-        .float-btn:hover {
-            transform: scale(1.1);
-        }
-        
-        .phone-btn {
-            background: var(--primary);
-            color: var(--white);
-        }
-        
-        .zalo-btn {
-            background: #00B900;
-            color: var(--white);
-        }
-        
-        @keyframes pulse {
-            0%, 100% {
-                box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+
+            /* Điều chỉnh kích thước phần Gửi Yêu Cầu trên mobile */
+            .contact-form {
+                padding: 1.5rem; /* Giảm padding */
             }
-            50% {
-                box-shadow: 0 4px 25px rgba(255,107,107,0.6);
+
+            .contact-form .form-group {
+                margin-bottom: 1rem; /* Giảm margin-bottom */
+            }
+
+            .contact-form .submit-btn {
+                padding: 0.8rem 2rem; /* Giảm padding nút submit */
+                font-size: 1rem; /* Giảm font-size nút submit */
             }
         }
+        
     </style>
+    /* Image Slider styles */
+    .image-slider {
+        padding: 80px 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .slider-container {
+        position: relative;
+        width: 100%;
+        overflow: hidden;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        margin-top: 3rem;
+    }
+
+    .slider-wrapper {
+        display: flex;
+        transition: transform 0.5s ease-in-out;
+    }
+
+    .slider-slide {
+        min-width: 100%;
+        display: block;
+        object-fit: cover;
+    }
+
+    .slider-prev, .slider-next {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: rgba(0,0,0,0.5);
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        cursor: pointer;
+        font-size: 1.5rem;
+        z-index: 10;
+        border-radius: 5px;
+    }
+
+    .slider-prev {
+        left: 10px;
+    }
+
+    .slider-next {
+        right: 10px;
+    }
+
+    .slider-dots {
+        text-align: center;
+        margin-top: 1rem;
+    }
+
+    .dot {
+        height: 15px;
+        width: 15px;
+        margin: 0 5px;
+        background-color: #bbb;
+        border-radius: 50%;
+        display: inline-block;
+        transition: background-color 0.6s ease;
+        cursor: pointer;
+    }
+
+    .dot.active {
+        background-color: var(--primary);
+    }
+
+    @media (max-width: 768px) {
+        .image-slider {
+            padding: 40px 1rem;
+        }
+    }
 </head>
 <body>
     <!-- Header -->
     <header>
         <div class="header-content">
-            <div class="logo">🌶️ Tương Ớt Bông Ớt</div>
-            <div class="hotline">
-                <a href="tel:0982722036" class="hotline-btn">📞 0982.722.036</a>
-                <a href="https://zalo.me/0982722036" target="_blank" class="hotline-btn" style="background: #00B900; color: white;">💬 Chat Zalo</a>
-            </div>
+            <div class="logo">🌶️ Bông Ớt Siêu Cay 0982722036</div>
         </div>
     </header>
 
     <!-- Hero Section -->
     <section class="hero">
-        <h1>Tương Ớt Đặc Biệt<br>Hương Vị Quê Nhà</h1>
+        <h1>Tương Ớt Đặc Biệt</h1>
+        <h2>Hương Vị Quê Nhà</h2> <!-- Khôi phục "Hương Vị Quê Nhà" -->
         <p>Thơm ngon - Đậm đà - An toàn tuyệt đối</p>
         <div class="cta-buttons">
             <a href="#pricing" class="cta-btn btn-primary">🛒 Mua Ngay</a>
@@ -727,7 +819,8 @@
                     <div class="info-icon">🚚</div>
                     <div>
                         <strong>Giao hàng:</strong><br>
-                        Miễn phí nội thành Hà Nội (đơn từ 100.000đ)
+                        Miễn phí nội thành Hà Nội (đơn từ 100.000đ)<br>
+                        Giao hàng toàn quốc
                     </div>
                 </div>
             </div>
@@ -771,11 +864,6 @@
         </div>
     </footer>
 
-    <!-- Floating Buttons -->
-    <div class="floating-buttons">
-        <a href="tel:0982722036" class="float-btn phone-btn" title="Gọi ngay">📞</a>
-        <a href="https://zalo.me/0982722036" target="_blank" class="float-btn zalo-btn" title="Chat Zalo">💬</a>
-    </div>
 
     <script>
         // Smooth scrolling for anchor links
@@ -871,10 +959,10 @@
             const currentScroll = window.pageYOffset;
             
             if (currentScroll > 100) {
-                header.style.background = 'linear-gradient(135deg, rgba(255,107,107,0.95), rgba(255,165,0,0.95))';
+                header.style.background = 'rgba(44, 62, 80, 0.95)'; /* Màu nền header khi cuộn */
                 header.style.backdropFilter = 'blur(10px)';
             } else {
-                header.style.background = 'linear-gradient(135deg, var(--primary), var(--secondary))';
+                header.style.background = 'var(--dark)'; /* Màu nền header ban đầu */
                 header.style.backdropFilter = 'none';
             }
             
@@ -883,3 +971,4 @@
     </script>
 </body>
 </html>
+
