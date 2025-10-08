@@ -2,22 +2,34 @@
 
 Đây là mã nguồn cho trang web giới thiệu sản phẩm "Tương Ớt Bông Ớt". Trang web này được thiết kế để cung cấp thông tin chi tiết về sản phẩm, bảng giá và các phương thức liên hệ đặt hàng.
 
-## Giới thiệu
+## Cấu trúc dự án
 
-Trang web là một trang đơn (single-page) được xây dựng bằng HTML, CSS và JavaScript thuần túy, không phụ thuộc vào bất kỳ framework nào.
+Dự án bao gồm các tệp chính sau:
+- `index.html`: Chứa toàn bộ nội dung và cấu trúc của trang web.
+- `style.css`: Chứa các quy tắc định dạng (CSS) cho giao diện.
+- `script.js`: Chứa mã JavaScript để xử lý các tương tác của người dùng.
+- `images/`: Thư mục chứa tất cả các hình ảnh được sử dụng trên trang.
+- `robots.txt`: Hướng dẫn các bot của công cụ tìm kiếm.
+- `sitemap.xml`: Sơ đồ trang web, giúp công cụ tìm kiếm hiểu cấu trúc trang.
 
-### Các tính năng chính:
-- **Thiết kế Responsive:** Tương thích với các thiết bị di động và máy tính để bàn.
-- **Thông tin sản phẩm:** Giới thiệu các đặc điểm nổi bật của Tương Ớt Bông Ớt (100% tự nhiên, công thức gia truyền, v.v.).
-- **Bảng giá:** Hiển thị rõ ràng giá cho các loại chai khác nhau.
-- **Nút gọi hành động (CTA):** Các nút "Mua Ngay", "Liên Hệ Zalo" được đặt ở vị trí nổi bật để khuyến khích khách hàng tương tác.
+## Các tính năng chính và nâng cấp
+
+- **Cấu trúc rõ ràng:** Mã nguồn được tách thành các tệp HTML, CSS, và JavaScript riêng biệt để dễ dàng bảo trì và phát triển.
+- **Thiết kế Responsive:** Tương thích tốt trên các thiết bị di động và máy tính để bàn.
+- **Tối ưu SEO & AIO:**
+    - Sử dụng các thẻ meta (title, description, keywords) được tối ưu hóa cho cả người dùng và máy tìm kiếm.
+    - Tích hợp đầy đủ các thẻ Open Graph (Facebook) và Twitter Card để đảm bảo hiển thị đẹp mắt khi chia sẻ trên mạng xã hội.
+    - Dữ liệu có cấu trúc (Schema.org) được làm giàu với các thông tin chi tiết về `Product` và `LocalBusiness`, giúp các công cụ tìm kiếm và AI hiểu rõ hơn về sản phẩm và doanh nghiệp.
+- **Giao diện chuyên nghiệp:** Các icon được thay thế bằng thư viện Font Awesome để đảm bảo tính nhất quán và sắc nét.
+- **Nút gọi hành động (CTA):** Các nút "Mua Ngay", "Liên Hệ Zalo" được thiết kế nổi bật để khuyến khích khách hàng tương tác.
 - **Form liên hệ:** Tích hợp với Formspree để khách hàng có thể gửi yêu cầu trực tiếp từ trang web.
 - **Bản đồ Google Maps:** Nhúng bản đồ chỉ đường đến địa chỉ cửa hàng.
-- **Tối ưu SEO:** Sử dụng các thẻ meta (description, keywords, Open Graph) và dữ liệu có cấu trúc (Schema.org) để cải thiện thứ hạng trên các công cụ tìm kiếm.
 
 ## Cách sử dụng
 
-Chỉ cần mở tệp `index.html` trong trình duyệt web để xem trang.
+1.  Clone repository này về máy.
+2.  Mở tệp `index.html` trong trình duyệt web để xem trang.
+3.  Để thay đổi hình ảnh, hãy cập nhật các tệp trong thư mục `images/`.
 
 ## Liên hệ
 
