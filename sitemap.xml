@@ -14,6 +14,13 @@
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+  <!-- Telegram Mini App Đặt Hàng -->
+  <url>
+    <loc>https://tuongotpho.github.io/app.html</loc>
+    <lastmod>2026-08-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
   <!-- Chuyên mục Blog -->
   <url>
     <loc>https://tuongotpho.github.io/blog/</loc>

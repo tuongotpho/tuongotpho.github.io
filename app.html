@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Đặt Hàng Nhanh - Tương Ớt Bông Ớt | Telegram Mini App</title>
+    <meta name="description" content="Đặt mua tương ớt phở nguyên chất gia truyền Hà Nội trực tiếp qua Telegram Mini App.">
+
+    <!-- Telegram WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <!-- Google Fonts & FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-color: var(--tg-theme-bg-color, #f8f9fa);
+            --text-color: var(--tg-theme-text-color, #222222);
+            --card-bg: var(--tg-theme-secondary-bg-color, #ffffff);
+            --hint-color: var(--tg-theme-hint-color, #777777);
+            --link-color: var(--tg-theme-link-color, #ff4500);
+            --button-color: var(--tg-theme-button-color, #8b0000);
+            --button-text-color: var(--tg-theme-button-text-color, #ffffff);
+            --primary: #8b0000;
+            --primary-light: #ff4500;
+            --accent: #ffe135;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 12px 12px 90px 12px;
+            max-width: 550px;
+            margin: 0 auto;
+        }
+
+        /* App Header */
+        .app-header {
+            text-align: center;
+            padding: 16px 12px;
+            background: linear-gradient(135deg, #8b0000, #dc143c);
+            border-radius: 18px;
+            color: white;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 15px rgba(139, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .app-header::after {
+            content: '🌶';
+            position: absolute;
+            right: -10px;
+            bottom: -15px;
+            font-size: 5rem;
+            opacity: 0.15;
+            pointer-events: none;
+        }
+
+        .app-title {
+            font-size: 1.4rem;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .app-subtitle {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .badge-live {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            margin-top: 6px;
+            font-weight: 500;
+        }
+
+        /* Section Title */
+        .section-label {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin: 16px 4px 10px 4px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Product Cards */
+        .product-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .product-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            transition: all 0.2s ease;
+        }
+
+        .product-card:active {
+            transform: scale(0.99);
+        }
+
+        .product-icon {
+            width: 54px;
+            height: 54px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            flex-shrink: 0;
+        }
+
+        .icon-red {
+            background: #ffebe8;
+            color: #dc143c;
+        }
+
+        .icon-green {
+            background: #e8f8ed;
+            color: #2e7d32;
+        }
+
+        .icon-orange {
+            background: #fff4e5;
+            color: #ed6c02;
+        }
+
+        .product-info {
+            flex: 1;
+        }
+
+        .product-name {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 2px;
+        }
+
+        .product-desc {
+            font-size: 0.78rem;
+            color: var(--hint-color);
+            margin-bottom: 6px;
+            line-height: 1.3;
+        }
+
+        .product-price {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #d32f2f;
+        }
+
+        .price-note {
+            font-size: 0.72rem;
+            color: var(--hint-color);
+            font-weight: normal;
+        }
+
+        /* Quantity Counter */
+        .counter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.04);
+            padding: 4px;
+            border-radius: 12px;
+        }
+
+        .btn-counter {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: none;
+            background: #ffffff;
+            color: #8b0000;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+            transition: all 0.15s ease;
+        }
+
+        .btn-counter:active {
+            transform: scale(0.9);
+            background: #f0f0f0;
+        }
+
+        .counter-value {
+            font-size: 0.95rem;
+            font-weight: 700;
+            min-width: 24px;
+            text-align: center;
+            color: var(--text-color);
+        }
+
+        /* Order Summary Box */
+        .summary-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 16px;
+            margin-top: 18px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            color: var(--hint-color);
+        }
+
+        .summary-row.total-row {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed rgba(0, 0, 0, 0.1);
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--text-color);
+        }
+
+        .total-amount {
+            color: #d32f2f;
+        }
+
+        /* Form Inputs */
+        .form-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 16px;
+            margin-top: 16px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-color);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 11px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 0, 0, 0.12);
+            background: var(--bg-color);
+            color: var(--text-color);
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-input:focus {
+            border-color: #8b0000;
+        }
+
+        textarea.form-input {
+            resize: none;
+            min-height: 60px;
+        }
+
+        /* Fallback Sticky Bottom Bar (khi mở trên trình duyệt thường) */
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--card-bg);
+            padding: 12px 16px;
+            box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 1000;
+        }
+
+        .bottom-total-text {
+            font-size: 0.75rem;
+            color: var(--hint-color);
+        }
+
+        .bottom-total-price {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #d32f2f;
+        }
+
+        .btn-submit-order {
+            background: linear-gradient(135deg, #8b0000, #e63946);
+            color: #ffffff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(139, 0, 0, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .btn-submit-order:active {
+            transform: scale(0.97);
+        }
+
+        .btn-submit-order:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Hotline quick dial */
+        .quick-contact {
+            text-align: center;
+            margin-top: 14px;
+            font-size: 0.8rem;
+            color: var(--hint-color);
+        }
+
+        .quick-contact a {
+            color: #8b0000;
+            font-weight: 700;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- App Header -->
+    <div class="app-header">
+        <div class="app-title">
+            <i class="fas fa-pepper-hot"></i> Tương Ớt Bông Ớt
+        </div>
+        <div class="app-subtitle">100% Ớt Tươi Nguyên Chất • Gia Truyền Hà Nội</div>
+        <span class="badge-live"><i class="fas fa-bolt"></i> Đặt Hàng Trực Tiếp Telegram</span>
+    </div>
+
+    <!-- 1. Chọn Sản Phẩm -->
+    <div class="section-label">
+        <span>🌶 Chọn Sản Phẩm</span>
+        <span style="font-size: 0.75rem; color: var(--hint-color);">Chọn số lượng cần mua</span>
+    </div>
+
+    <div class="product-list">
+        <!-- Sản phẩm 1: Chai 350ml -->
+        <div class="product-card">
+            <div class="product-icon icon-red">
+                <i class="fas fa-pepper-hot"></i>
+            </div>
+            <div class="product-info">
+                <div class="product-name">Chai Siêu Cay 350ml</div>
+                <div class="product-desc">Độ cay cực mạnh, chuẩn vị phở Bắc</div>
+                <div class="product-price">30.000₫ <span class="price-note">/ chai</span></div>
+            </div>
+            <div class="counter-group">
+                <button type="button" class="btn-counter" onclick="changeQty('p350', -1)">−</button>
+                <span class="counter-value" id="qty_p350">0</span>
+                <button type="button" class="btn-counter" onclick="changeQty('p350', 1)">+</button>
+            </div>
+        </div>
+
+        <!-- Sản phẩm 2: Chai 500ml -->
+        <div class="product-card">
+            <div class="product-icon icon-green">
+                <i class="fas fa-bottle-droplet"></i>
+            </div>
+            <div class="product-info">
+                <div class="product-name">Chai Truyền Thống 500ml</div>
+                <div class="product-desc">Cay vừa phải, thơm nồng đậm vị</div>
+                <div class="product-price">45.000₫ <span class="price-note">/ chai</span></div>
+            </div>
+            <div class="counter-group">
+                <button type="button" class="btn-counter" onclick="changeQty('p500', -1)">−</button>
+                <span class="counter-value" id="qty_p500">0</span>
+                <button type="button" class="btn-counter" onclick="changeQty('p500', 1)">+</button>
+            </div>
+        </div>
+
+        <!-- Sản phẩm 3: Mua Buôn / Quán Phở (Theo Lít) -->
+        <div class="product-card">
+            <div class="product-icon icon-orange">
+                <i class="fas fa-cubes-stacked"></i>
+            </div>
+            <div class="product-info">
+                <div class="product-name">Mua Buôn / Quán Phở</div>
+                <div class="product-desc">Can từ 5 Lít trở lên cho nhà hàng, quán ăn</div>
+                <div class="product-price">Giá sỉ ưu đãi <span class="price-note">(tính theo Lít)</span></div>
+            </div>
+            <div class="counter-group">
+                <button type="button" class="btn-counter" onclick="changeQty('pBulk', -5)">−</button>
+                <span class="counter-value" id="qty_pBulk" style="min-width: 38px;">0L</span>
+                <button type="button" class="btn-counter" onclick="changeQty('pBulk', 5)">+</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Tóm Tắt Đơn Hàng -->
+    <div class="summary-card" id="summaryCard">
+        <div class="summary-row">
+            <span>Chai 350ml:</span>
+            <span id="sum_p350">0 chai (0₫)</span>
+        </div>
+        <div class="summary-row">
+            <span>Chai 500ml:</span>
+            <span id="sum_p500">0 chai (0₫)</span>
+        </div>
+        <div class="summary-row">
+            <span>Mua Buôn:</span>
+            <span id="sum_pBulk">0 Lít (Báo giá sỉ)</span>
+        </div>
+        <div class="summary-row total-row">
+            <span>Tạm Tính:</span>
+            <span class="total-amount" id="totalAmount">0₫</span>
+        </div>
+    </div>
+
+    <!-- 3. Form Điền Thông Tin Nhận Hàng -->
+    <div class="section-label">
+        <span>📦 Thông Tin Nhận Hàng</span>
+    </div>
+
+    <form id="orderForm" class="form-card" onsubmit="submitOrder(event)">
+        <div class="form-group">
+            <label class="form-label">Họ và tên *</label>
+            <input type="text" id="custName" class="form-input" placeholder="Nhập họ tên của bạn" required>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Số điện thoại *</label>
+            <input type="tel" id="custPhone" class="form-input" placeholder="Ví dụ: 0982722036" required>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Địa chỉ giao hàng *</label>
+            <input type="text" id="custAddress" class="form-input" placeholder="Số nhà, tên đường, quận/huyện, tỉnh thành" required>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Ghi chú đơn hàng (nếu có)</label>
+            <textarea id="custNote" class="form-input" placeholder="Ví dụ: Giao giờ hành chính, gọi trước khi ship..."></textarea>
+        </div>
+    </form>
+
+    <div class="quick-contact">
+        Cần tư vấn gấp? Gọi Hotline: <a href="tel:0982722036">0982.722.036</a>
+    </div>
+
+    <!-- Bottom Action Bar (Dùng khi xem trên Web hoặc Fallback) -->
+    <div class="bottom-bar" id="fallbackBottomBar">
+        <div>
+            <div class="bottom-total-text">Tổng tiền thanh toán</div>
+            <div class="bottom-total-price" id="bottomTotal">0₫</div>
+        </div>
+        <button type="button" class="btn-submit-order" onclick="triggerSubmit()">
+            <i class="fas fa-paper-plane"></i> Gửi Đơn Ngay
+        </button>
+    </div>
+
+    <script>
+        // CẤU HÌNH TELEGRAM BOT
+        const TELEGRAM_BOT_TOKEN = '8571697852:AAGhE7cw3Sx3vWoX1SF1jovESawYsngBwXo';
+        const TELEGRAM_CHAT_ID = '5056715300';
+
+        // Khởi tạo Telegram WebApp SDK
+        const tg = window.Telegram?.WebApp;
+
+        // Trạng thái số lượng
+        const cartData = {
+            p350: 0,
+            p500: 0,
+            pBulk: 0
+        };
+
+        const PRICES = {
+            p350: 30000,
+            p500: 45000,
+            pBulk: 0 // Giá buôn báo riêng
+        };
+
+        document.addEventListener('DOMContentLoaded', function () {
+            if (tg) {
+                try {
+                    tg.ready();
+                    tg.expand();
+
+                    // Tự động điền họ tên từ tài khoản Telegram
+                    const user = tg.initDataUnsafe?.user;
+                    if (user) {
+                        const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim();
+                        if (fullName) {
+                            document.getElementById('custName').value = fullName;
+                        }
+                    }
+
+                    // Kích hoạt nút Telegram MainButton
+                    tg.MainButton.setText('ĐẶT HÀNG NGAY (0₫)');
+                    tg.MainButton.onClick(triggerSubmit);
+                    tg.MainButton.hide(); // Ẩn khi chưa chọn sản phẩm
+                } catch (e) {
+                    console.warn('Telegram init error:', e);
+                }
+            }
+
+            updateCalculation();
+        });
+
+        // Hàm rung phản hồi Haptic Feedback
+        function triggerHaptic(type = 'light') {
+            if (tg?.HapticFeedback) {
+                try {
+                    if (type === 'success' || type === 'error' || type === 'warning') {
+                        tg.HapticFeedback.notificationOccurred(type);
+                    } else {
+                        tg.HapticFeedback.impactOccurred(type);
+                    }
+                } catch (e) {}
+            }
+        }
+
+        // Tăng giảm số lượng
+        function changeQty(productKey, change) {
+            triggerHaptic('light');
+            let current = cartData[productKey] || 0;
+            let nextVal = current + change;
+            if (nextVal < 0) nextVal = 0;
+            cartData[productKey] = nextVal;
+
+            if (productKey === 'pBulk') {
+                document.getElementById('qty_pBulk').textContent = nextVal + 'L';
+            } else {
+                document.getElementById(`qty_${productKey}`).textContent = nextVal;
+            }
+
+            updateCalculation();
+        }
+
+        // Cập nhật tính toán tiền & hiển thị
+        function updateCalculation() {
+            const sum350 = cartData.p350 * PRICES.p350;
+            const sum500 = cartData.p500 * PRICES.p500;
+            const totalMoney = sum350 + sum500;
+            const totalQty = cartData.p350 + cartData.p500 + cartData.pBulk;
+
+            document.getElementById('sum_p350').textContent = `${cartData.p350} chai (${sum350.toLocaleString('vi-VN')}₫)`;
+            document.getElementById('sum_p500').textContent = `${cartData.p500} chai (${sum500.toLocaleString('vi-VN')}₫)`;
+            document.getElementById('sum_pBulk').textContent = `${cartData.pBulk} Lít ${cartData.pBulk > 0 ? '(Liên hệ báo giá sỉ)' : ''}`;
+
+            const formattedTotal = totalMoney.toLocaleString('vi-VN') + '₫' + (cartData.pBulk > 0 ? ' + Giá sỉ' : '');
+            document.getElementById('totalAmount').textContent = formattedTotal;
+            document.getElementById('bottomTotal').textContent = formattedTotal;
+
+            // Cập nhật Telegram MainButton nếu có trong Telegram
+            if (tg) {
+                if (totalQty > 0) {
+                    tg.MainButton.setText(`GỬI ĐƠN HÀNG (${formattedTotal})`);
+                    tg.MainButton.show();
+                    // Ẩn thanh fallback nếu Telegram Native Button đã hiện
+                    document.getElementById('fallbackBottomBar').style.display = 'none';
+                } else {
+                    tg.MainButton.hide();
+                    document.getElementById('fallbackBottomBar').style.display = 'flex';
+                }
+            }
+        }
+
+        function triggerSubmit() {
+            const form = document.getElementById('orderForm');
+            if (form.reportValidity()) {
+                submitOrder(new Event('submit'));
+            }
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text.toString()
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        // Xử lý gửi đơn hàng
+        async function submitOrder(e) {
+            e.preventDefault();
+
+            const totalQty = cartData.p350 + cartData.p500 + cartData.pBulk;
+            if (totalQty === 0) {
+                triggerHaptic('warning');
+                if (tg?.showAlert) {
+                    tg.showAlert('Vui lòng chọn ít nhất 1 sản phẩm trước khi đặt hàng nhé!');
+                } else {
+                    alert('Vui lòng chọn ít nhất 1 sản phẩm trước khi đặt hàng nhé!');
+                }
+                return;
+            }
+
+            const name = document.getElementById('custName').value.trim();
+            const phone = document.getElementById('custPhone').value.trim();
+            const address = document.getElementById('custAddress').value.trim();
+            const note = document.getElementById('custNote').value.trim();
+
+            if (!name || !phone || !address) {
+                triggerHaptic('warning');
+                return;
+            }
+
+            // Tạo danh sách món đã chọn
+            const itemsList = [];
+            if (cartData.p350 > 0) itemsList.push(`• <b>${cartData.p350}</b> chai Siêu Cay 350ml (${(cartData.p350 * PRICES.p350).toLocaleString('vi-VN')}₫)`);
+            if (cartData.p500 > 0) itemsList.push(`• <b>${cartData.p500}</b> chai Truyền Thống 500ml (${(cartData.p500 * PRICES.p500).toLocaleString('vi-VN')}₫)`);
+            if (cartData.pBulk > 0) itemsList.push(`• <b>${cartData.pBulk}</b> Lít Tương Ớt Bán Buôn (Can sỉ)`);
+
+            const totalMoney = (cartData.p350 * PRICES.p350) + (cartData.p500 * PRICES.p500);
+            const formattedTotal = totalMoney.toLocaleString('vi-VN') + '₫' + (cartData.pBulk > 0 ? ' + Giá sỉ' : '');
+
+            // Thông tin tài khoản Telegram nếu có
+            const tgUser = tg?.initDataUnsafe?.user;
+            let tgInfo = '';
+            if (tgUser) {
+                tgInfo = `📱 <b>Kênh đặt:</b> Telegram Mini App (@${escapeHtml(tgUser.username || 'ẩn')} - ID: <code>${tgUser.id}</code>)\n`;
+            } else {
+                tgInfo = `🌐 <b>Kênh đặt:</b> Web Mini App\n`;
+            }
+
+            const messageText = `🔥 <b>ĐƠN HÀNG MỚI TỪ TELEGRAM MINI APP!</b>\n\n` +
+                `👤 <b>Khách hàng:</b> ${escapeHtml(name)}\n` +
+                `📞 <b>Điện thoại:</b> ${escapeHtml(phone)}\n` +
+                `📍 <b>Địa chỉ:</b> ${escapeHtml(address)}\n` +
+                `📝 <b>Ghi chú:</b> ${escapeHtml(note || 'Không có')}\n\n` +
+                `📦 <b>Chi tiết sản phẩm:</b>\n${itemsList.join('\n')}\n\n` +
+                `💰 <b>TỔNG CỘNG:</b> <b>${formattedTotal}</b>\n` +
+                tgInfo +
+                `⏰ <b>Thời gian:</b> ${new Date().toLocaleString('vi-VN')}`;
+
+            const cleanPhone = phone.replace(/\D/g, '');
+            const inlineButtons = [];
+            const actionRow = [];
+
+            if (cleanPhone) {
+                actionRow.push({ text: `💬 Chat Zalo`, url: `https://zalo.me/${cleanPhone}` });
+            }
+            actionRow.push({ text: `📍 Vị Trí Shop`, url: `https://maps.app.goo.gl/tuongotpho` });
+            if (actionRow.length > 0) inlineButtons.push(actionRow);
+
+            if (tg?.MainButton) {
+                tg.MainButton.showProgress();
+            }
+
+            try {
+                const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: TELEGRAM_CHAT_ID,
+                        text: messageText,
+                        parse_mode: 'HTML',
+                        reply_markup: inlineButtons.length > 0 ? { inline_keyboard: inlineButtons } : undefined
+                    })
+                });
+
+                const data = await res.json();
+                if (tg?.MainButton) {
+                    tg.MainButton.hideProgress();
+                }
+
+                if (data.ok) {
+                    triggerHaptic('success');
+                    const successMsg = `🎉 Đặt hàng thành công!\n\nCảm ơn ${name}, chúng tôi đã nhận được đơn hàng và sẽ liên hệ giao hàng đến địa chỉ:\n${address} sớm nhất!`;
+                    if (tg?.showAlert) {
+                        tg.showAlert(successMsg, function () {
+                            tg.close();
+                        });
+                    } else {
+                        alert(successMsg);
+                        // Reset form
+                        cartData.p350 = 0;
+                        cartData.p500 = 0;
+                        cartData.pBulk = 0;
+                        document.getElementById('qty_p350').textContent = '0';
+                        document.getElementById('qty_p500').textContent = '0';
+                        document.getElementById('qty_pBulk').textContent = '0L';
+                        document.getElementById('orderForm').reset();
+                        updateCalculation();
+                    }
+                } else {
+                    triggerHaptic('error');
+                    alert('Có lỗi xảy ra khi gửi đơn. Vui lòng gọi trực tiếp hotline 0982.722.036 để đặt hàng!');
+                }
+            } catch (err) {
+                if (tg?.MainButton) {
+                    tg.MainButton.hideProgress();
+                }
+                triggerHaptic('error');
+                console.error(err);
+                alert('Không thể kết nối máy chủ. Vui lòng gọi hotline 0982.722.036 để đặt hàng!');
+            }
+        }
+    </script>
+</body>
+
+</html>
