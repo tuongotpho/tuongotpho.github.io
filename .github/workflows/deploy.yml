@@ -17,11 +17,18 @@ jobs:
           fetch-depth: 0
 
       - name: Push to tuongotcay/tuongotcay.github.io
+        env:
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git remote add target https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/tuongotcay/tuongotcay.github.io.git || true
-          git push -f target main:main || echo "Sync skipped or completed"
+          if [ -n "$PAT_TOKEN" ]; then
+            git config --global user.name "github-actions[bot]"
+            git config --global user.email "github-actions[bot]@users.noreply.github.com"
+            git remote add target https://x-access-token:${PAT_TOKEN}@github.com/tuongotcay/tuongotcay.github.io.git || true
+            git push -f target main:main
+            echo "✅ Successfully synced to tuongotcay/tuongotcay.github.io!"
+          else
+            echo "ℹ️ PAT_TOKEN secret not set yet. Skipping cross-repo sync."
+          fi
 
   deploy_firebase:
     name: Deploy Multi-site to Firebase Hosting
