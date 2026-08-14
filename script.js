@@ -76,7 +76,7 @@ async function sendTelegramNotification(orderData) {
     if (cleanPhone) {
         actionRow.push({ text: `💬 Chat Zalo`, url: `https://zalo.me/${cleanPhone}` });
     }
-    actionRow.push({ text: `📍 Vị Trí Shop`, url: `https://maps.app.goo.gl/tuongotpho` });
+    actionRow.push({ text: `📍 Vị Trí Shop`, url: `https://maps.app.goo.gl/Kgb7iHMjhNCQFnSu9` });
     if (actionRow.length > 0) inlineButtons.push(actionRow);
 
     const payload = {

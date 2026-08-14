@@ -482,6 +482,29 @@
         </div>
     </form>
 
+    <!-- 4. Bản Đồ & Vị Trí Cửa Hàng -->
+    <div class="section-label" id="mapSection">
+        <span>📍 Vị Trí Cửa Hàng Trực Tiếp</span>
+        <a href="https://maps.app.goo.gl/Kgb7iHMjhNCQFnSu9" target="_blank" style="font-size: 0.8rem; color: #ff4500; text-decoration: none; font-weight: 600;">
+            Mở Bản Đồ <i class="fas fa-external-link-alt"></i>
+        </a>
+    </div>
+
+    <div class="form-card" id="mapCard" style="padding: 12px; overflow: hidden;">
+        <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-color); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+            <i class="fas fa-store" style="color: #8b0000;"></i> Số 8 phố 135 Núi Trúc, Ba Đình, Hà Nội
+        </div>
+        <div style="border-radius: 12px; overflow: hidden; height: 180px; box-shadow: inset 0 0 10px rgba(0,0,0,0.1);">
+            <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d598.272455111829!2d105.82362946624725!3d21.029278464930897!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ab1c16db8245%3A0x2ece78466781b970!2zVMawxqFuZyDhu5t0IFBo4bufIG5ndXnDqm4gY2jhuqV0IC0gQsO0bmcg4bubdA!5e0!3m2!1svi!2s!4v1786723089445!5m2!1svi!2s"
+                width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"
+                referrerpolicy="strict-origin-when-cross-origin"></iframe>
+        </div>
+        <a href="https://maps.app.goo.gl/Kgb7iHMjhNCQFnSu9" target="_blank" style="display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 10px; padding: 10px; background: rgba(139, 0, 0, 0.08); border-radius: 10px; color: #8b0000; font-size: 0.85rem; font-weight: 700; text-decoration: none;">
+            <i class="fas fa-directions"></i> Chỉ Đường Đến Cửa Hàng (Google Maps)
+        </a>
+    </div>
+
     <div class="quick-contact">
         Cần tư vấn gấp? Gọi Hotline: <a href="tel:0982722036">0982.722.036</a>
     </div>
@@ -774,7 +797,7 @@
             if (cleanPhone) {
                 actionRow.push({ text: `💬 Chat Zalo`, url: `https://zalo.me/${cleanPhone}` });
             }
-            actionRow.push({ text: `📍 Vị Trí Shop`, url: `https://maps.app.goo.gl/tuongotpho` });
+            actionRow.push({ text: `📍 Vị Trí Shop`, url: `https://maps.app.goo.gl/Kgb7iHMjhNCQFnSu9` });
             if (actionRow.length > 0) inlineButtons.push(actionRow);
 
             if (tg?.MainButton) {
