@@ -1,37 +1,58 @@
-# Tương Ớt Bông Ớt - Landing Page
+# Tương Ớt Bông Ớt - Master Website (Multi-Domain & Multi-Hosting)
 
-Đây là mã nguồn cho trang web giới thiệu sản phẩm "Tương Ớt Bông Ớt". Trang web này được thiết kế để cung cấp thông tin chi tiết về sản phẩm, bảng giá và các phương thức liên hệ đặt hàng.
+Hệ thống mã nguồn website chính thức của thương hiệu **Tương Ớt Bông Ớt** (Gia truyền Hà Nội - 100% ớt tươi nguyên chất, không chất bảo quản).
 
-## Cấu trúc dự án
+---
 
-Dự án bao gồm các tệp chính sau:
-- `index.html`: Chứa toàn bộ nội dung và cấu trúc của trang web.
-- `style.css`: Chứa các quy tắc định dạng (CSS) cho giao diện.
-- `script.js`: Chứa mã JavaScript để xử lý các tương tác của người dùng.
-- `images/`: Thư mục chứa tất cả các hình ảnh được sử dụng trên trang.
-- `robots.txt`: Hướng dẫn các bot của công cụ tìm kiếm.
-- `sitemap.xml`: Sơ đồ trang web, giúp công cụ tìm kiếm hiểu cấu trúc trang.
+## 🌐 Hệ Thống Tự Động Hóa 4 Web (CI/CD)
 
-## Các tính năng chính và nâng cấp
+Mã nguồn được quản lý tập trung duy nhất tại repository này (`tuongotpho/tuongotpho.github.io`). Khi có commit mới, **GitHub Actions** tự động xuất bản lên cả 4 trang web:
 
-- **Cấu trúc rõ ràng:** Mã nguồn được tách thành các tệp HTML, CSS, và JavaScript riêng biệt để dễ dàng bảo trì và phát triển.
-- **Thiết kế Responsive:** Tương thích tốt trên các thiết bị di động và máy tính để bàn.
-- **Tối ưu SEO & AIO:**
-    - Sử dụng các thẻ meta (title, description, keywords) được tối ưu hóa cho cả người dùng và máy tìm kiếm.
-    - Tích hợp đầy đủ các thẻ Open Graph (Facebook) và Twitter Card để đảm bảo hiển thị đẹp mắt khi chia sẻ trên mạng xã hội.
-    - Dữ liệu có cấu trúc (Schema.org) được làm giàu với các thông tin chi tiết về `Product` và `LocalBusiness`, giúp các công cụ tìm kiếm và AI hiểu rõ hơn về sản phẩm và doanh nghiệp.
-- **Giao diện chuyên nghiệp:** Các icon được thay thế bằng thư viện Font Awesome để đảm bảo tính nhất quán và sắc nét.
-- **Nút gọi hành động (CTA):** Các nút "Mua Ngay", "Liên Hệ Zalo" được thiết kế nổi bật để khuyến khích khách hàng tương tác.
-- **Form liên hệ:** Tích hợp với Formspree để khách hàng có thể gửi yêu cầu trực tiếp từ trang web.
-- **Bản đồ Google Maps:** Nhúng bản đồ chỉ đường đến địa chỉ cửa hàng.
+1. **[tuongotpho.github.io](https://tuongotpho.github.io/)** *(GitHub Pages 1)*
+2. **[tuongotcay.github.io](https://tuongotcay.github.io/)** *(GitHub Pages 2)*
+3. **[tuongot-sieucay.web.app](https://tuongot-sieucay.web.app/)** *(Firebase Hosting Site 1)*
+4. **[tuongotsieucay.web.app](https://tuongotsieucay.web.app/)** *(Firebase Hosting Site 2)*
 
-## Cách sử dụng
+---
 
-1.  Clone repository này về máy.
-2.  Mở tệp `index.html` trong trình duyệt web để xem trang.
-3.  Để thay đổi hình ảnh, hãy cập nhật các tệp trong thư mục `images/`.
+## 📂 Cấu Trúc Dự Án Đã Chuẩn Hóa
 
-## Liên hệ
+```text
+├── .github/workflows/
+│   └── deploy.yml          # Kịch bản CI/CD tự động deploy 4 web
+├── blog/                   # Thư mục bài viết Blog chuẩn SEO Content
+│   ├── index.html          # Trang danh sách bài viết
+│   └── *.html              # 13 bài viết chia sẻ kiến thức ẩm thực & sức khỏe
+├── images/                 # Hình ảnh sản phẩm, gallery và đồ họa
+├── .firebaserc             # Cấu hình dự án Firebase (tuongot-sieucay)
+├── firebase.json           # Cấu hình Multi-site Hosting (2 sites)
+├── gallery.html            # Trang bộ sưu tập ảnh sản phẩm & món ăn
+├── index.html              # Trang chủ Master (Giỏ hàng, Đánh giá, Hero Animation)
+├── robots.txt              # Khai báo Bot tìm kiếm và Sitemap
+├── script.js               # Mã nguồn JS (Giỏ hàng, Telegram Bot API, Formspree)
+├── script.min.js           # Phiên bản JS tối ưu nén
+├── sitemap.xml             # Sitemap XML chuẩn SEO chứa đầy đủ 17 URL
+├── styles.css              # Mã nguồn CSS giao diện hiện đại
+└── styles.min.css          # Phiên bản CSS tối ưu nén
+```
 
-- **Hotline/Zalo:** 0982.722.036
-- **Địa chỉ:** Số 8, ngõ 135 Núi Trúc, Giảng Võ, Hà Nội
+---
+
+## ⚡ Các Tính Năng Nổi Bật
+
+1. **Đặt Hàng & Thông Báo Tức Thì**:
+   - Tích hợp **Telegram Bot API**: Đơn hàng tự động gửi trực tiếp về Telegram cá nhân/nhóm của chủ shop ngay khi khách đặt.
+   - Hỗ trợ **Giỏ hàng trực tiếp (Cart Modal)** trên web + Liên hệ Zalo / Hotline.
+2. **Tối Ưu SEO & AI Search (AIO / GEO)**:
+   - Cấu trúc dữ liệu có cấu trúc Schema.org (`LocalBusiness`, `Product`, `FAQPage`, `BreadcrumbList`).
+   - Sitemap XML đầy đủ 17 URL canonical giúp Google lập chỉ mục nhanh chóng.
+   - 13 bài viết Blog chuẩn SEO kéo traffic tự nhiên từ công cụ tìm kiếm.
+3. **Tracking & Analytics**:
+   - Tích hợp **Google Analytics GA4** và **Firebase Analytics SDK** (`G-536YB7K3WV`).
+
+---
+
+## 📞 Liên Hệ
+
+- **Hotline / Zalo:** 0982.722.036
+- **Địa chỉ:** Số 8, ngõ 135 Núi Trúc, Giảng Võ, Ba Đình, Hà Nội
