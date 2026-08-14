@@ -24,8 +24,11 @@ jobs:
           if [ -n "$PAT_TOKEN" ]; then
             git config --global user.name "tuongotpho"
             git config --global user.email "vietthanh228@gmail.com"
-            git push -f "https://${PAT_TOKEN}@github.com/tuongotcay/tuongotcay.github.io.git" HEAD:main
-            echo "✅ Successfully synced to tuongotcay/tuongotcay.github.io!"
+            git checkout -b sync-release
+            git rm -rf .github || true
+            git commit -m "sync: cap nhat ma nguon website moi nhat" || true
+            git push -f "https://${PAT_TOKEN}@github.com/tuongotcay/tuongotcay.github.io.git" sync-release:main
+            echo "✅ Successfully synced content to tuongotcay/tuongotcay.github.io!"
           else
             echo "ℹ️ PAT_TOKEN secret not set yet. Skipping cross-repo sync."
           fi
