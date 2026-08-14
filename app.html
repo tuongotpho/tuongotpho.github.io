@@ -810,9 +810,18 @@
             actionRow.push({ text: `📍 Vị Trí Shop`, url: `https://maps.app.goo.gl/Kgb7iHMjhNCQFnSu9` });
             if (actionRow.length > 0) inlineButtons.push(actionRow);
 
-            if (tg?.MainButton) {
-                tg.MainButton.showProgress();
+            const isRealTelegram = !!(tg && tg.initData && tg.initData.length > 0);
+
+            if (isRealTelegram && tg.MainButton) {
+                try { tg.MainButton.showProgress(); } catch (e) {}
             }
+
+            // Hiển thị trạng thái đang gửi trên nút Web
+            const submitBtns = document.querySelectorAll('.btn-submit-order');
+            submitBtns.forEach(btn => {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi đơn hàng...';
+            });
 
             try {
                 const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
@@ -827,17 +836,22 @@
                 });
 
                 const data = await res.json();
-                if (tg?.MainButton) {
-                    tg.MainButton.hideProgress();
+
+                if (isRealTelegram && tg?.MainButton) {
+                    try { tg.MainButton.hideProgress(); } catch (e) {}
                 }
 
                 if (data.ok) {
                     triggerHaptic('success');
                     const successMsg = `🎉 Đặt hàng thành công!\n\nCảm ơn ${name}, chúng tôi đã nhận được đơn hàng và sẽ liên hệ giao hàng đến địa chỉ:\n${address} sớm nhất!`;
-                    if (tg?.showAlert) {
-                        tg.showAlert(successMsg, function () {
-                            tg.close();
-                        });
+                    if (isRealTelegram && tg?.showAlert) {
+                        try {
+                            tg.showAlert(successMsg, function () {
+                                tg.close();
+                            });
+                        } catch (e) {
+                            alert(successMsg);
+                        }
                     } else {
                         alert(successMsg);
                         // Reset form
@@ -852,15 +866,21 @@
                     }
                 } else {
                     triggerHaptic('error');
-                    alert('Có lỗi xảy ra khi gửi đơn. Vui lòng gọi trực tiếp hotline 0982.722.036 để đặt hàng!');
+                    alert('Lỗi: ' + (data.description || 'Có lỗi xảy ra khi gửi đơn. Vui lòng gọi trực tiếp hotline 0982.722.036 để đặt hàng!'));
                 }
             } catch (err) {
-                if (tg?.MainButton) {
-                    tg.MainButton.hideProgress();
+                if (isRealTelegram && tg?.MainButton) {
+                    try { tg.MainButton.hideProgress(); } catch (e) {}
                 }
                 triggerHaptic('error');
-                console.error(err);
+                console.error('Submit order error:', err);
                 alert('Không thể kết nối máy chủ. Vui lòng gọi hotline 0982.722.036 để đặt hàng!');
+            } finally {
+                submitBtns.forEach(btn => {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-paper-plane"></i> GỬI ĐƠN HÀNG NGAY';
+                });
+                updateCalculation();
             }
         }
     </script>
