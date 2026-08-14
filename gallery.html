@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-site-verification" content="H-1uGYQBFn_CIx4O_Q3IoRNPm06vMAwyE72Rwy6Dzlk">
+    <title>Bộ Sưu Tập Ảnh - Tương Ớt Siêu Cay Bông Ớt | Sản Phẩm & Món Ăn</title>
+    <meta name="description"
+        content="Bộ sưu tập ảnh tương ớt siêu cay nguyên chất Bông Ớt. Xem ảnh sản phẩm thực tế, món ăn kèm tương ớt và quy trình sản xuất thủ công.">
+    <meta name="keywords" content="ảnh tương ớt, tương ớt nguyên chất, sản phẩm tương ớt, Bông Ớt, tương ớt siêu cay">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://tuongotcay.github.io/gallery.html">
+    <meta property="og:title" content="Bộ Sưu Tập Ảnh - Tương Ớt Siêu Cay Bông Ớt">
+    <meta property="og:description"
+        content="Xem ảnh sản phẩm thực tế, món ăn kèm tương ớt và quy trình sản xuất thủ công.">
+    <meta property="og:image" content="https://cdn-icons-png.flaticon.com/512/5495/5495490.png">
+    <link rel="canonical" href="https://tuongotcay.github.io/gallery.html">
+    <link rel="stylesheet" href="styles.min.css">
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/5495/5495490.png" type="image/png">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Dancing+Script:wght@700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-6JHML7VMEB"></script>
+    <script>window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments); } gtag('js', new Date()); gtag('config', 'G-6JHML7VMEB');</script>
+    <style>
+        /* ===== Gallery Page Styles ===== */
+        .gallery-page {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+        }
+
+        .gallery-header {
+            text-align: center;
+            padding: 120px 20px 50px;
+            background: linear-gradient(135deg, rgba(255, 87, 51, 0.3) 0%, rgba(255, 126, 95, 0.1) 100%);
+        }
+
+        .gallery-header h1 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3rem;
+            color: #ff5733;
+            margin-bottom: 15px;
+        }
+
+        .gallery-header p {
+            color: #fff;
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Filter Tabs */
+        .gallery-filters {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding: 30px 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 10px 24px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: linear-gradient(135deg, #ff5733, #ff7e5f);
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 4px 15px rgba(255, 87, 51, 0.4);
+        }
+
+        /* Gallery Grid */
+        .gallery-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px 60px;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .gallery-item {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            aspect-ratio: 4/3;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(255, 87, 51, 0.3);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.08);
+        }
+
+        .gallery-item .overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover .overlay {
+            transform: translateY(0);
+        }
+
+        .overlay h4 {
+            color: #fff;
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+
+        .overlay span {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.85rem;
+        }
+
+        /* Placeholder khi chưa có ảnh */
+        .gallery-placeholder {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 80px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            border: 2px dashed rgba(255, 255, 255, 0.15);
+        }
+
+        .gallery-placeholder i {
+            font-size: 4rem;
+            color: rgba(255, 87, 51, 0.4);
+            margin-bottom: 20px;
+        }
+
+        .gallery-placeholder h3 {
+            color: #fff;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .gallery-placeholder p {
+            color: rgba(255, 255, 255, 0.6);
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        /* Lightbox */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .lightbox.active {
+            display: flex;
+        }
+
+        .lightbox img {
+            max-width: 90vw;
+            max-height: 85vh;
+            object-fit: contain;
+            border-radius: 10px;
+            box-shadow: 0 0 60px rgba(255, 87, 51, 0.3);
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #fff;
+            font-size: 2.5rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+            z-index: 10001;
+            transition: transform 0.2s;
+        }
+
+        .lightbox-close:hover {
+            transform: scale(1.2);
+            color: #ff5733;
+        }
+
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #fff;
+            font-size: 2rem;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .lightbox-nav:hover {
+            background: rgba(255, 87, 51, 0.5);
+        }
+
+        .lightbox-prev {
+            left: 20px;
+        }
+
+        .lightbox-next {
+            right: 20px;
+        }
+
+        .lightbox-caption {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            font-size: 1.1rem;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 10px 25px;
+            border-radius: 30px;
+        }
+
+        /* CTA Section */
+        .gallery-cta {
+            background: linear-gradient(135deg, rgba(220, 53, 69, 0.2) 0%, rgba(255, 107, 107, 0.1) 100%);
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .gallery-cta h2 {
+            color: #fff;
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+
+        .gallery-cta p {
+            color: #fff;
+            margin-bottom: 25px;
+        }
+
+        .gallery-cta .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .gallery-header h1 {
+                font-size: 2rem;
+            }
+
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 12px;
+            }
+
+            .lightbox-nav {
+                width: 40px;
+                height: 40px;
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .gallery-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+
+            .gallery-item {
+                border-radius: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body class="gallery-page">
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <a href="index.html"
+                    style="text-decoration:none;color:inherit;display:flex;align-items:center;gap:10px;">
+                    <i class="fas fa-pepper-hot"></i>
+                    <span>Tương Ớt Siêu Cay</span>
+                </a>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">Trang Chủ</a>
+                <a href="index.html#products" class="nav-link">Sản Phẩm</a>
+                <a href="gallery.html" class="nav-link active">Bộ Sưu Tập</a>
+                <a href="blog/index.html" class="nav-link">Blog</a>
+                <a href="index.html#contact" class="nav-link">Liên Hệ</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Gallery Header -->
+    <section class="gallery-header">
+        <h1><i class="fas fa-camera-retro"></i> Bộ Sưu Tập Ảnh</h1>
+        <p>Khám phá sản phẩm tương ớt nguyên chất và những món ăn tuyệt vời cùng Bông Ớt</p>
+    </section>
+
+    <!-- Filter Tabs -->
+    <div class="gallery-filters">
+        <button class="filter-btn active" data-filter="all">
+            <i class="fas fa-th"></i> Tất Cả
+        </button>
+        <button class="filter-btn" data-filter="products">
+            <i class="fas fa-box"></i> Sản Phẩm
+        </button>
+        <button class="filter-btn" data-filter="food">
+            <i class="fas fa-utensils"></i> Món Ăn
+        </button>
+        <button class="filter-btn" data-filter="process">
+            <i class="fas fa-flask"></i> Quy Trình
+        </button>
+    </div>
+
+    <!-- Gallery Grid -->
+    <div class="gallery-container">
+        <div class="gallery-grid" id="galleryGrid">
+
+            <div class="gallery-item" data-category="products">
+                <img src="images/gallery/TOSC-1.jpg"
+                    alt="Tương ớt siêu cay nguyên chất Bông Ớt - Hũ thủy tinh với ớt tươi trên nền gỗ" loading="lazy">
+                <div class="overlay">
+                    <h4>Tương Ớt Siêu Cay Nguyên Chất</h4>
+                    <span>Sản phẩm</span>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="products">
+                <img src="images/gallery/TOSC-2.jpg" alt="Chai tương ớt Bông Ớt siêu cay nguyên chất - Close-up nền tối"
+                    loading="lazy">
+                <div class="overlay">
+                    <h4>Bông Ớt - Siêu Cay Nguyên Chất</h4>
+                    <span>Sản phẩm</span>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="products">
+                <img src="images/gallery/TOSC-3.jpg"
+                    alt="Chai tương ớt Bông Ớt bên cạnh quả ớt tươi - Phong cách tối giản" loading="lazy">
+                <div class="overlay">
+                    <h4>Tương Ớt & Ớt Tươi</h4>
+                    <span>Sản phẩm</span>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="products">
+                <img src="images/gallery/TOSC-4.png" alt="Chai tương ớt nguyên chất Bông Ớt trên đế gỗ - Nền trắng"
+                    loading="lazy">
+                <div class="overlay">
+                    <h4>Tương Ớt Nguyên Chất Bông Ớt</h4>
+                    <span>Sản phẩm</span>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="products">
+                <img src="images/gallery/TOSC-5.jpg"
+                    alt="Chai tương ớt Bông Ớt bên cửa sổ với ớt tươi - Ánh sáng tự nhiên" loading="lazy">
+                <div class="overlay">
+                    <h4>Bông Ớt - Ánh Sáng Tự Nhiên</h4>
+                    <span>Sản phẩm</span>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="products">
+                <img src="images/gallery/TOSC-6.jpg" alt="Tương ớt Bông Ớt siêu cay - Chai mở nắp với ớt khô và ớt tươi"
+                    loading="lazy">
+                <div class="overlay">
+                    <h4>Siêu Cay - Mở Nắp Là Cay!</h4>
+                    <span>Sản phẩm</span>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="products">
+                <img src="images/gallery/TOSC-7.jpg" alt="Chai tương ớt Bông Ớt mở nắp với ớt tươi xung quanh"
+                    loading="lazy">
+                <div class="overlay">
+                    <h4>Bông Ớt - 100% Ớt Tươi</h4>
+                    <span>Sản phẩm</span>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="products">
+                <img src="images/gallery/TOSC-8.jpg" alt="Chai tương ớt Bông Ớt giữa vòng tròn ớt tươi và ngọn lửa"
+                    loading="lazy">
+                <div class="overlay">
+                    <h4>Bông Ớt - Siêu Cay Rực Lửa</h4>
+                    <span>Sản phẩm</span>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="products">
+                <img src="images/gallery/TOSC-9.jpg"
+                    alt="Hũ tương ớt Bông Ớt thủ công với muỗng gỗ - Không tỏi, không cà chua" loading="lazy">
+                <div class="overlay">
+                    <h4>Thủ Công - Không Tỏi, Không Cà Chua</h4>
+                    <span>Sản phẩm</span>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="products">
+                <img src="images/gallery/TOSC-10.jpg" alt="Chai tương ớt Bông Ớt trong căn bếp Việt truyền thống"
+                    loading="lazy">
+                <div class="overlay">
+                    <h4>Bông Ớt Trong Bếp Việt</h4>
+                    <span>Sản phẩm</span>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="products">
+                <img src="images/gallery/TOSC-11.jpg" alt="Hũ tương ớt Bông Ớt nắp gỗ trên kệ bếp ấm cúng"
+                    loading="lazy">
+                <div class="overlay">
+                    <h4>Nguyên Chất - Nắp Gỗ Thủ Công</h4>
+                    <span>Sản phẩm</span>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="products">
+                <img src="images/gallery/TOSC-12.jpg" alt="Hũ tương ớt Bông Ớt với ớt tươi dưới ánh hoàng hôn"
+                    loading="lazy">
+                <div class="overlay">
+                    <h4>Bông Ớt - Hoàng Hôn Rực Cay</h4>
+                    <span>Sản phẩm</span>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="products">
+                <img src="images/gallery/TOSC-13.jpg"
+                    alt="Hũ tương ớt Bông Ớt pure chili sauce với muỗng gỗ trên vải linen" loading="lazy">
+                <div class="overlay">
+                    <h4>Pure Chili Sauce - Bông Ớt</h4>
+                    <span>Sản phẩm</span>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="products">
+                <img src="images/gallery/TOSC-14.jpg" alt="Hũ tương ớt cay nguyên chất Bông Ớt với muỗng gỗ và gia vị"
+                    loading="lazy">
+                <div class="overlay">
+                    <h4>Không Tỏi, Không Cà Chua, Không Bảo Quản</h4>
+                    <span>Sản phẩm</span>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="products">
+                <img src="images/gallery/TOSC-15.jpg" alt="Hũ tương ớt Bông Ớt trên mặt đá cẩm thạch trong bếp hiện đại"
+                    loading="lazy">
+                <div class="overlay">
+                    <h4>Bông Ớt - Bếp Hiện Đại</h4>
+                    <span>Sản phẩm</span>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="products">
+                <img src="images/gallery/TOSC-16.jpg" alt="Hũ tương ớt Bông Ớt trên đĩa trắng trong bếp ấm áp"
+                    loading="lazy">
+                <div class="overlay">
+                    <h4>Nguyên Chất - Bếp Ấm Áp</h4>
+                    <span>Sản phẩm</span>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="products">
+                <img src="images/gallery/TOSC-17.jpg" alt="Chai tương ớt Bông Ớt mở nắp với ớt tươi bên cửa sổ"
+                    loading="lazy">
+                <div class="overlay">
+                    <h4>Bông Ớt - Tươi Mỗi Ngày</h4>
+                    <span>Sản phẩm</span>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="products">
+                <img src="images/gallery/TOSC-18.jpg" alt="Hũ tương ớt Bông Ớt pure chili sauce với muỗng gỗ nhỏ"
+                    loading="lazy">
+                <div class="overlay">
+                    <h4>Không Tỏi, Không Cà Chua, Không Bảo Quản</h4>
+                    <span>Sản phẩm</span>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="products">
+                <img src="images/gallery/TOSC-19.jpg"
+                    alt="Hũ tương ớt Bông Ớt mở nắp với ớt tươi trên bàn gỗ - 8 ngõ 135 Núi Trúc" loading="lazy">
+                <div class="overlay">
+                    <h4>Bông Ớt - 8 Ngõ 135 Núi Trúc</h4>
+                    <span>Sản phẩm</span>
+                </div>
+            </div>
+
+
+
+            <div class="gallery-item" data-category="food">
+                <img src="images/gallery/new_logo.png" alt="Tương ớt Bông Ớt - new logo" loading="lazy">
+                <div class="overlay">
+                    <h4>new logo</h4>
+                    <span>Món ăn</span>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="food">
+                <img src="images/gallery/f35a895bba2cabf6198fcb4d86b96e00.jfif" alt="Tương ớt Bông Ớt - f35a895bba2cabf6198fcb4d86b96e00" loading="lazy">
+                <div class="overlay">
+                    <h4>f35a895bba2cabf6198fcb4d86b96e00</h4>
+                    <span>Món ăn</span>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="food">
+                <img src="images/gallery/1 (2).jpg" alt="Tương ớt Bông Ớt - 1 (2)" loading="lazy">
+                <div class="overlay">
+                    <h4>1 (2)</h4>
+                    <span>Món ăn</span>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="food">
+                <img src="images/gallery/insta (3).jpg" alt="Tương ớt Bông Ớt - insta (3)" loading="lazy">
+                <div class="overlay">
+                    <h4>insta (3)</h4>
+                    <span>Món ăn</span>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="food">
+                <img src="images/gallery/insta (1).jpg" alt="Tương ớt Bông Ớt - insta (1)" loading="lazy">
+                <div class="overlay">
+                    <h4>insta (1)</h4>
+                    <span>Món ăn</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- CTA -->
+    <section class="gallery-cta">
+        <div style="max-width:800px;margin:0 auto;">
+            <h2><i class="fas fa-fire"></i> Muốn thử ngay tương ớt siêu cay?</h2>
+            <p>100% ớt tươi nguyên chất, lên men tự nhiên, không chất bảo quản</p>
+            <div class="cta-buttons">
+                <a href="index.html#products" class="btn btn-primary" style="text-decoration:none;">
+                    <i class="fas fa-shopping-cart"></i> Xem Sản Phẩm
+                </a>
+                <button class="btn btn-primary" onclick="callNow()">
+                    <i class="fas fa-phone"></i> Gọi: 0982 722 036
+                </button>
+                <button class="btn btn-zalo" onclick="contactZalo()">
+                    <i class="fas fa-comment-dots"></i> Chat Zalo
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-brand">
+                        <i class="fas fa-pepper-hot"></i>
+                        <span>Tương Ớt Siêu Cay</span>
+                    </div>
+                    <p class="footer-description">Mang đến những sản phẩm tương ớt chất lượng cao với vị cay thuần khiết
+                        từ thiên nhiên.</p>
+                </div>
+                <div class="footer-section">
+                    <h4 class="footer-title">Liên Kết Nhanh</h4>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Trang Chủ</a></li>
+                        <li><a href="index.html#products">Sản Phẩm</a></li>
+                        <li><a href="gallery.html">Bộ Sưu Tập</a></li>
+                        <li><a href="blog/index.html">Blog</a></li>
+                        <li><a href="index.html#contact">Liên Hệ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4 class="footer-title">Liên Hệ</h4>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-phone"></i> 0982 722 036</li>
+                        <li><i class="fas fa-envelope"></i> vietthanh228@gmail.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2011 Tương Ớt Siêu Cay nguyên chất Bông Ớt. Tất cả quyền được bảo lưu.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+        <button class="lightbox-nav lightbox-prev" onclick="navigateLightbox(-1)"><i
+                class="fas fa-chevron-left"></i></button>
+        <img id="lightboxImg" src="" alt="">
+        <button class="lightbox-nav lightbox-next" onclick="navigateLightbox(1)"><i
+                class="fas fa-chevron-right"></i></button>
+        <div class="lightbox-caption" id="lightboxCaption"></div>
+    </div>
+
+    <script src="script.min.js"></script>
+    <script>
+        // ===== Gallery Filter =====
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const galleryItems = document.querySelectorAll('.gallery-item');
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const filter = btn.dataset.filter;
+
+                galleryItems.forEach(item => {
+                    if (filter === 'all' || item.dataset.category === filter) {
+                        item.style.display = '';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // ===== Lightbox =====
+        let currentIndex = 0;
+        let visibleItems = [];
+
+        function getVisibleItems() {
+            return Array.from(document.querySelectorAll('.gallery-item')).filter(
+                item => item.style.display !== 'none'
+            );
+        }
+
+        // Click to open
+        document.querySelectorAll('.gallery-item').forEach(item => {
+            item.addEventListener('click', () => {
+                visibleItems = getVisibleItems();
+                currentIndex = visibleItems.indexOf(item);
+                openLightbox();
+            });
+        });
+
+        function openLightbox() {
+            const item = visibleItems[currentIndex];
+            const img = item.querySelector('img');
+            const caption = item.querySelector('.overlay h4');
+            document.getElementById('lightboxImg').src = img.src;
+            document.getElementById('lightboxCaption').textContent = caption ? caption.textContent : '';
+            document.getElementById('lightbox').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function navigateLightbox(dir) {
+            currentIndex = (currentIndex + dir + visibleItems.length) % visibleItems.length;
+            openLightbox();
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', e => {
+            if (!document.getElementById('lightbox').classList.contains('active')) return;
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowLeft') navigateLightbox(-1);
+            if (e.key === 'ArrowRight') navigateLightbox(1);
+        });
+
+        // Click outside to close
+        document.getElementById('lightbox').addEventListener('click', e => {
+            if (e.target === document.getElementById('lightbox')) closeLightbox();
+        });
+    </script>
+</body>
+
+</html>
