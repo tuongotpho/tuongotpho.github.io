@@ -15,16 +15,16 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Push to tuongotcay/tuongotcay.github.io
         env:
           PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           if [ -n "$PAT_TOKEN" ]; then
-            git config --global user.name "github-actions[bot]"
-            git config --global user.email "github-actions[bot]@users.noreply.github.com"
-            git remote add target https://x-access-token:${PAT_TOKEN}@github.com/tuongotcay/tuongotcay.github.io.git || true
-            git push -f target main:main
+            git config --global user.name "tuongotpho"
+            git config --global user.email "vietthanh228@gmail.com"
+            git push -f "https://${PAT_TOKEN}@github.com/tuongotcay/tuongotcay.github.io.git" HEAD:main
             echo "✅ Successfully synced to tuongotcay/tuongotcay.github.io!"
           else
             echo "ℹ️ PAT_TOKEN secret not set yet. Skipping cross-repo sync."
