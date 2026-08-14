@@ -7,6 +7,15 @@ const TELEGRAM_CHAT_ID = '5056715300';
 
 
 
+function escapeHtml(text) {
+    if (!text) return '';
+    return text.toString()
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
 // Hàm gửi thông báo đơn hàng sang Telegram Bot
 async function sendTelegramNotification(orderData) {
     if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
@@ -14,12 +23,12 @@ async function sendTelegramNotification(orderData) {
         return false;
     }
 
-    const messageText = `🛒 *ĐƠN HÀNG MỚI TỪ WEBSITE!*\n\n` +
-        `👤 *Họ và tên:* ${orderData.name}\n` +
-        `📞 *Số điện thoại:* ${orderData.phone}\n` +
-        `📦 *Sản phẩm:* ${orderData.product || 'Chưa chọn cụ thể'}\n` +
-        `📝 *Ghi chú:* ${orderData.message || 'Không có'}\n` +
-        `⏰ *Thời gian:* ${new Date().toLocaleString('vi-VN')}`;
+    const messageText = `🛒 <b>ĐƠN HÀNG MỚI TỪ WEBSITE!</b>\n\n` +
+        `👤 <b>Họ và tên:</b> ${escapeHtml(orderData.name)}\n` +
+        `📞 <b>Số điện thoại:</b> ${escapeHtml(orderData.phone)}\n` +
+        `📦 <b>Sản phẩm:</b> ${escapeHtml(orderData.product || 'Chưa chọn cụ thể')}\n` +
+        `📝 <b>Ghi chú:</b> ${escapeHtml(orderData.message || 'Không có')}\n` +
+        `⏰ <b>Thời gian:</b> ${new Date().toLocaleString('vi-VN')}`;
 
     try {
         const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
@@ -28,16 +37,20 @@ async function sendTelegramNotification(orderData) {
             body: JSON.stringify({
                 chat_id: TELEGRAM_CHAT_ID,
                 text: messageText,
-                parse_mode: 'Markdown'
+                parse_mode: 'HTML'
             })
         });
         const data = await res.json();
+        if (!data.ok) {
+            console.error('Telegram API Error:', data);
+        }
         return data.ok;
     } catch (err) {
         console.error('Lỗi khi gửi đơn hàng qua Telegram:', err);
         return false;
     }
 }
+
 
 // Smooth scrolling for anchor links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
