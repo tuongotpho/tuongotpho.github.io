@@ -63,6 +63,14 @@ async function sendTelegramNotification(orderData) {
     // Tạo các nút bấm tương tác thông minh (Inline Keyboard)
     const cleanPhone = (orderData.phone || '').replace(/\D/g, '');
     const inlineButtons = [];
+
+    if (tgUser && tgUser.id) {
+        const confirmUrl = `https://tuongotpho.github.io/app.html?action=confirm&to_id=${tgUser.id}&name=${encodeURIComponent(orderData.name)}`;
+        inlineButtons.push([
+            { text: `✅ Xác Nhận Đơn & Báo Khách`, url: confirmUrl }
+        ]);
+    }
+
     const actionRow = [];
 
     if (cleanPhone) {

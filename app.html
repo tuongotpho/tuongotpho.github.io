@@ -497,6 +497,16 @@
         </button>
     </div>
 
+    <!-- 4. Confirmation Screen (Hiển thị khi Shop bấm nút Xác Nhận Đơn) -->
+    <div id="confirmScreen" style="display: none; text-align: center; padding: 30px 16px; background: var(--card-bg); border-radius: 18px; margin-top: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.06);">
+        <div style="font-size: 3.5rem; margin-bottom: 12px;">🌶️</div>
+        <h2 style="color: #8b0000; font-size: 1.3rem; font-weight: 800; margin-bottom: 8px;">XÁC NHẬN ĐƠN HÀNG</h2>
+        <p id="confirmInfo" style="font-size: 0.95rem; color: var(--text-color); margin-bottom: 20px; line-height: 1.5;"></p>
+        <button type="button" id="btnConfirmSend" class="btn-submit-order" style="width: 100%; justify-content: center;" onclick="sendCustomerConfirmation()">
+            <i class="fas fa-paper-plane"></i> Gửi Tin Nhắn Báo Khách Ngay
+        </button>
+    </div>
+
     <script>
         // CẤU HÌNH TELEGRAM BOT
         const TELEGRAM_BOT_TOKEN = '8571697852:AAGhE7cw3Sx3vWoX1SF1jovESawYsngBwXo';
@@ -517,6 +527,9 @@
             p500: 45000,
             pBulk: 60000 // Giá sỉ 60.000đ/Lít
         };
+
+        let confirmToId = '';
+        let confirmCustName = '';
 
         document.addEventListener('DOMContentLoaded', function () {
             if (tg) {
@@ -542,8 +555,80 @@
                 }
             }
 
+            // Kiểm tra xem có phải mở từ link Xác Nhận Đơn không
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('action') === 'confirm') {
+                confirmToId = urlParams.get('to_id') || '';
+                confirmCustName = urlParams.get('name') || 'Khách hàng';
+
+                // Ẩn giao diện đặt hàng, hiện màn hình xác nhận
+                document.querySelector('.product-list').style.display = 'none';
+                document.getElementById('summaryCard').style.display = 'none';
+                document.getElementById('orderForm').style.display = 'none';
+                document.getElementById('fallbackBottomBar').style.display = 'none';
+                document.querySelectorAll('.section-label').forEach(el => el.style.display = 'none');
+
+                document.getElementById('confirmScreen').style.display = 'block';
+                document.getElementById('confirmInfo').innerHTML = `Gửi tin nhắn xác nhận tự động từ <b>@khachtuongot_bot</b> tới khách hàng <b>${escapeHtml(confirmCustName)}</b>: Đơn hàng đã được duyệt và đang chuẩn bị giao!`;
+                return;
+            }
+
             updateCalculation();
         });
+
+        // Hàm gửi tin nhắn xác nhận tới Telegram của khách hàng
+        async function sendCustomerConfirmation() {
+            if (!confirmToId) {
+                alert('Không tìm thấy thông tin Telegram của khách!');
+                return;
+            }
+
+            const btn = document.getElementById('btnConfirmSend');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi tin nhắn...';
+
+            const confirmMsg = `🌶️ <b>THÔNG BÁO XÁC NHẬN ĐƠN HÀNG - TƯƠNG ỚT BÔNG ỚT</b> 🌶️\n\n` +
+                `Chào <b>${escapeHtml(confirmCustName)}</b>,\n` +
+                `Đơn hàng của bạn đã được chủ shop <b>XÁC NHẬN THÀNH CÔNG</b>! 🎉\n\n` +
+                `📦 <b>Tình trạng:</b> Đang đóng gói cẩn thận & chuẩn bị giao\n` +
+                `🚚 <b>Thời gian giao dự kiến:</b> 1 - 2 ngày làm việc\n` +
+                `📞 <b>Hotline hỗ trợ:</b> 0982.722.036\n\n` +
+                `Cảm ơn bạn đã tin dùng Tương Ớt Phở Gia Truyền Bông Ớt! Chúc bạn có những bữa ăn thật ngon miệng! ❤️`;
+
+            try {
+                const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: confirmToId,
+                        text: confirmMsg,
+                        parse_mode: 'HTML'
+                    })
+                });
+
+                const data = await res.json();
+                if (data.ok) {
+                    triggerHaptic('success');
+                    const doneMsg = `✅ Đã gửi tin nhắn xác nhận tới Telegram của ${confirmCustName} thành công!`;
+                    if (tg?.showAlert) {
+                        tg.showAlert(doneMsg, function () {
+                            tg.close();
+                        });
+                    } else {
+                        alert(doneMsg);
+                    }
+                } else {
+                    triggerHaptic('error');
+                    alert('Lỗi: ' + (data.description || 'Không thể gửi tin nhắn cho khách!'));
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Lỗi kết nối khi gửi tin nhắn xác nhận!');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-check-circle"></i> Đã Gửi Thành Công';
+            }
+        }
 
         // Hàm rung phản hồi Haptic Feedback
         function triggerHaptic(type = 'light') {
@@ -676,8 +761,16 @@
 
             const cleanPhone = phone.replace(/\D/g, '');
             const inlineButtons = [];
-            const actionRow = [];
 
+            // Nút bấm xác nhận đơn tự động báo cho khách nếu khách đặt từ Telegram
+            if (tgUser && tgUser.id) {
+                const confirmUrl = `https://tuongotpho.github.io/app.html?action=confirm&to_id=${tgUser.id}&name=${encodeURIComponent(name)}`;
+                inlineButtons.push([
+                    { text: `✅ Xác Nhận Đơn & Báo Khách`, url: confirmUrl }
+                ]);
+            }
+
+            const actionRow = [];
             if (cleanPhone) {
                 actionRow.push({ text: `💬 Chat Zalo`, url: `https://zalo.me/${cleanPhone}` });
             }
