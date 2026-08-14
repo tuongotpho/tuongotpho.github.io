@@ -535,8 +535,34 @@
 
     <script>
         // CẤU HÌNH TELEGRAM BOT
+        // ⚠️ TẠM THỜI: token dưới đây chỉ còn dùng cho luồng dự phòng và màn hình xác nhận.
+        // Sau khi test xong API mới -> revoke token ở @BotFather và xoá 2 dòng này.
         const TELEGRAM_BOT_TOKEN = '8571697852:AAGhE7cw3Sx3vWoX1SF1jovESawYsngBwXo';
         const TELEGRAM_CHAT_ID = '5056715300';
+
+        // API đặt hàng tập trung (Firebase Function).
+        // Trên 2 site Firebase thì gọi cùng domain (/api/order) nên không lo bị nhà mạng chặn;
+        // trên GitHub Pages thì gọi tuyệt đối sang site Firebase.
+        const ORDER_API_URL = (function () {
+            const host = location.hostname;
+            // Chạy thử ở máy: trỏ vào Firebase Emulator
+            if (host === 'localhost' || host === '127.0.0.1') {
+                return 'http://127.0.0.1:5001/demo-tuongot/asia-southeast1/order';
+            }
+            // 2 site Firebase: gọi cùng domain, khỏi lo CORS lẫn nhà mạng chặn
+            if (/\.(web\.app|firebaseapp\.com)$/.test(host)) return '/api/order';
+            // GitHub Pages: gọi tuyệt đối sang site Firebase
+            return 'https://tuongot-sieucay.web.app/api/order';
+        })();
+
+        // Mã chống trùng đơn: giữ nguyên khi khách bấm lại vì lỗi mạng,
+        // chỉ đổi sau khi một đơn đã đặt thành công.
+        let clientOrderKey = newClientOrderKey();
+
+        function newClientOrderKey() {
+            if (window.crypto?.randomUUID) return crypto.randomUUID();
+            return `k-${Date.now()}-${Math.random().toString(36).slice(2, 12)}`;
+        }
 
         // Khởi tạo Telegram WebApp SDK
         const tg = window.Telegram?.WebApp;
@@ -739,9 +765,46 @@
                 .replace(/"/g, '&quot;');
         }
 
+        // Bật/tắt trạng thái "đang gửi", có nhớ nội dung gốc của nút
+        // (trước đây ghi đè thẳng innerHTML làm mất luôn ô hiển thị tổng tiền trên nút)
+        function setSubmitButtonsBusy(busy) {
+            document.querySelectorAll('#orderForm .btn-submit-order, #fallbackBottomBar .btn-submit-order')
+                .forEach(btn => {
+                    if (btn.dataset.originalHtml === undefined) {
+                        btn.dataset.originalHtml = btn.innerHTML;
+                    }
+                    btn.disabled = busy;
+                    btn.innerHTML = busy
+                        ? '<i class="fas fa-spinner fa-spin"></i> Đang gửi đơn hàng...'
+                        : btn.dataset.originalHtml;
+                });
+        }
+
+        function notifyCustomer(message, closeAppAfter) {
+            const isRealTelegram = !!(tg && tg.initData && tg.initData.length > 0);
+            if (isRealTelegram && tg?.showAlert) {
+                try {
+                    tg.showAlert(message, closeAppAfter ? function () { tg.close(); } : undefined);
+                    return;
+                } catch (err) { /* rơi xuống alert thường */ }
+            }
+            alert(message);
+        }
+
+        function resetOrderForm() {
+            cartData.p350 = 0;
+            cartData.p500 = 0;
+            cartData.pBulk = 0;
+            document.getElementById('qty_p350').textContent = '0';
+            document.getElementById('qty_p500').textContent = '0';
+            document.getElementById('qty_pBulk').textContent = '0L';
+            document.getElementById('orderForm').reset();
+            updateCalculation();
+        }
+
         // Xử lý gửi đơn hàng
         async function submitOrder(e) {
-            e.preventDefault();
+            if (e && e.preventDefault) e.preventDefault();
 
             const totalQty = cartData.p350 + cartData.p500 + cartData.pBulk;
             if (totalQty === 0) {
@@ -815,14 +878,96 @@
             if (isRealTelegram && tg.MainButton) {
                 try { tg.MainButton.showProgress(); } catch (e) {}
             }
+            setSubmitButtonsBusy(true);
 
-            // Hiển thị trạng thái đang gửi trên nút Web
-            const submitBtns = document.querySelectorAll('.btn-submit-order');
-            submitBtns.forEach(btn => {
-                btn.disabled = true;
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi đơn hàng...';
-            });
+            try {
+                // ĐƯỜNG CHÍNH: gửi đơn qua API của shop.
+                // Đơn được lưu vào Firestore trước khi báo Telegram nên không bao giờ bị mất.
+                const res = await fetch(ORDER_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        clientKey: clientOrderKey,
+                        items: { p350: cartData.p350, p500: cartData.p500, pBulk: cartData.pBulk },
+                        name: name,
+                        phone: phone,
+                        address: address,
+                        note: note,
+                        clientTotal: totalMoney,
+                        initData: isRealTelegram ? tg.initData : undefined
+                    })
+                });
 
+                const data = await res.json().catch(() => ({}));
+
+                if (res.ok && data.ok) {
+                    handleOrderSuccess(data, name, address, isRealTelegram);
+                    return;
+                }
+
+                // 4xx = dữ liệu khách nhập chưa hợp lệ -> báo rõ để khách sửa, không gửi dự phòng.
+                if (res.status >= 400 && res.status < 500 && data.error) {
+                    triggerHaptic('warning');
+                    notifyCustomer('⚠️ ' + data.error, false);
+                    return;
+                }
+
+                throw new Error(`API trả về lỗi ${res.status}`);
+            } catch (err) {
+                console.error('Lỗi gửi đơn qua API:', err);
+
+                // ĐƯỜNG DỰ PHÒNG: bắn thẳng về Telegram như cơ chế cũ.
+                // (Sẽ ngừng hoạt động sau khi revoke token — lúc đó khách được hướng dẫn gọi hotline.)
+                const sentDirect = await sendOrderDirectFallback(messageText, inlineButtons);
+
+                if (sentDirect) {
+                    handleOrderSuccess({
+                        orderId: 'Chưa cấp mã',
+                        message: 'Đơn đã được gửi tới cửa hàng qua kênh dự phòng.'
+                    }, name, address, isRealTelegram);
+                } else {
+                    triggerHaptic('error');
+                    notifyCustomer(
+                        '❌ Không gửi được đơn hàng do lỗi kết nối.\n\n' +
+                        'Vui lòng gọi hotline 0982.722.036 hoặc nhắn Zalo cùng số này, ' +
+                        'chúng tôi sẽ chốt đơn giúp bạn ngay.',
+                        false
+                    );
+                }
+            } finally {
+                if (isRealTelegram && tg?.MainButton) {
+                    try { tg.MainButton.hideProgress(); } catch (e) {}
+                }
+                setSubmitButtonsBusy(false);
+                updateCalculation();
+            }
+        }
+
+        function handleOrderSuccess(data, name, address, isRealTelegram) {
+            triggerHaptic('success');
+
+            // Đơn đã chốt -> lần đặt sau là một đơn mới hoàn toàn.
+            clientOrderKey = newClientOrderKey();
+
+            const heading = data.duplicated
+                ? '✅ Đơn này đã được ghi nhận rồi!'
+                : '🎉 Đặt hàng thành công!';
+
+            let msg = `${heading}\n\n`;
+            if (data.orderId) msg += `📋 Mã đơn hàng: ${data.orderId}\n`;
+            if (data.totalText) msg += `💰 Tổng tiền hàng: ${data.totalText}\n`;
+            msg += `\nCảm ơn ${name}! Chúng tôi sẽ gọi xác nhận và giao tới:\n${address}\n\n`;
+            msg += data.message || '';
+
+            notifyCustomer(msg, isRealTelegram);
+
+            if (!isRealTelegram) {
+                resetOrderForm();
+            }
+        }
+
+        // Gửi thẳng Telegram khi API chính không truy cập được.
+        async function sendOrderDirectFallback(messageText, inlineButtons) {
             try {
                 const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
                     method: 'POST',
@@ -834,53 +979,11 @@
                         reply_markup: inlineButtons.length > 0 ? { inline_keyboard: inlineButtons } : undefined
                     })
                 });
-
                 const data = await res.json();
-
-                if (isRealTelegram && tg?.MainButton) {
-                    try { tg.MainButton.hideProgress(); } catch (e) {}
-                }
-
-                if (data.ok) {
-                    triggerHaptic('success');
-                    const successMsg = `🎉 Đặt hàng thành công!\n\nCảm ơn ${name}, chúng tôi đã nhận được đơn hàng và sẽ liên hệ giao hàng đến địa chỉ:\n${address} sớm nhất!`;
-                    if (isRealTelegram && tg?.showAlert) {
-                        try {
-                            tg.showAlert(successMsg, function () {
-                                tg.close();
-                            });
-                        } catch (e) {
-                            alert(successMsg);
-                        }
-                    } else {
-                        alert(successMsg);
-                        // Reset form
-                        cartData.p350 = 0;
-                        cartData.p500 = 0;
-                        cartData.pBulk = 0;
-                        document.getElementById('qty_p350').textContent = '0';
-                        document.getElementById('qty_p500').textContent = '0';
-                        document.getElementById('qty_pBulk').textContent = '0L';
-                        document.getElementById('orderForm').reset();
-                        updateCalculation();
-                    }
-                } else {
-                    triggerHaptic('error');
-                    alert('Lỗi: ' + (data.description || 'Có lỗi xảy ra khi gửi đơn. Vui lòng gọi trực tiếp hotline 0982.722.036 để đặt hàng!'));
-                }
+                return !!data.ok;
             } catch (err) {
-                if (isRealTelegram && tg?.MainButton) {
-                    try { tg.MainButton.hideProgress(); } catch (e) {}
-                }
-                triggerHaptic('error');
-                console.error('Submit order error:', err);
-                alert('Không thể kết nối máy chủ. Vui lòng gọi hotline 0982.722.036 để đặt hàng!');
-            } finally {
-                submitBtns.forEach(btn => {
-                    btn.disabled = false;
-                    btn.innerHTML = '<i class="fas fa-paper-plane"></i> GỬI ĐƠN HÀNG NGAY';
-                });
-                updateCalculation();
+                console.error('Kênh dự phòng cũng lỗi:', err);
+                return false;
             }
         }
     </script>

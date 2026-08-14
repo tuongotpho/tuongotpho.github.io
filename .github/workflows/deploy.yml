@@ -26,6 +26,7 @@ jobs:
             git config --global user.email "vietthanh228@gmail.com"
             git checkout -b sync-release
             git rm -rf .github || true
+            git rm -rf functions || true
             git commit -m "sync: cap nhat ma nguon website moi nhat" || true
             git push -f "https://${PAT_TOKEN}@github.com/tuongotcay/tuongotcay.github.io.git" sync-release:main
             echo "✅ Successfully synced content to tuongotcay/tuongotcay.github.io!"
@@ -33,9 +34,47 @@ jobs:
             echo "ℹ️ PAT_TOKEN secret not set yet. Skipping cross-repo sync."
           fi
 
+  deploy_order_api:
+    name: Deploy API Dat Hang (Cloud Functions + Firestore Rules)
+    runs-on: ubuntu-latest
+    # Khong duoc chan viec deploy website neu API loi: web van chay duoc
+    # nho kenh du phong, con hon la ca 4 site khong duoc cap nhat.
+    continue-on-error: true
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: functions/package-lock.json
+
+      - name: Cai dat thu vien cho Functions
+        working-directory: functions
+        run: npm ci
+
+      - name: Deploy Functions & Firestore Rules
+        env:
+          SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_TUONGOT_SIECAY }}
+        run: |
+          if [ -z "$SERVICE_ACCOUNT_JSON" ]; then
+            echo "::warning::Chua co secret FIREBASE_SERVICE_ACCOUNT_TUONGOT_SIECAY. Bo qua deploy API."
+            exit 0
+          fi
+          echo "$SERVICE_ACCOUNT_JSON" > "$RUNNER_TEMP/sa.json"
+          export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/sa.json"
+          npx --yes firebase-tools@latest deploy \
+            --only functions,firestore:rules \
+            --project tuongot-sieucay \
+            --non-interactive --force
+
   deploy_firebase:
     name: Deploy Multi-site to Firebase Hosting
     runs-on: ubuntu-latest
+    # Deploy API truoc roi moi bat rewrite /api/order tren hosting.
+    needs: deploy_order_api
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4

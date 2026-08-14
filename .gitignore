@@ -1,3 +1,9 @@
 tuongotcay.github.io/
 .DS_Store
 node_modules/
+
+# Firebase
+.firebase/
+functions/.secret.local
+firebase-debug*.log
+firestore-debug*.log
