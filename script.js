@@ -129,32 +129,35 @@ function initScrollEffects() {
     const header = document.querySelector('.header');
     const scrollIndicator = document.querySelector('.scroll-indicator');
 
+    // Trang gallery và các bài blog KHÔNG có 2 phần tử này.
+    // Thiếu kiểm tra null là mỗi lần khách cuộn chuột lại nổ một lỗi JS.
+    if (!header && !scrollIndicator) return;
+
     window.addEventListener('scroll', function () {
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
         // Hiệu ứng header khi cuộn
-        if (scrollTop > 100) {
-            header.style.background = 'rgba(139, 0, 0, 0.98)';
-            header.style.boxShadow = '0 2px 20px rgba(0,0,0,0.1)';
-        } else {
-            header.style.background = 'rgba(139, 0, 0, 0.95)';
-            header.style.boxShadow = 'none';
+        if (header) {
+            if (scrollTop > 100) {
+                header.style.background = 'rgba(139, 0, 0, 0.98)';
+                header.style.boxShadow = '0 2px 20px rgba(0,0,0,0.1)';
+            } else {
+                header.style.background = 'rgba(139, 0, 0, 0.95)';
+                header.style.boxShadow = 'none';
+            }
         }
 
         // Ẩn scroll indicator khi cuộn xuống
-        if (scrollTop > 200) {
-            scrollIndicator.style.opacity = '0';
-        } else {
-            scrollIndicator.style.opacity = '1';
+        if (scrollIndicator) {
+            scrollIndicator.style.opacity = scrollTop > 200 ? '0' : '1';
         }
     });
 
     // Click scroll indicator để cuộn xuống
     if (scrollIndicator) {
         scrollIndicator.addEventListener('click', function () {
-            document.querySelector('#products').scrollIntoView({
-                behavior: 'smooth'
-            });
+            const products = document.querySelector('#products');
+            if (products) products.scrollIntoView({ behavior: 'smooth' });
         });
     }
 }
@@ -332,6 +335,11 @@ function addToCart(productName, price) {
 function updateCartDisplay() {
     const cartItems = document.getElementById('cartItems');
     const cartTotalElement = document.getElementById('cartTotal');
+
+    updateCartCount();
+
+    // Gallery và blog không có khối giỏ hàng - thoát sớm thay vì nổ lỗi
+    if (!cartItems || !cartTotalElement) return;
 
     if (cart.length === 0) {
         cartItems.innerHTML = '<p>Giỏ hàng trống</p>';
@@ -591,21 +599,21 @@ function saveContactInfo(contactInfo) {
     localStorage.setItem('chiliSauceContacts', JSON.stringify(contacts));
 }
 
-// Hàm hiển thị số lượng sản phẩm trong giỏ hàng trên header
+// Tiêu đề gốc của CHÍNH trang đang mở (mỗi bài blog một tiêu đề riêng).
+const ORIGINAL_PAGE_TITLE = document.title;
+
+// Hàm hiển thị số lượng sản phẩm trong giỏ hàng trên tiêu đề trang
+//
+// Trước đây hàm này chạy bằng setInterval mỗi giây trên MỌI trang và ghi đè
+// document.title bằng tiêu đề trang chủ - làm 13 bài blog và trang gallery
+// mất tiêu đề thật cả trên tab trình duyệt lẫn với Googlebot (Google có chạy JS).
+// Nay chỉ gọi khi giỏ hàng thay đổi, và luôn giữ nguyên tiêu đề gốc của trang.
 function updateCartCount() {
-    // Có thể thêm counter vào header nếu cần
     const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
-
-    // Cập nhật title của trang với số lượng giỏ hàng
-    if (cartCount > 0) {
-        document.title = `Tương Ớt Siêu Cay (${cartCount})`;
-    } else {
-        document.title = 'Tương Ớt Phở Siêu Cay Nguyên Chất | Bông Ớt - Gia Truyền Hà Nội';
-    }
+    document.title = cartCount > 0
+        ? `(${cartCount}) ${ORIGINAL_PAGE_TITLE}`
+        : ORIGINAL_PAGE_TITLE;
 }
-
-// Cập nhật số lượng giỏ hàng mỗi giây
-setInterval(updateCartCount, 1000);
 
 // Thêm CSS cho notification
 const notificationCSS = `
@@ -740,25 +748,6 @@ const notificationCSS = `
     background: #c82333;
     transform: scale(1.1);
 }
-
-/* Khởi tạo trạng thái ban đầu cho các elements */
-document.addEventListener('DOMContentLoaded', function() {
-    // Ẩn các product cards ban đầu để animation
-    const productCards = document.querySelectorAll('.product-card');
-    const testimonialCards = document.querySelectorAll('.testimonial-card');
-
-    productCards.forEach(card => {
-        card.style.opacity = '0';
-        card.style.transform = 'translateY(20px)';
-        card.style.transition = 'all 0.5s ease';
-    });
-
-    testimonialCards.forEach(card => {
-        card.style.opacity = '0';
-        card.style.transform = 'translateY(20px)';
-        card.style.transition = 'all 0.5s ease';
-    });
-});
 `;
 
 // Thêm CSS vào head của document
