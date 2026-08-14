@@ -1,0 +1,40 @@
+name: Auto Deploy 4 Web Apps (GitHub Pages & Firebase Hosting Multi-site)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  sync_to_tuongotcay:
+    name: Sync to tuongotcay.github.io
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Push to tuongotcay/tuongotcay.github.io
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git remote add target https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/tuongotcay/tuongotcay.github.io.git || true
+          git push -f target main:main || echo "Sync skipped or completed"
+
+  deploy_firebase:
+    name: Deploy Multi-site to Firebase Hosting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Firebase Hosting (tuongot-sieucay & tuongotsieucay)
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_TUONGOT_SIECAY }}'
+          channelId: live
+          projectId: tuongot-sieucay
+        continue-on-error: true

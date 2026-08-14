@@ -1,5 +1,17 @@
 {
   "projects": {
     "default": "tuongot-sieucay"
+  },
+  "targets": {
+    "tuongot-sieucay": {
+      "hosting": {
+        "tuongot-sieucay": [
+          "tuongot-sieucay"
+        ],
+        "tuongotsieucay": [
+          "tuongotsieucay"
+        ]
+      }
+    }
   }
 }
