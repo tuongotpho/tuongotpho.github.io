@@ -480,6 +480,9 @@
             <label class="form-label">Ghi chú đơn hàng (nếu có)</label>
             <textarea id="custNote" class="form-input" placeholder="Ví dụ: Giao giờ hành chính, gọi trước khi ship..."></textarea>
         </div>
+        <button type="submit" class="btn-submit-order" style="width: 100%; justify-content: center; margin-top: 14px; padding: 14px; font-size: 1.05rem;">
+            <i class="fas fa-paper-plane"></i> GỬI ĐƠN HÀNG NGAY (<span id="formBtnTotal">0₫</span>)
+        </button>
     </form>
 
     <!-- 4. Bản Đồ & Vị Trí Cửa Hàng -->
@@ -698,18 +701,25 @@
             const formattedTotal = totalMoney.toLocaleString('vi-VN') + '₫';
             document.getElementById('totalAmount').textContent = formattedTotal;
             document.getElementById('bottomTotal').textContent = formattedTotal;
+            if (document.getElementById('formBtnTotal')) {
+                document.getElementById('formBtnTotal').textContent = formattedTotal;
+            }
 
-            // Cập nhật Telegram MainButton nếu có trong Telegram
-            if (tg) {
+            // Kiểm tra xem có đang thực sự chạy bên trong ứng dụng Telegram hay không
+            const isInsideTelegram = !!(tg && tg.initData && tg.initData.length > 0);
+
+            if (isInsideTelegram) {
                 if (totalQty > 0) {
                     tg.MainButton.setText(`GỬI ĐƠN HÀNG (${formattedTotal})`);
                     tg.MainButton.show();
-                    // Ẩn thanh fallback nếu Telegram Native Button đã hiện
                     document.getElementById('fallbackBottomBar').style.display = 'none';
                 } else {
                     tg.MainButton.hide();
-                    document.getElementById('fallbackBottomBar').style.display = 'flex';
+                    document.getElementById('fallbackBottomBar').style.display = 'none';
                 }
+            } else {
+                // Trên trình duyệt Web thông thường: Luôn hiển thị thanh đặt hàng cố định dưới đáy
+                document.getElementById('fallbackBottomBar').style.display = 'flex';
             }
         }
 
