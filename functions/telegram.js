@@ -2,7 +2,6 @@ const crypto = require('crypto');
 const { formatVnd } = require('./catalog');
 
 const SHOP_MAP_URL = 'https://maps.app.goo.gl/Kgb7iHMjhNCQFnSu9';
-const CONFIRM_BASE_URL = 'https://tuongotpho.github.io/app.html';
 
 function escapeHtml(text) {
     if (text === null || text === undefined) return '';
@@ -94,16 +93,27 @@ function buildOwnerMessage(order) {
         `⏰ <b>Thời gian:</b> ${order.createdAtText}`;
 }
 
-/** Cac nut hanh dong dinh kem tin nhan don hang. */
-function buildOwnerKeyboard(order) {
+/** Tien to cua callback_data khi chu shop bam nut xac nhan. */
+const CONFIRM_PREFIX = 'cf:';
+
+/**
+ * Cac nut hanh dong dinh kem tin nhan don hang.
+ *
+ * Nut xac nhan dung callback_data chu khong phai URL nhu truoc:
+ *  - Bam 2 lan khong gui 2 tin cho khach (URL thi bam bao nhieu lan cung gui)
+ *  - Don tu WEB cung co nut, bam vao la danh dau da chot trong so sach,
+ *    thay vi ngo cut nhu truoc
+ *  - Khong con can mo trang app.html?action=confirm, tuc la bot token
+ *    khong con ly do ton tai trong ma nguon client
+ */
+function buildOwnerKeyboard(order, confirmed = false) {
     const rows = [];
 
-    if (order.channel === 'telegram' && order.tgUser && order.tgUser.id) {
-        const url = `${CONFIRM_BASE_URL}?action=confirm` +
-            `&to_id=${encodeURIComponent(order.tgUser.id)}` +
-            `&name=${encodeURIComponent(order.customer.name)}` +
-            `&order=${encodeURIComponent(order.orderId)}`;
-        rows.push([{ text: '✅ Xác Nhận Đơn & Báo Khách', url }]);
+    if (!confirmed) {
+        const label = (order.channel === 'telegram' && order.tgUser && order.tgUser.id)
+            ? '✅ Xác Nhận Đơn & Báo Khách'
+            : '✅ Xác Nhận Đơn (khách đặt từ web)';
+        rows.push([{ text: label, callback_data: CONFIRM_PREFIX + order.orderId }]);
     }
 
     const actions = [];
@@ -116,8 +126,42 @@ function buildOwnerKeyboard(order) {
     return rows;
 }
 
-async function sendMessage(botToken, payload) {
-    const res = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+/** Tin nhan bao khach da duoc duyet don - kem ma don va chi tiet hang. */
+function buildCustomerConfirmMessage(order) {
+    const itemLines = order.lines
+        .map(l => `• <b>${l.qty}</b> ${l.unit} ${escapeHtml(l.name)} — ${formatVnd(l.amount)}`)
+        .join('\n');
+
+    return `🌶️ <b>ĐƠN HÀNG ĐÃ ĐƯỢC XÁC NHẬN</b> 🌶️\n\n` +
+        `Chào <b>${escapeHtml(order.customer.name)}</b>, đơn của bạn đã được cửa hàng duyệt! 🎉\n\n` +
+        `📋 <b>Mã đơn:</b> <code>${order.orderId}</code>\n` +
+        `📦 <b>Chi tiết:</b>\n${itemLines}\n` +
+        `💰 <b>Tổng tiền hàng:</b> <b>${formatVnd(order.subtotal)}</b>\n` +
+        `📍 <b>Giao tới:</b> ${escapeHtml(order.customer.address)}\n\n` +
+        `🚚 <b>Dự kiến giao:</b> 1 - 2 ngày làm việc\n` +
+        `📞 <b>Hotline hỗ trợ:</b> 0982.722.036\n\n` +
+        `Cảm ơn bạn đã tin dùng Tương Ớt Bông Ớt! ❤️`;
+}
+
+/**
+ * Chuoi bi mat dung de xac thuc webhook, suy ra tu chinh bot token.
+ *
+ * Lam vay de khong phai quan them mot secret thu hai (viec nap secret da
+ * hong 3 lan roi). Doi lai: moi lan revoke token thi chuoi nay doi theo,
+ * BAT BUOC phai chay lai setup-webhook.js.
+ */
+function webhookSecretFor(botToken) {
+    return crypto.createHash('sha256').update(botToken.trim()).digest('hex');
+}
+
+function safeEquals(a, b) {
+    const bufA = Buffer.from(String(a || ''), 'utf8');
+    const bufB = Buffer.from(String(b || ''), 'utf8');
+    return bufA.length === bufB.length && crypto.timingSafeEqual(bufA, bufB);
+}
+
+async function callTelegram(botToken, method, payload) {
+    const res = await fetch(`https://api.telegram.org/bot${botToken}/${method}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -125,10 +169,39 @@ async function sendMessage(botToken, payload) {
     return res.json();
 }
 
+function sendMessage(botToken, payload) {
+    return callTelegram(botToken, 'sendMessage', payload);
+}
+
+/** Bat buoc goi trong vong ~10 giay, neu khong nut se quay vong mai tren may chu shop. */
+function answerCallbackQuery(botToken, callbackQueryId, text, showAlert = false) {
+    return callTelegram(botToken, 'answerCallbackQuery', {
+        callback_query_id: callbackQueryId,
+        text: text.slice(0, 200),
+        show_alert: showAlert
+    });
+}
+
+function editMessageText(botToken, chatId, messageId, text, inlineKeyboard) {
+    return callTelegram(botToken, 'editMessageText', {
+        chat_id: chatId,
+        message_id: messageId,
+        text,
+        parse_mode: 'HTML',
+        reply_markup: { inline_keyboard: inlineKeyboard }
+    });
+}
+
 module.exports = {
+    CONFIRM_PREFIX,
     escapeHtml,
     verifyInitData,
     buildOwnerMessage,
     buildOwnerKeyboard,
-    sendMessage
+    buildCustomerConfirmMessage,
+    webhookSecretFor,
+    safeEquals,
+    sendMessage,
+    answerCallbackQuery,
+    editMessageText
 };

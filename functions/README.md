@@ -65,12 +65,32 @@ Vào [IAM Console](https://console.cloud.google.com/iam-admin/iam?project=tuongo
 
 Chưa cấp cũng không sao: job `deploy_order_api` được đặt `continue-on-error`, website vẫn deploy bình thường, chỉ là API phải deploy tay.
 
+## Webhook xác nhận đơn
+
+Nút `✅ Xác Nhận Đơn` dùng `callback_data`, xử lý bởi function `telegramWebhook`:
+
+- Bấm 2 lần **không** gửi 2 tin cho khách — chốt bằng transaction ở tầng dữ liệu
+- Đơn đặt từ **web** cũng bấm được: đánh dấu `status: confirmed` vào sổ sách, chủ shop gọi khách sau
+- Tin nhắn đơn tự sửa thành `✅ ĐÃ XÁC NHẬN lúc HH:mm` và gỡ nút đi, nhìn lịch sử chat là biết đơn nào đã chốt
+
+Đăng ký webhook (chạy **sau mỗi lần** deploy function lần đầu, và **bắt buộc chạy lại sau khi revoke token**):
+
+```bash
+TELEGRAM_BOT_TOKEN=xxx node functions/setup-webhook.js
+```
+
+Chuỗi bí mật xác thực webhook được suy ra từ chính bot token (`sha256`), nên không phải quản thêm một secret thứ hai — đổi lại là đổi token thì phải đăng ký lại.
+
+Gỡ webhook: thêm `--delete`.
+
 ## Sau khi test xong — dọn token cũ
 
 1. @BotFather → `/revoke` → lấy token mới
-2. `firebase functions:secrets:set TELEGRAM_BOT_TOKEN` (dán token mới)
-3. `firebase deploy --only functions`
-4. Xoá `TELEGRAM_BOT_TOKEN` và `sendOrderDirectFallback` khỏi `app.html`, xoá khỏi `script.js` và `HANDOVER_CONTEXT.md`
+2. `firebase functions:secrets:set TELEGRAM_BOT_TOKEN --data-file <file> -f` (xem mục dưới)
+3. `TELEGRAM_BOT_TOKEN=<token moi> node functions/setup-webhook.js` — **không được quên bước này**
+4. Xoá `TELEGRAM_BOT_TOKEN` cùng `sendOrderDirectFallback` khỏi `app.html`, xoá khỏi `script.js`, `script.min.js` và `HANDOVER_CONTEXT.md`
+
+⚠️ **Đừng nhập token bằng ô nhập ẩn của CLI.** Đã hỏng 3 lần liên tiếp trên máy Windows (lưu được 16, rồi 6, rồi 100 ký tự thay vì 46). Luôn dùng `--data-file`, và tạo file bằng `fs.writeFileSync` của Node chứ đừng dùng phép chuyển hướng `>` của shell — PowerShell sẽ mã hoá lại file.
 
 ## Chạy thử ở máy local
 
@@ -84,10 +104,14 @@ Cần file `functions/.secret.local` (đã có trong .gitignore):
 TELEGRAM_BOT_TOKEN=123456:FAKE_TOKEN_FOR_LOCAL_TEST
 ```
 
-Rồi chạy bộ kiểm thử (21 phép thử: tính tiền, chống trùng, chặn spam, xác thực Telegram):
+Rồi chạy 2 bộ kiểm thử (31 phép thử: tính tiền, chống trùng, chặn spam, xác thực Telegram, luồng xác nhận đơn):
 
 ```bash
 node functions/test-order-api.js
+```
+
+```bash
+node functions/test-webhook.js
 ```
 
 Mở `app.html` ở `http://127.0.0.1:5173` thì client tự trỏ vào emulator, đặt thử thoải mái mà không đụng tới đơn thật.

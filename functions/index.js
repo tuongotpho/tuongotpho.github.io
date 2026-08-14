@@ -17,8 +17,15 @@ const { initializeApp } = require('firebase-admin/app');
 const { getFirestore } = require('firebase-admin/firestore');
 
 const { buildOrderLines, normalizePhone, formatVnd } = require('./catalog');
-const { verifyInitData, buildOwnerMessage, buildOwnerKeyboard, sendMessage } = require('./telegram');
-const { createOrder, findOrderByClientKey, checkRateLimit, markNotified } = require('./orders');
+const {
+    CONFIRM_PREFIX, verifyInitData, buildOwnerMessage, buildOwnerKeyboard,
+    buildCustomerConfirmMessage, webhookSecretFor, safeEquals,
+    sendMessage, answerCallbackQuery, editMessageText
+} = require('./telegram');
+const {
+    createOrder, findOrderByClientKey, confirmOrder, checkRateLimit,
+    markNotified, markCustomerNotified
+} = require('./orders');
 
 const TELEGRAM_BOT_TOKEN = defineSecret('TELEGRAM_BOT_TOKEN');
 const TELEGRAM_OWNER_CHAT_ID = defineString('TELEGRAM_OWNER_CHAT_ID', { default: '5056715300' });
@@ -212,6 +219,100 @@ exports.order = onRequest(
                 ? `Đơn ${order.orderId} đã được gửi tới cửa hàng!`
                 : `Đơn ${order.orderId} đã được ghi nhận. Nếu sau 30 phút chưa có ai gọi lại, vui lòng gọi hotline ${HOTLINE}.`
         });
+    }
+);
+
+/**
+ * WEBHOOK NHAN SU KIEN TU TELEGRAM
+ *
+ * Chi xu ly mot viec: chu shop bam nut "Xac Nhan Don".
+ *  - Chong bam 2 lan bang transaction, khach khong bao gio nhan 2 tin duyet
+ *  - Sua lai chinh tin nhan don thanh "DA XAC NHAN luc HH:mm" va go nut di,
+ *    nen nhin lich su chat la biet don nao da chot
+ *  - Don tu web cung chot duoc (ghi vao so sach), khong con la ngo cut
+ */
+exports.telegramWebhook = onRequest(
+    { cors: false, secrets: [TELEGRAM_BOT_TOKEN] },
+    async (req, res) => {
+        const botToken = TELEGRAM_BOT_TOKEN.value().trim();
+
+        // Endpoint nay cong khai tren Internet. Khong co buoc nay thi bat ky ai
+        // cung gia duoc su kien "chu shop da xac nhan" va bao khach linh tinh.
+        if (!safeEquals(req.headers['x-telegram-bot-api-secret-token'], webhookSecretFor(botToken))) {
+            logger.warn('Webhook bi goi voi secret sai', { ip: req.headers['x-forwarded-for'] });
+            return res.status(403).send('forbidden');
+        }
+
+        const cq = req.body && req.body.callback_query;
+        if (!cq || !cq.data || !cq.data.startsWith(CONFIRM_PREFIX)) {
+            return res.status(200).send('ok'); // su kien khac -> bo qua
+        }
+
+        // Luon tra 200 that nhanh, neu khong Telegram se gui lai lien tuc.
+        res.status(200).send('ok');
+
+        const ownerId = TELEGRAM_OWNER_CHAT_ID.value().trim();
+        const orderId = cq.data.slice(CONFIRM_PREFIX.length);
+
+        try {
+            if (String(cq.from && cq.from.id) !== ownerId) {
+                await answerCallbackQuery(botToken, cq.id, '⛔ Bạn không có quyền duyệt đơn này.', true);
+                return;
+            }
+
+            const result = await confirmOrder(db, orderId, cq.from.id);
+
+            if (!result.found) {
+                await answerCallbackQuery(botToken, cq.id,
+                    `Không tìm thấy đơn ${orderId} trong hệ thống.`, true);
+                return;
+            }
+
+            if (result.already) {
+                await answerCallbackQuery(botToken, cq.id,
+                    `Đơn ${orderId} đã được xác nhận lúc ${result.order.confirmedAtText || 'trước đó'}.`, true);
+                return;
+            }
+
+            const order = result.order;
+
+            // Bao khach - chi lam duoc khi khach dat tu trong Telegram
+            let customerMsg = 'Đã ghi nhận. Khách đặt từ web nên hãy gọi điện hoặc nhắn Zalo cho khách.';
+            if (order.channel === 'telegram' && order.tgUser && order.tgUser.id) {
+                const sent = await sendMessage(botToken, {
+                    chat_id: order.tgUser.id,
+                    text: buildCustomerConfirmMessage(order),
+                    parse_mode: 'HTML'
+                });
+                customerMsg = sent.ok
+                    ? 'Đã xác nhận và nhắn báo khách thành công!'
+                    : `Đã xác nhận, nhưng KHÔNG nhắn được cho khách (${sent.description || 'lỗi'}). Hãy gọi điện.`;
+                markCustomerNotified(db, orderId, !!sent.ok, sent.description || null)
+                    .catch(err => logger.error('Khong ghi duoc trang thai bao khach', err));
+            } else {
+                markCustomerNotified(db, orderId, false, 'khach dat tu web')
+                    .catch(err => logger.error('Khong ghi duoc trang thai bao khach', err));
+            }
+
+            // Sua tin nhan goc: dong dau xac nhan, go nut de khong bam nham nua
+            if (cq.message) {
+                const newText = buildOwnerMessage(order) +
+                    `\n\n✅ <b>ĐÃ XÁC NHẬN</b> lúc ${order.confirmedAtText}`;
+                const edited = await editMessageText(
+                    botToken, cq.message.chat.id, cq.message.message_id,
+                    newText, buildOwnerKeyboard(order, true)
+                );
+                if (!edited.ok) logger.warn('Khong sua duoc tin nhan don', { orderId, edited });
+            }
+
+            await answerCallbackQuery(botToken, cq.id, `✅ ${customerMsg}`, true);
+        } catch (err) {
+            logger.error('Loi xu ly webhook xac nhan don', { orderId, err });
+            try {
+                await answerCallbackQuery(botToken, cq.id,
+                    'Có lỗi khi xác nhận đơn. Vui lòng thử lại.', true);
+            } catch (e) { /* het cach */ }
+        }
     }
 );
 

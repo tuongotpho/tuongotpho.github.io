@@ -105,6 +105,45 @@ async function createOrder(db, { clientKey, draft }) {
     });
 }
 
+/**
+ * Chot don. Chong bam 2 lan o ngay tang du lieu bang transaction:
+ * lan bam thu hai luon nhan { already: true } nen khach khong bao gio
+ * nhan 2 tin "don da duoc duyet".
+ *
+ * Tra ve { found, already, order }.
+ */
+async function confirmOrder(db, orderId, byUserId) {
+    const ref = db.collection('orders').doc(orderId);
+
+    return db.runTransaction(async tx => {
+        const snap = await tx.get(ref);
+        if (!snap.exists) return { found: false, already: false, order: null };
+
+        const order = snap.data();
+        if (order.status === 'confirmed') {
+            return { found: true, already: true, order };
+        }
+
+        const confirmedAtText = vnDateTimeText();
+        tx.update(ref, {
+            status: 'confirmed',
+            confirmedAt: FieldValue.serverTimestamp(),
+            confirmedAtText,
+            confirmedBy: String(byUserId || 'unknown')
+        });
+
+        return { found: true, already: false, order: { ...order, status: 'confirmed', confirmedAtText } };
+    });
+}
+
+/** Ghi nhan da bao (hoac khong bao duoc) cho khach sau khi chot don. */
+async function markCustomerNotified(db, orderId, ok, detail) {
+    await db.collection('orders').doc(orderId).set({
+        customerNotified: ok,
+        customerNotifyDetail: detail || null
+    }, { merge: true });
+}
+
 /** Danh dau don da (hoac chua) bao duoc ve Telegram cho chu shop. */
 async function markNotified(db, orderId, notified, detail) {
     await db.collection('orders').doc(orderId).set({
@@ -115,5 +154,6 @@ async function markNotified(db, orderId, notified, detail) {
 }
 
 module.exports = {
-    createOrder, findOrderByClientKey, checkRateLimit, markNotified, vnDateCode, vnDateTimeText
+    createOrder, findOrderByClientKey, confirmOrder, checkRateLimit,
+    markNotified, markCustomerNotified, vnDateCode, vnDateTimeText
 };
