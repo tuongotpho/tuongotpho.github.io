@@ -2,6 +2,32 @@
 const TELEGRAM_BOT_TOKEN = '8571697852:AAGhE7cw3Sx3vWoX1SF1jovESawYsngBwXo';
 const TELEGRAM_CHAT_ID = '5056715300';
 
+// Khởi tạo Telegram Mini App WebApp SDK
+const tgApp = (typeof window !== 'undefined' && window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
+
+if (tgApp) {
+    try {
+        tgApp.ready();
+        tgApp.expand();
+        console.log('✅ Telegram Mini App Initialized');
+    } catch (e) {
+        console.warn('Telegram WebApp Init Warning:', e);
+    }
+}
+
+// Hàm kích hoạt rung phản hồi xúc giác (Haptic Feedback) trên điện thoại
+function triggerHaptic(type = 'medium') {
+    if (tgApp && tgApp.HapticFeedback) {
+        try {
+            if (type === 'success' || type === 'warning' || type === 'error') {
+                tgApp.HapticFeedback.notificationOccurred(type);
+            } else {
+                tgApp.HapticFeedback.impactOccurred(type);
+            }
+        } catch (e) {}
+    }
+}
+
 function escapeHtml(text) {
     if (!text) return '';
     return text.toString()
@@ -17,22 +43,51 @@ async function sendTelegramNotification(orderData) {
         return false;
     }
 
-    const messageText = `🛒 <b>ĐƠN HÀNG / LIÊN HỆ MỚI TỪ WEBPAGE!</b>\n\n` +
+    // Kiểm tra xem khách có đặt từ Telegram Mini App không
+    const tgUser = tgApp?.initDataUnsafe?.user;
+    let tgSourceInfo = '';
+    if (tgUser) {
+        tgSourceInfo = `📱 <b>Kênh đặt:</b> Telegram Mini App (@${escapeHtml(tgUser.username || 'ẩn')} - ID: <code>${tgUser.id}</code>)\n`;
+    } else {
+        tgSourceInfo = `🌐 <b>Kênh đặt:</b> Trình duyệt Web\n`;
+    }
+
+    const messageText = `🛒 <b>ĐƠN HÀNG / LIÊN HỆ MỚI!</b>\n\n` +
         `👤 <b>Họ và tên:</b> ${escapeHtml(orderData.name)}\n` +
-        `📧 <b>Email:</b> ${escapeHtml(orderData.email || 'Không có')}\n` +
         `📞 <b>Số điện thoại:</b> ${escapeHtml(orderData.phone)}\n` +
-        `📝 <b>Lời nhắn:</b> ${escapeHtml(orderData.message || 'Không có')}\n` +
+        `📧 <b>Email:</b> ${escapeHtml(orderData.email || 'Không có')}\n` +
+        `📝 <b>Nội dung:</b> ${escapeHtml(orderData.message || 'Không có')}\n` +
+        tgSourceInfo +
         `⏰ <b>Thời gian:</b> ${new Date().toLocaleString('vi-VN')}`;
+
+    // Tạo các nút bấm tương tác thông minh (Inline Keyboard)
+    const cleanPhone = (orderData.phone || '').replace(/\D/g, '');
+    const inlineButtons = [];
+    const actionRow = [];
+
+    if (cleanPhone) {
+        actionRow.push({ text: `💬 Chat Zalo`, url: `https://zalo.me/${cleanPhone}` });
+    }
+    actionRow.push({ text: `📍 Vị Trí Shop`, url: `https://maps.app.goo.gl/tuongotpho` });
+    if (actionRow.length > 0) inlineButtons.push(actionRow);
+
+    const payload = {
+        chat_id: TELEGRAM_CHAT_ID,
+        text: messageText,
+        parse_mode: 'HTML'
+    };
+
+    if (inlineButtons.length > 0) {
+        payload.reply_markup = {
+            inline_keyboard: inlineButtons
+        };
+    }
 
     try {
         const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                chat_id: TELEGRAM_CHAT_ID,
-                text: messageText,
-                parse_mode: 'HTML'
-            })
+            body: JSON.stringify(payload)
         });
         const data = await res.json();
         if (!data.ok) {
@@ -111,6 +166,16 @@ function initContactForm() {
     const contactForm = document.getElementById('contactForm') || document.querySelector('.contact-form');
 
     if (contactForm) {
+        // Tự động điền tên từ Telegram nếu mở qua Mini App
+        if (tgApp?.initDataUnsafe?.user) {
+            const user = tgApp.initDataUnsafe.user;
+            const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim();
+            const nameInput = contactForm.querySelector('input[name="name"]');
+            if (nameInput && !nameInput.value) {
+                nameInput.value = fullName;
+            }
+        }
+
         contactForm.addEventListener('submit', async function (e) {
             e.preventDefault();
 
@@ -121,6 +186,8 @@ function initContactForm() {
                 submitBtn.disabled = true;
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi...';
             }
+
+            triggerHaptic('light');
 
             // Lấy dữ liệu từ form
             const formData = new FormData(contactForm);
@@ -153,8 +220,15 @@ function initContactForm() {
                 submitBtn.innerHTML = originalBtnHTML;
             }
 
-            // Hiển thị thông báo thành công
-            showNotification(`🎉 Cảm ơn ${name}! Thông tin đặt hàng đã được gửi thành công. Chúng tôi sẽ liên hệ lại với bạn sớm nhất!`, 'success');
+            triggerHaptic('success');
+
+            // Hiển thị thông báo thành công (Native alert nếu trong Telegram)
+            const successMsg = `🎉 Cảm ơn ${name}! Thông tin đặt hàng đã được gửi thành công. Chúng tôi sẽ liên hệ lại với bạn sớm nhất!`;
+            if (tgApp && tgApp.showAlert) {
+                tgApp.showAlert(successMsg);
+            } else {
+                showNotification(successMsg, 'success');
+            }
 
             // Reset form
             contactForm.reset();
