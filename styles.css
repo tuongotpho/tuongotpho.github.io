@@ -1269,6 +1269,61 @@ section {
 }
 
 
+/* FAQ Section Styles */
+.faq-section {
+    background: #fdfaf6;
+    padding: 5rem 0;
+}
+
+.faq-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.faq-item {
+    background: #ffffff;
+    border-radius: 15px;
+    padding: 1.8rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border-left: 5px solid #ff6b35;
+    transition: all 0.3s ease;
+}
+
+.faq-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(255, 107, 53, 0.15);
+}
+
+.faq-question {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.8rem;
+}
+
+.faq-question i {
+    font-size: 1.5rem;
+    color: #ff6b35;
+}
+
+.faq-question h3 {
+    font-size: 1.2rem;
+    color: #8b0000;
+    margin: 0;
+    font-weight: 700;
+}
+
+.faq-answer p {
+    color: #555;
+    line-height: 1.7;
+    margin: 0;
+    font-size: 1rem;
+}
+
 /* Modal Styles */
 .modal {
     display: none;
