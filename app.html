@@ -406,7 +406,7 @@
         <!-- Sản phẩm 2: Chai 500ml -->
         <div class="product-card">
             <div class="product-icon icon-green">
-                <i class="fas fa-bottle-droplet"></i>
+                <i class="fas fa-pepper-hot"></i>
             </div>
             <div class="product-info">
                 <div class="product-name">Chai Truyền Thống 500ml</div>
@@ -423,12 +423,12 @@
         <!-- Sản phẩm 3: Mua Buôn / Quán Phở (Theo Lít) -->
         <div class="product-card">
             <div class="product-icon icon-orange">
-                <i class="fas fa-cubes-stacked"></i>
+                <i class="fas fa-pepper-hot"></i>
             </div>
             <div class="product-info">
                 <div class="product-name">Mua Buôn / Quán Phở</div>
                 <div class="product-desc">Can từ 5 Lít trở lên cho nhà hàng, quán ăn</div>
-                <div class="product-price">Giá sỉ ưu đãi <span class="price-note">(tính theo Lít)</span></div>
+                <div class="product-price">60.000₫ <span class="price-note">/ Lít (Can từ 5L)</span></div>
             </div>
             <div class="counter-group">
                 <button type="button" class="btn-counter" onclick="changeQty('pBulk', -5)">−</button>
@@ -449,8 +449,8 @@
             <span id="sum_p500">0 chai (0₫)</span>
         </div>
         <div class="summary-row">
-            <span>Mua Buôn:</span>
-            <span id="sum_pBulk">0 Lít (Báo giá sỉ)</span>
+            <span>Mua Buôn (Lít):</span>
+            <span id="sum_pBulk">0 Lít (0₫)</span>
         </div>
         <div class="summary-row total-row">
             <span>Tạm Tính:</span>
@@ -515,7 +515,7 @@
         const PRICES = {
             p350: 30000,
             p500: 45000,
-            pBulk: 0 // Giá buôn báo riêng
+            pBulk: 60000 // Giá sỉ 60.000đ/Lít
         };
 
         document.addEventListener('DOMContentLoaded', function () {
@@ -579,14 +579,15 @@
         function updateCalculation() {
             const sum350 = cartData.p350 * PRICES.p350;
             const sum500 = cartData.p500 * PRICES.p500;
-            const totalMoney = sum350 + sum500;
+            const sumBulk = cartData.pBulk * PRICES.pBulk;
+            const totalMoney = sum350 + sum500 + sumBulk;
             const totalQty = cartData.p350 + cartData.p500 + cartData.pBulk;
 
             document.getElementById('sum_p350').textContent = `${cartData.p350} chai (${sum350.toLocaleString('vi-VN')}₫)`;
             document.getElementById('sum_p500').textContent = `${cartData.p500} chai (${sum500.toLocaleString('vi-VN')}₫)`;
-            document.getElementById('sum_pBulk').textContent = `${cartData.pBulk} Lít ${cartData.pBulk > 0 ? '(Liên hệ báo giá sỉ)' : ''}`;
+            document.getElementById('sum_pBulk').textContent = `${cartData.pBulk} Lít (${sumBulk.toLocaleString('vi-VN')}₫)`;
 
-            const formattedTotal = totalMoney.toLocaleString('vi-VN') + '₫' + (cartData.pBulk > 0 ? ' + Giá sỉ' : '');
+            const formattedTotal = totalMoney.toLocaleString('vi-VN') + '₫';
             document.getElementById('totalAmount').textContent = formattedTotal;
             document.getElementById('bottomTotal').textContent = formattedTotal;
 
@@ -649,10 +650,10 @@
             const itemsList = [];
             if (cartData.p350 > 0) itemsList.push(`• <b>${cartData.p350}</b> chai Siêu Cay 350ml (${(cartData.p350 * PRICES.p350).toLocaleString('vi-VN')}₫)`);
             if (cartData.p500 > 0) itemsList.push(`• <b>${cartData.p500}</b> chai Truyền Thống 500ml (${(cartData.p500 * PRICES.p500).toLocaleString('vi-VN')}₫)`);
-            if (cartData.pBulk > 0) itemsList.push(`• <b>${cartData.pBulk}</b> Lít Tương Ớt Bán Buôn (Can sỉ)`);
+            if (cartData.pBulk > 0) itemsList.push(`• <b>${cartData.pBulk}</b> Lít Tương Ớt Bán Buôn (${(cartData.pBulk * PRICES.pBulk).toLocaleString('vi-VN')}₫)`);
 
-            const totalMoney = (cartData.p350 * PRICES.p350) + (cartData.p500 * PRICES.p500);
-            const formattedTotal = totalMoney.toLocaleString('vi-VN') + '₫' + (cartData.pBulk > 0 ? ' + Giá sỉ' : '');
+            const totalMoney = (cartData.p350 * PRICES.p350) + (cartData.p500 * PRICES.p500) + (cartData.pBulk * PRICES.pBulk);
+            const formattedTotal = totalMoney.toLocaleString('vi-VN') + '₫';
 
             // Thông tin tài khoản Telegram nếu có
             const tgUser = tg?.initDataUnsafe?.user;
