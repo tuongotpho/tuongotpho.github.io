@@ -254,25 +254,26 @@
             </div>
             
             <div class="contact-form">
-                <h3 style="color: var(--primary); margin-bottom: 1.5rem;">Gửi Yêu Cầu</h3>
-                <form action="https://formspree.io/f/xjkaoowg" method="POST">
+                <h3 style="color: var(--primary); margin-bottom: 1.5rem;">Gửi Yêu Cầu Đặt Hàng</h3>
+                <form id="contact-form" action="https://formspree.io/f/xjkaoowg" method="POST">
                     <div class="form-group">
                         <label>Họ và Tên *</label>
-                        <input type="text" name="name" required placeholder="Nhập họ tên của bạn">
+                        <input type="text" name="name" id="form-name" required placeholder="Nhập họ tên của bạn">
                     </div>
                     <div class="form-group">
                         <label>Số Điện Thoại *</label>
-                        <input type="tel" name="phone" required placeholder="Nhập số điện thoại">
+                        <input type="tel" name="phone" id="form-phone" required placeholder="Nhập số điện thoại">
                     </div>
                     <div class="form-group">
                         <label>Sản Phẩm</label>
-                        <input type="text" name="product" placeholder="Ví dụ: 2 chai 500ml">
+                        <input type="text" name="product" id="form-product" placeholder="Ví dụ: 2 chai 500ml">
                     </div>
                     <div class="form-group">
                         <label>Ghi Chú</label>
-                        <textarea name="message" placeholder="Địa chỉ giao hàng, thời gian mong muốn..."></textarea>
+                        <textarea name="message" id="form-message" placeholder="Địa chỉ giao hàng, thời gian mong muốn..."></textarea>
                     </div>
-                    <button type="submit" class="submit-btn">Gửi Đơn Hàng</button>
+                    <button type="submit" id="form-submit-btn" class="submit-btn">Gửi Đơn Hàng</button>
+                    <div id="form-status" class="form-status-msg" style="display: none;"></div>
                 </form>
             </div>
         </div>
