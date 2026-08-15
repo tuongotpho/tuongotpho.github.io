@@ -52,9 +52,58 @@ function initReadingProgress() {
     });
 }
 
+// Muc luc tu dong.
+// Cac bai dai 6-10 phut doc co 5-8 muc lon nhung khong co cach nao nhay
+// nhanh - khach phai cuon mo. Muc luc duoc sinh tu chinh cac the H2 nen
+// khong phai sua tay tung bai, va khong bao gio lech voi noi dung.
+function initTableOfContents() {
+    const than = document.querySelector('.article-body');
+    if (!than) return;
+
+    const muc = [...than.querySelectorAll('h2')];
+    if (muc.length < 4) return; // bai ngan thi muc luc chi tho^ them
+
+    const khongDau = t => t.normalize('NFD').replace(/[̀-ͯ]/g, '')
+        .replace(/đ/g, 'd').replace(/Đ/g, 'D')
+        .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+    const ds = document.createElement('nav');
+    ds.className = 'article-toc';
+    ds.setAttribute('aria-label', 'Mục lục bài viết');
+
+    let html = '<button type="button" class="article-toc-title" aria-expanded="true">'
+        + '<span><i class="fas fa-list-ul"></i> Nội dung bài viết</span>'
+        + '<i class="fas fa-chevron-up article-toc-caret"></i></button><ol class="article-toc-list">';
+
+    muc.forEach((h, i) => {
+        const chu = h.textContent.trim();
+        if (!h.id) h.id = 'muc-' + (khongDau(chu) || i);
+        html += `<li><a href="#${h.id}">${chu}</a></li>`;
+    });
+    ds.innerHTML = html + '</ol>';
+
+    // Dat ngay sau doan mo dau de nguoi doc thay bo cuc truoc khi doc sau
+    const doanDau = than.querySelector('p');
+    if (doanDau && doanDau.nextSibling) than.insertBefore(ds, doanDau.nextSibling);
+    else than.insertBefore(ds, than.firstChild);
+
+    const nut = ds.querySelector('.article-toc-title');
+    nut.addEventListener('click', () => {
+        const dangMo = ds.classList.toggle('closed') === false;
+        nut.setAttribute('aria-expanded', String(dangMo));
+    });
+
+    // Tren dien thoai thi thu gon san cho do chiem man hinh
+    if (window.matchMedia('(max-width: 768px)').matches) {
+        ds.classList.add('closed');
+        nut.setAttribute('aria-expanded', 'false');
+    }
+}
+
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     initReadingProgress();
+    initTableOfContents();
     
     // Add animation on scroll
     const observerOptions = {

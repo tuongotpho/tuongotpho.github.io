@@ -104,6 +104,22 @@
     border: 1px solid rgba(255, 87, 51, 0.15);
     transition: all 0.4s ease;
     position: relative;
+    /* Cac the trong cung mot hang cao bang nhau, nut "Doc tiep" thang hang.
+       Truoc day the nao it chu thi ngan hon, nhin lom com. */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Day phan chan (ngay dang + thoi gian doc + nut) xuong day the */
+.blog-card-footer {
+    margin-top: auto;
+    padding-top: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .blog-card::before {
@@ -183,15 +199,23 @@
 
 .blog-card-content {
     padding: 25px;
+    /* Cho phan chan the tut duoc xuong day */
+    display: flex;
+    flex-direction: column;
+    flex: 1;
 }
 
 .blog-card-meta {
     display: flex;
     align-items: center;
     gap: 15px;
-    margin-bottom: 15px;
     font-size: 0.85rem;
     color: rgba(255, 255, 255, 0.85);
+}
+
+/* Meta gio nam trong chan the nen khong con can day khoang cach xuong duoi */
+.blog-card-footer .blog-card-meta {
+    margin-bottom: 0;
 }
 
 .blog-card-meta i {
@@ -248,6 +272,19 @@
     color: #fff;
 }
 
+/* Bo rong dong doc.
+   Truoc day mot dong dai toi 98 ky tu - mat de bam dong khi xuong dong,
+   doc bai 10 phut rat met. Gioi han phan chu o 68ky tu, con bang bieu va
+   anh van duoc dung tron be ngang. */
+.article-body p,
+.article-body h2,
+.article-body h3,
+.article-body h4,
+.article-body ul,
+.article-body ol {
+    max-width: 68ch;
+}
+
 .article-body h2 {
     font-size: 1.8rem;
     color: #ff7e5f;
@@ -274,11 +311,18 @@
 }
 
 .article-body p {
-    color: #fff;
+    /* Trang tinh tren nen toi gay choi mat khi doc lau */
+    color: rgba(255, 255, 255, 0.92);
     font-size: 1.1rem;
     line-height: 1.9;
     margin-bottom: 20px;
-    text-align: justify;
+    /* Bo justify: tieng Viet nhieu tu ngan, can deu hai ben tao ra cac
+       khoang trang loang lo giua chu, cang ro khi dong chi con 68 ky tu */
+    text-align: left;
+}
+
+.article-body li {
+    color: rgba(255, 255, 255, 0.92);
 }
 
 .article-body ul,
@@ -648,10 +692,99 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    color: rgba(255, 255, 255, 0.5);
+    /* 0.5 cho do tuong phan ~2.5:1, duoi nguong WCAG AA (4.5:1) - kho doc
+       tren dien thoai ngoai troi. 0.78 dat ~7:1. */
+    color: rgba(255, 255, 255, 0.78);
     font-size: 0.9rem;
 }
 
 .article-meta-item i {
     color: #ff5733;
+}
+/* ============ MUC LUC BAI VIET ============
+   Sinh tu the H2 boi blog.js, chi hien khi bai co tu 4 muc tro len. */
+.article-toc {
+    max-width: 68ch;
+    margin: 30px 0 36px;
+    padding: 4px 0;
+    background: rgba(255, 87, 51, 0.07);
+    border: 1px solid rgba(255, 87, 51, 0.22);
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.article-toc-title {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 20px;
+    background: none;
+    border: none;
+    color: #ff7e5f;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: left;
+}
+
+.article-toc-caret {
+    font-size: 0.8rem;
+    transition: transform 0.25s ease;
+}
+
+.article-toc.closed .article-toc-caret {
+    transform: rotate(180deg);
+}
+
+.article-toc-list {
+    margin: 0;
+    padding: 0 20px 16px 40px;
+    max-width: none;
+}
+
+.article-toc.closed .article-toc-list {
+    display: none;
+}
+
+.article-toc-list li {
+    margin: 8px 0;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.article-toc-list a {
+    color: rgba(255, 255, 255, 0.88);
+    text-decoration: none;
+    line-height: 1.5;
+    transition: color 0.2s ease;
+}
+
+.article-toc-list a:hover {
+    color: #ff7e5f;
+    text-decoration: underline;
+}
+
+/* Nhay toi muc thi khong bi header che mat tieu de */
+.article-body h2 {
+    scroll-margin-top: 90px;
+}
+
+/* Nhan the loai tren the bai viet.
+   Truoc day khong co CSS rieng nen thua huong mau #333 tu styles.css -
+   chu den tren nen the mau toi, gan nhu khong doc duoc. */
+.blog-card-category {
+    display: inline-block;
+    align-self: flex-start;
+    margin-bottom: 12px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: rgba(255, 87, 51, 0.16);
+    border: 1px solid rgba(255, 87, 51, 0.35);
+    color: #ff9673;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
 }
