@@ -120,9 +120,20 @@ exports.order = onRequest(
         const note = String(body.note || '').trim().slice(0, 500);
         const phone = normalizePhone(body.phone);
 
-        if (name.length < 2) return fail(res, 400, 'Vui lòng nhập họ tên người nhận.');
-        if (!phone) return fail(res, 400, 'Số điện thoại chưa đúng. Vui lòng kiểm tra lại (ví dụ: 0982722036).');
-        if (address.length < 8) return fail(res, 400, 'Địa chỉ quá ngắn. Vui lòng ghi rõ số nhà, đường, quận/huyện.');
+        // Kem theo `field` de client dua khach den dung o nhap sai,
+        // khong phai doan tu noi dung tin nhan.
+        if (name.length < 2) {
+            return fail(res, 400, 'Vui lòng nhập họ tên người nhận.', { field: 'name' });
+        }
+        if (!phone) {
+            return fail(res, 400,
+                'Số điện thoại chưa đúng. Vui lòng kiểm tra lại, ví dụ: 0982722036.', { field: 'phone' });
+        }
+        if (address.length < 8) {
+            return fail(res, 400,
+                'Địa chỉ quá ngắn. Vui lòng ghi rõ số nhà, tên đường, quận/huyện để shipper tìm được.',
+                { field: 'address' });
+        }
 
         // --- 4. Tinh lai tien o server (khong tin gia tu client) ---
         const priced = buildOrderLines(body.items);

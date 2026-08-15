@@ -366,6 +366,88 @@
             font-weight: 700;
             text-decoration: none;
         }
+
+        /* Modal thong bao - thay cho alert() cua trinh duyet */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+
+        .modal-backdrop.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-box {
+            background: var(--card-bg);
+            border-radius: 18px;
+            padding: 24px 20px 20px;
+            width: 100%;
+            max-width: 340px;
+            text-align: center;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+            transform: translateY(16px) scale(0.97);
+            transition: transform 0.2s ease;
+        }
+
+        .modal-backdrop.open .modal-box {
+            transform: translateY(0) scale(1);
+        }
+
+        .modal-icon {
+            font-size: 2.6rem;
+            line-height: 1;
+            margin-bottom: 12px;
+        }
+
+        .modal-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--text-color);
+            margin-bottom: 8px;
+        }
+
+        .modal-message {
+            font-size: 0.95rem;
+            line-height: 1.55;
+            color: var(--hint-color);
+            white-space: pre-line;
+            margin-bottom: 20px;
+        }
+
+        .modal-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .modal-btn {
+            width: 100%;
+            justify-content: center;
+            padding: 13px;
+            font-size: 1rem;
+        }
+
+        .modal-btn-phu {
+            background: transparent;
+            color: #8b0000;
+            border: 2px solid rgba(139, 0, 0, 0.25);
+            box-shadow: none;
+            font-weight: 700;
+            border-radius: 12px;
+            padding: 11px;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
     </style>
 </head>
 
@@ -510,6 +592,21 @@
 
     <div class="quick-contact">
         Cần tư vấn gấp? Gọi Hotline: <a href="tel:0982722036">0982.722.036</a>
+    </div>
+
+    <!-- Modal thông báo (thay cho alert của trình duyệt) -->
+    <div class="modal-backdrop" id="appModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal-box">
+            <div class="modal-icon" id="modalIcon">⚠️</div>
+            <div class="modal-title" id="modalTitle">Thông báo</div>
+            <div class="modal-message" id="modalMessage"></div>
+            <div class="modal-actions">
+                <button type="button" class="btn-submit-order modal-btn" id="modalOk">Đã hiểu</button>
+                <button type="button" class="modal-btn-phu" id="modalGoi" style="display: none;">
+                    📞 Gọi hotline 0982.722.036
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- Bottom Action Bar (Dùng khi xem trên Web hoặc Fallback) -->
@@ -695,15 +792,90 @@
                 });
         }
 
-        function notifyCustomer(message, closeAppAfter) {
+        // Modal thay cho alert() cua trinh duyet.
+        // Trong Telegram thi van dung popup native cua Telegram - do moi la
+        // chuan giao dien cua nen tang, va no khoa duoc ca MainButton.
+        let modalDangMo = null;
+
+        function showModal({ icon, title, message, hienNutGoi }, onClose) {
+            const backdrop = document.getElementById('appModal');
+            document.getElementById('modalIcon').textContent = icon || 'ℹ️';
+            document.getElementById('modalTitle').textContent = title || 'Thông báo';
+            document.getElementById('modalMessage').textContent = message || '';
+            document.getElementById('modalGoi').style.display = hienNutGoi ? 'block' : 'none';
+
+            modalDangMo = typeof onClose === 'function' ? onClose : null;
+            backdrop.classList.add('open');
+            document.body.style.overflow = 'hidden';
+            document.getElementById('modalOk').focus();
+        }
+
+        function closeModal() {
+            document.getElementById('appModal').classList.remove('open');
+            document.body.style.overflow = '';
+            const cb = modalDangMo;
+            modalDangMo = null;
+            if (cb) cb();
+        }
+
+        document.getElementById('modalOk').addEventListener('click', closeModal);
+        document.getElementById('modalGoi').addEventListener('click', function () {
+            window.location.href = 'tel:0982722036';
+        });
+        document.getElementById('appModal').addEventListener('click', function (e) {
+            if (e.target === this) closeModal();
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && document.getElementById('appModal').classList.contains('open')) {
+                closeModal();
+            }
+        });
+
+        // Bao loi kem viec dua khach den dung o nhap sai.
+        // Server tra ve `field` nen client khong phai doan tu noi dung tin nhan.
+        const O_NHAP = { name: 'custName', phone: 'custPhone', address: 'custAddress' };
+
+        function baoLoiONhap(field, message) {
+            const el = O_NHAP[field] ? document.getElementById(O_NHAP[field]) : null;
+
+            const dua = () => {
+                if (!el) return;
+                el.style.borderColor = '#e63946';
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                el.focus();
+                el.addEventListener('input', function xoaVien() {
+                    el.style.borderColor = '';
+                    el.removeEventListener('input', xoaVien);
+                });
+            };
+
+            const isRealTelegram = !!(tg && tg.initData && tg.initData.length > 0);
+            if (isRealTelegram && tg?.showAlert) {
+                try {
+                    tg.showAlert(message, dua);
+                    return;
+                } catch (err) { /* rơi xuống modal */ }
+            }
+
+            showModal({ icon: '⚠️', title: 'Cần kiểm tra lại', message, hienNutGoi: false }, dua);
+        }
+
+        function notifyCustomer(message, closeAppAfter, kieu) {
             const isRealTelegram = !!(tg && tg.initData && tg.initData.length > 0);
             if (isRealTelegram && tg?.showAlert) {
                 try {
                     tg.showAlert(message, closeAppAfter ? function () { tg.close(); } : undefined);
                     return;
-                } catch (err) { /* rơi xuống alert thường */ }
+                } catch (err) { /* rơi xuống modal */ }
             }
-            alert(message);
+
+            const mau = {
+                loi: { icon: '⚠️', title: 'Cần kiểm tra lại', hienNutGoi: false },
+                hong: { icon: '❌', title: 'Không gửi được đơn', hienNutGoi: true },
+                xong: { icon: '🎉', title: 'Đặt hàng thành công', hienNutGoi: false }
+            }[kieu || 'loi'];
+
+            showModal({ ...mau, message });
         }
 
         function resetOrderForm() {
@@ -724,11 +896,8 @@
             const totalQty = cartData.p350 + cartData.p500 + cartData.pBulk;
             if (totalQty === 0) {
                 triggerHaptic('warning');
-                if (tg?.showAlert) {
-                    tg.showAlert('Vui lòng chọn ít nhất 1 sản phẩm trước khi đặt hàng nhé!');
-                } else {
-                    alert('Vui lòng chọn ít nhất 1 sản phẩm trước khi đặt hàng nhé!');
-                }
+                notifyCustomer('Bạn chưa chọn sản phẩm nào. Bấm nút + ở sản phẩm muốn mua nhé!',
+                    false, 'loi');
                 return;
             }
 
@@ -818,7 +987,7 @@
                 // 4xx = dữ liệu khách nhập chưa hợp lệ -> báo rõ để khách sửa, không gửi dự phòng.
                 if (res.status >= 400 && res.status < 500 && data.error) {
                     triggerHaptic('warning');
-                    notifyCustomer('⚠️ ' + data.error, false);
+                    baoLoiONhap(data.field, data.error);
                     return;
                 }
 
@@ -838,10 +1007,10 @@
                 } else {
                     triggerHaptic('error');
                     notifyCustomer(
-                        '❌ Không gửi được đơn hàng do lỗi kết nối.\n\n' +
-                        'Vui lòng gọi hotline 0982.722.036 hoặc nhắn Zalo cùng số này, ' +
-                        'chúng tôi sẽ chốt đơn giúp bạn ngay.',
-                        false
+                        'Không gửi được đơn do lỗi kết nối mạng.\n\n' +
+                        'Vui lòng gọi hotline hoặc nhắn Zalo cùng số này, ' +
+                        'chúng tôi chốt đơn giúp bạn ngay.',
+                        false, 'hong'
                     );
                 }
             } finally {
@@ -859,17 +1028,26 @@
             // Đơn đã chốt -> lần đặt sau là một đơn mới hoàn toàn.
             clientOrderKey = newClientOrderKey();
 
-            const heading = data.duplicated
-                ? '✅ Đơn này đã được ghi nhận rồi!'
-                : '🎉 Đặt hàng thành công!';
-
-            let msg = `${heading}\n\n`;
+            let msg = '';
             if (data.orderId) msg += `📋 Mã đơn hàng: ${data.orderId}\n`;
             if (data.totalText) msg += `💰 Tổng tiền hàng: ${data.totalText}\n`;
             msg += `\nCảm ơn ${name}! Chúng tôi sẽ gọi xác nhận và giao tới:\n${address}\n\n`;
             msg += data.message || '';
 
-            notifyCustomer(msg, isRealTelegram);
+            if (isRealTelegram) {
+                // Trong Telegram: dung popup native, dong xong thi dong luon Mini App
+                const heading = data.duplicated
+                    ? '✅ Đơn này đã được ghi nhận rồi!\n\n'
+                    : '🎉 Đặt hàng thành công!\n\n';
+                notifyCustomer(heading + msg, true, 'xong');
+            } else {
+                showModal({
+                    icon: data.duplicated ? '✅' : '🎉',
+                    title: data.duplicated ? 'Đơn đã được ghi nhận' : 'Đặt hàng thành công',
+                    message: msg,
+                    hienNutGoi: false
+                });
+            }
 
             if (!isRealTelegram) {
                 resetOrderForm();
