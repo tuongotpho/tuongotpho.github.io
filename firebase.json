@@ -33,13 +33,6 @@
             "functionId": "order",
             "region": "asia-southeast1"
           }
-        },
-        {
-          "source": "/api/contact",
-          "function": {
-            "functionId": "contact",
-            "region": "asia-southeast1"
-          }
         }
       ]
     },
@@ -58,13 +51,6 @@
           "source": "/api/order",
           "function": {
             "functionId": "order",
-            "region": "asia-southeast1"
-          }
-        },
-        {
-          "source": "/api/contact",
-          "function": {
-            "functionId": "contact",
             "region": "asia-southeast1"
           }
         }

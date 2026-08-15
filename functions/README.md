@@ -27,7 +27,7 @@ Database tên **`tuongot`** (Native mode, `asia-southeast1`) — **không phải
 Vì vậy hai chỗ này bắt buộc phải khai báo đúng tên, bỏ đi là function chết với lỗi `NOT_FOUND`:
 
 - `functions/index.js`: `getFirestore('tuongot')`
-- `firebase.json`: `"firestore": [{ "database": "tuongot", ... }]`
+- `firebase.json`: `"firestore": { "database": "tuongot", ... }`
 
 Nếu sau này tạo thêm database khác, phải sửa cả hai chỗ.
 
@@ -104,7 +104,7 @@ Cần file `functions/.secret.local` (đã có trong .gitignore):
 TELEGRAM_BOT_TOKEN=123456:FAKE_TOKEN_FOR_LOCAL_TEST
 ```
 
-Rồi chạy các bộ kiểm thử (43 phép thử: tính tiền, chống trùng, chặn spam, xác thực Telegram, luồng xác nhận đơn):
+Rồi chạy các bộ kiểm thử (41 phép thử: tính tiền, chống trùng, chặn spam, xác thực Telegram, luồng xác nhận đơn):
 
 ```bash
 node functions/test-order-api.js
@@ -112,10 +112,6 @@ node functions/test-order-api.js
 
 ```bash
 node functions/test-webhook.js
-```
-
-```bash
-node functions/test-contact.js
 ```
 
 ```bash
@@ -129,11 +125,10 @@ Mở `app.html` ở `http://127.0.0.1:5173` thì client tự trỏ vào emulator
 | Collection | Nội dung |
 |---|---|
 | `orders/{BO-YYMMDD-NNN}` | Đơn hàng: khách, sản phẩm, tổng tiền, kênh đặt, đã báo Telegram chưa, đã xác nhận chưa |
-| `enquiries/{LH-YYMMDD-NNN}` | Liên hệ / tư vấn / mua buôn từ form trang chủ |
-| `counters/{YYMMDD}` và `counters/LH-{YYMMDD}` | Bộ đếm số thứ tự trong ngày |
-| `orderKeys/` và `enquiryKeys/` | Chống trùng khi khách bấm nhiều lần |
+| `counters/{YYMMDD}` | Bộ đếm số thứ tự đơn trong ngày |
+| `orderKeys/{clientKey}` | Chống trùng khi khách bấm nhiều lần |
 | `rateLimits/{bucket:danh-tinh}` | Chống spam |
 
-⚠️ Bộ đếm đơn hàng dùng doc id **chỉ có `YYMMDD`** (không có tiền tố `BO-`) vì lý do lịch sử. Đổi nó là số đơn nhảy về `001` và **ghi đè lên đơn thật đã có**. `createRecord` có chốt chặn ném lỗi nếu mã trùng, nhưng đừng thử.
+⚠️ Bộ đếm dùng doc id **chỉ có `YYMMDD`**, không có tiền tố `BO-`. Đổi nó là số đơn nhảy về `001` và **ghi đè lên đơn thật đã có**. `createOrder` có chốt chặn ném lỗi nếu mã trùng, nhưng đừng thử.
 
 `firestore.rules` chặn mọi truy cập từ trình duyệt — chỉ Cloud Function đọc ghi được.

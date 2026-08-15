@@ -62,24 +62,26 @@ async function findOrderByClientKey(db, clientKey) {
 }
 
 /**
- * Ghi mot ban ghi (don hang hoac lien he) AN TOAN TUYET DOI VOI VIEC BAM 2 LAN:
- * - clientKey giong nhau -> tra ve dung ban ghi cu, khong tao cai moi.
- * - So thu tu duoc cap trong cung transaction nen khong bao gio trung.
+ * Ghi don hang AN TOAN TUYET DOI VOI VIEC BAM 2 LAN:
+ * - clientKey giong nhau -> tra ve dung don cu, khong tao don moi.
+ * - Ma BO-YYMMDD-NNN duoc cap trong cung transaction nen khong bao gio trung.
  *
- * Don hang va lien he dung chung ham nay de chi co MOT cho quyet dinh
- * cach danh so va cach chong trung.
+ * Bo dem dung doc id chi co YYMMDD (khong co tien to). Doi id nay la so don
+ * nhay ve 001 va GHI DE len cac don da co tren production.
+ *
+ * Tra ve { order, duplicated }.
  */
-async function createRecord(db, { collection, keyCollection, prefix, counterId, clientKey, draft }) {
-    const keyRef = db.collection(keyCollection).doc(clientKey);
+async function createOrder(db, { clientKey, draft }) {
+    const keyRef = db.collection('orderKeys').doc(clientKey);
     const dateCode = vnDateCode();
-    const counterRef = db.collection('counters').doc(counterId);
+    const counterRef = db.collection('counters').doc(dateCode);
 
-    return db.runTransaction(async tx => {
+    const ketQua = await db.runTransaction(async tx => {
         // --- Toan bo doc phai thuc hien truoc moi thao tac ghi ---
         const keySnap = await tx.get(keyRef);
         if (keySnap.exists) {
             const existingId = keySnap.data().orderId;
-            const existingSnap = await tx.get(db.collection(collection).doc(existingId));
+            const existingSnap = await tx.get(db.collection('orders').doc(existingId));
             return {
                 duplicated: true,
                 record: existingSnap.exists ? existingSnap.data() : { orderId: existingId }
@@ -88,17 +90,14 @@ async function createRecord(db, { collection, keyCollection, prefix, counterId, 
 
         const counterSnap = await tx.get(counterRef);
         const seq = (counterSnap.exists ? counterSnap.data().seq || 0 : 0) + 1;
+        const orderId = `BO-${dateCode}-${String(seq).padStart(3, '0')}`;
 
-        // Ten truong giu nguyen la `orderId` cho ca 2 loai ban ghi - doi ten
-        // se lam moi cho doc lai tu Firestore hong theo.
-        const orderId = `${prefix}-${dateCode}-${String(seq).padStart(3, '0')}`;
-
-        // Chot chan: tuyet doi khong duoc ghi de len ban ghi da co. Neu bo dem
-        // vi ly do nao do bi lui lai, tha bao loi cho khach goi hotline con hon
-        // lam mat mot don hang that ma khong ai biet.
-        const trungRef = db.collection(collection).doc(orderId);
-        if ((await tx.get(trungRef)).exists) {
-            throw new Error(`Ma ${orderId} da ton tai - bo dem ${counterId} khong dong bo`);
+        // Chot chan: tuyet doi khong duoc ghi de len don da co. Neu bo dem vi ly
+        // do nao do bi lui lai, tha bao loi cho khach goi hotline con hon lam
+        // mat mot don hang that ma khong ai biet.
+        const donRef = db.collection('orders').doc(orderId);
+        if ((await tx.get(donRef)).exists) {
+            throw new Error(`Ma ${orderId} da ton tai - bo dem ${dateCode} khong dong bo`);
         }
 
         const record = {
@@ -110,33 +109,13 @@ async function createRecord(db, { collection, keyCollection, prefix, counterId, 
         };
 
         tx.set(counterRef, { seq, updatedAt: FieldValue.serverTimestamp() }, { merge: true });
-        tx.set(trungRef, record);
+        tx.set(donRef, record);
         tx.set(keyRef, { orderId, createdAt: FieldValue.serverTimestamp() });
 
         return { duplicated: false, record };
     });
-}
 
-/**
- * Don hang: ma BO-YYMMDD-NNN. Tra ve { order, duplicated }.
- * Bo dem van dung doc id cu (chi YYMMDD) de khong danh so lai tu dau
- * va ghi de len cac don da co tren production.
- */
-async function createOrder(db, { clientKey, draft }) {
-    const r = await createRecord(db, {
-        collection: 'orders', keyCollection: 'orderKeys', prefix: 'BO',
-        counterId: vnDateCode(), clientKey, draft
-    });
-    return { duplicated: r.duplicated, order: r.record };
-}
-
-/** Lien he / tu van: ma LH-YYMMDD-NNN. Tra ve { enquiry, duplicated }. */
-async function createEnquiry(db, { clientKey, draft }) {
-    const r = await createRecord(db, {
-        collection: 'enquiries', keyCollection: 'enquiryKeys', prefix: 'LH',
-        counterId: `LH-${vnDateCode()}`, clientKey, draft
-    });
-    return { duplicated: r.duplicated, enquiry: r.record };
+    return { duplicated: ketQua.duplicated, order: ketQua.record };
 }
 
 /**
@@ -179,8 +158,8 @@ async function markCustomerNotified(db, orderId, ok, detail) {
 }
 
 /** Danh dau don da (hoac chua) bao duoc ve Telegram cho chu shop. */
-async function markNotified(db, orderId, notified, detail, collection = 'orders') {
-    await db.collection(collection).doc(orderId).set({
+async function markNotified(db, orderId, notified, detail) {
+    await db.collection('orders').doc(orderId).set({
         notified,
         notifyDetail: detail || null,
         notifiedAt: FieldValue.serverTimestamp()
@@ -188,6 +167,6 @@ async function markNotified(db, orderId, notified, detail, collection = 'orders'
 }
 
 module.exports = {
-    createOrder, createEnquiry, findOrderByClientKey, confirmOrder, checkRateLimit,
+    createOrder, findOrderByClientKey, confirmOrder, checkRateLimit,
     markNotified, markCustomerNotified, vnDateCode, vnDateTimeText
 };

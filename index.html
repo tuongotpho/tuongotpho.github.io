@@ -652,36 +652,28 @@
                         width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
                         referrerpolicy="strict-origin-when-cross-origin"></iframe>
                 </div>
-                <form id="contactForm" class="contact-form">
-                    <p class="form-lead">
-                        Muốn đặt hàng ngay? <a href="app.html">Bấm vào đây để chọn sản phẩm và đặt trong 30 giây</a>.
-                        Còn form này dành cho tư vấn và mua buôn.
+                <div class="contact-cta">
+                    <h3 class="contact-cta-title">Đặt Hàng Ngay</h3>
+                    <p class="contact-cta-text">
+                        Chọn sản phẩm, điền địa chỉ, xong trong 30 giây. Không cần đăng ký tài khoản.
+                        Chúng tôi gọi lại xác nhận trước khi giao.
                     </p>
-                    <div class="form-group">
-                        <input type="text" name="name" placeholder="Họ và tên *" required>
+                    <a href="app.html" class="btn btn-primary contact-cta-main">
+                        <i class="fas fa-shopping-cart"></i> Đặt Hàng Ngay
+                    </a>
+                    <p class="contact-cta-or">hoặc liên hệ trực tiếp</p>
+                    <div class="contact-cta-row">
+                        <button class="btn btn-buy" onclick="callNow()">
+                            <i class="fas fa-phone"></i> Gọi 0982.722.036
+                        </button>
+                        <button class="btn btn-zalo" onclick="contactZalo()">
+                            <i class="fab fa-zalo"></i> Nhắn Zalo
+                        </button>
                     </div>
-                    <div class="form-group">
-                        <input type="tel" name="phone" placeholder="Số điện thoại *" required>
-                    </div>
-                    <div class="form-group">
-                        <select name="need" aria-label="Nhu cầu của bạn">
-                            <option value="le">Mua lẻ / dùng gia đình</option>
-                            <option value="buon">Mua buôn — quán phở, nhà hàng, đại lý</option>
-                            <option value="tuvan">Tư vấn sản phẩm</option>
-                            <option value="khac">Việc khác</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <input type="text" name="address" placeholder="Địa chỉ (để chúng tôi báo phí ship)">
-                    </div>
-                    <div class="form-group">
-                        <textarea name="message" placeholder="Lời nhắn — bạn cần bao nhiêu, giao khi nào..." rows="4"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-paper-plane"></i>
-                        Gửi Yêu Cầu Tư Vấn
-                    </button>
-                </form>
+                    <p class="contact-cta-note">
+                        Quán phở, nhà hàng, đại lý cần báo giá sỉ: gọi hotline để được tư vấn theo sản lượng.
+                    </p>
+                </div>
             </div>
         </div>
     </section>
