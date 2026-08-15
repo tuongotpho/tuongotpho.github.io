@@ -788,3 +788,110 @@
     letter-spacing: 0.02em;
     text-transform: uppercase;
 }
+
+/* ============ KHOI DAT HANG CUOI BAI ============
+   Truoc day chi 4/14 bai co khoi nay, moi bai mot kieu va deu tro ve
+   index.html#products chu khong phai trang dat hang that. */
+.article-cta {
+    max-width: 68ch;
+    margin: 45px 0 10px;
+    padding: 30px 28px;
+    text-align: center;
+    background: linear-gradient(135deg, rgba(255, 87, 51, 0.14), rgba(139, 0, 0, 0.18));
+    border: 1px solid rgba(255, 87, 51, 0.35);
+    border-radius: 18px;
+}
+
+.article-cta-icon {
+    font-size: 2.2rem;
+    color: #ff7e5f;
+    margin-bottom: 10px;
+}
+
+.article-cta-title {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+.article-cta-text {
+    color: rgba(255, 255, 255, 0.88);
+    font-size: 1rem;
+    line-height: 1.65;
+    margin-bottom: 22px;
+    max-width: none;
+}
+
+.article-cta-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.article-cta-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 13px 26px;
+    border-radius: 50px;
+    background: linear-gradient(135deg, #8b0000, #e63946);
+    color: #fff;
+    font-weight: 700;
+    font-size: 1rem;
+    text-decoration: none;
+    border: 2px solid transparent;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.article-cta-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(230, 57, 70, 0.4);
+    color: #fff;
+}
+
+.article-cta-btn-phu {
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.35);
+}
+
+.article-cta-btn-phu:hover {
+    border-color: #ff7e5f;
+    box-shadow: none;
+}
+
+.article-cta-note {
+    margin: 18px 0 0;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.65);
+    max-width: none;
+}
+
+@media (max-width: 520px) {
+    .article-cta-actions {
+        flex-direction: column;
+    }
+
+    .article-cta-btn {
+        width: 100%;
+    }
+}
+
+/* Lien ket trong than bai.
+   Truoc day khong co CSS nen dung mau xanh mac dinh cua trinh duyet
+   rgb(0,0,238) tren nen xanh den: do tuong phan 1.69:1, duoi chuan
+   WCAG AA (4.5:1) rat xa - gan nhu khong doc duoc. */
+.article-body a:not(.article-cta-btn):not(.back-to-blog) {
+    color: #ff9673;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: rgba(255, 150, 115, 0.45);
+    transition: color 0.2s ease, text-decoration-color 0.2s ease;
+}
+
+.article-body a:not(.article-cta-btn):not(.back-to-blog):hover {
+    color: #ffb499;
+    text-decoration-color: #ffb499;
+}
