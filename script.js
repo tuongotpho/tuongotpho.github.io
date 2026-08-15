@@ -1,21 +1,37 @@
-// CẤU HÌNH TELEGRAM BOT RECEIVER
-const TELEGRAM_BOT_TOKEN = '8571697852:AAGhE7cw3Sx3vWoX1SF1jovESawYsngBwXo';
-const TELEGRAM_CHAT_ID = '5056715300';
+// Trang chu Tuong Ot Bong Ot
+//
+// File nay KHONG con chua bot token. Moi lien he deu di qua API cua shop
+// (/api/contact), giong nhu don hang di qua /api/order.
+//
+// Gio hang cu da duoc go bo hoan toan: no chua bao gio hoat dong (khong co
+// nut "them vao gio" nao tren trang), va toan bo viec dat hang nay do
+// app.html dam nhan.
 
-// Khởi tạo Telegram Mini App WebApp SDK
-const tgApp = (typeof window !== 'undefined' && window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
+const CONTACT_API_URL = (function () {
+    const host = location.hostname;
+    if (host === 'localhost' || host === '127.0.0.1') {
+        return 'http://127.0.0.1:5001/demo-tuongot/asia-southeast1/contact';
+    }
+    if (/\.(web\.app|firebaseapp\.com)$/.test(host)) return '/api/contact';
+    return 'https://tuongot-sieucay.web.app/api/contact';
+})();
+
+const HOTLINE = '0982722036';
+
+// Telegram Mini App SDK - co the trang chu duoc mo tu trong Telegram
+const tgApp = (typeof window !== 'undefined' && window.Telegram && window.Telegram.WebApp)
+    ? window.Telegram.WebApp
+    : null;
 
 if (tgApp) {
     try {
         tgApp.ready();
         tgApp.expand();
-        console.log('✅ Telegram Mini App Initialized');
     } catch (e) {
         console.warn('Telegram WebApp Init Warning:', e);
     }
 }
 
-// Hàm kích hoạt rung phản hồi xúc giác (Haptic Feedback) trên điện thoại
 function triggerHaptic(type = 'medium') {
     if (tgApp && tgApp.HapticFeedback) {
         try {
@@ -28,115 +44,29 @@ function triggerHaptic(type = 'medium') {
     }
 }
 
-function escapeHtml(text) {
-    if (!text) return '';
-    return text.toString()
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
+function newClientKey() {
+    if (window.crypto && window.crypto.randomUUID) return window.crypto.randomUUID();
+    return `lh-${Date.now()}-${Math.random().toString(36).slice(2, 12)}`;
 }
 
-async function sendTelegramNotification(orderData) {
-    if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
-        console.warn('Telegram Bot Token hoặc Chat ID chưa được cấu hình.');
-        return false;
-    }
-
-    // Kiểm tra xem khách có đặt từ Telegram Mini App không
-    const tgUser = tgApp?.initDataUnsafe?.user;
-    let tgSourceInfo = '';
-    if (tgUser) {
-        tgSourceInfo = `📱 <b>Kênh đặt:</b> Telegram Mini App (@${escapeHtml(tgUser.username || 'ẩn')} - ID: <code>${tgUser.id}</code>)\n`;
-    } else {
-        tgSourceInfo = `🌐 <b>Kênh đặt:</b> Trình duyệt Web\n`;
-    }
-
-    const messageText = `🛒 <b>ĐƠN HÀNG / LIÊN HỆ MỚI!</b>\n\n` +
-        `👤 <b>Họ và tên:</b> ${escapeHtml(orderData.name)}\n` +
-        `📞 <b>Số điện thoại:</b> ${escapeHtml(orderData.phone)}\n` +
-        `📧 <b>Email:</b> ${escapeHtml(orderData.email || 'Không có')}\n` +
-        `📝 <b>Nội dung:</b> ${escapeHtml(orderData.message || 'Không có')}\n` +
-        tgSourceInfo +
-        `⏰ <b>Thời gian:</b> ${new Date().toLocaleString('vi-VN')}`;
-
-    // Tạo các nút bấm tương tác thông minh (Inline Keyboard)
-    const cleanPhone = (orderData.phone || '').replace(/\D/g, '');
-    const inlineButtons = [];
-
-    if (tgUser && tgUser.id) {
-        const confirmUrl = `https://tuongotpho.github.io/app.html?action=confirm&to_id=${tgUser.id}&name=${encodeURIComponent(orderData.name)}`;
-        inlineButtons.push([
-            { text: `✅ Xác Nhận Đơn & Báo Khách`, url: confirmUrl }
-        ]);
-    }
-
-    const actionRow = [];
-
-    if (cleanPhone) {
-        actionRow.push({ text: `💬 Chat Zalo`, url: `https://zalo.me/${cleanPhone}` });
-    }
-    actionRow.push({ text: `📍 Vị Trí Shop`, url: `https://maps.app.goo.gl/Kgb7iHMjhNCQFnSu9` });
-    if (actionRow.length > 0) inlineButtons.push(actionRow);
-
-    const payload = {
-        chat_id: TELEGRAM_CHAT_ID,
-        text: messageText,
-        parse_mode: 'HTML'
-    };
-
-    if (inlineButtons.length > 0) {
-        payload.reply_markup = {
-            inline_keyboard: inlineButtons
-        };
-    }
-
-    try {
-        const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-        const data = await res.json();
-        if (!data.ok) {
-            console.error('Lỗi Telegram API:', data);
-        }
-        return data.ok;
-    } catch (err) {
-        console.error('Lỗi khi gửi Telegram:', err);
-        return false;
-    }
-}
-
-// Khởi tạo các biến toàn cục
-let cart = [];
-let cartTotal = 0;
-
-// Hàm khởi tạo khi trang web tải xong
 document.addEventListener('DOMContentLoaded', function () {
-    // Khởi tạo các tính năng
     initScrollEffects();
-    initCart();
     initContactForm();
     initSmoothScroll();
-
-    // Hiển thị animation khi tải trang
     animateOnLoad();
 });
 
-// Hàm khởi tạo hiệu ứng cuộn
 function initScrollEffects() {
     const header = document.querySelector('.header');
     const scrollIndicator = document.querySelector('.scroll-indicator');
 
-    // Trang gallery và các bài blog KHÔNG có 2 phần tử này.
-    // Thiếu kiểm tra null là mỗi lần khách cuộn chuột lại nổ một lỗi JS.
+    // Trang gallery va cac bai blog KHONG co 2 phan tu nay.
+    // Thieu kiem tra null la moi lan khach cuon chuot lai no mot loi JS.
     if (!header && !scrollIndicator) return;
 
     window.addEventListener('scroll', function () {
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
-        // Hiệu ứng header khi cuộn
         if (header) {
             if (scrollTop > 100) {
                 header.style.background = 'rgba(139, 0, 0, 0.98)';
@@ -147,13 +77,11 @@ function initScrollEffects() {
             }
         }
 
-        // Ẩn scroll indicator khi cuộn xuống
         if (scrollIndicator) {
             scrollIndicator.style.opacity = scrollTop > 200 ? '0' : '1';
         }
     });
 
-    // Click scroll indicator để cuộn xuống
     if (scrollIndicator) {
         scrollIndicator.addEventListener('click', function () {
             const products = document.querySelector('#products');
@@ -162,345 +90,166 @@ function initScrollEffects() {
     }
 }
 
-// Hàm khởi tạo giỏ hàng
-function initCart() {
-    // Tải giỏ hàng từ localStorage nếu có
-    const savedCart = localStorage.getItem('chiliSauceCart');
-    if (savedCart) {
-        cart = JSON.parse(savedCart);
-        updateCartDisplay();
-    }
-}
-
-// Hàm khởi tạo form liên hệ
+// Form tu van / mua buon tren trang chu
 function initContactForm() {
-    const contactForm = document.getElementById('contactForm') || document.querySelector('.contact-form');
+    const contactForm = document.getElementById('contactForm');
+    if (!contactForm) return;
 
-    if (contactForm) {
-        // Tự động điền tên từ Telegram nếu mở qua Mini App
-        if (tgApp?.initDataUnsafe?.user) {
-            const user = tgApp.initDataUnsafe.user;
-            const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim();
-            const nameInput = contactForm.querySelector('input[name="name"]');
-            if (nameInput && !nameInput.value) {
-                nameInput.value = fullName;
-            }
+    let clientKey = newClientKey();
+
+    // Tu dong dien ten neu trang duoc mo tu trong Telegram
+    const tgUser = tgApp && tgApp.initDataUnsafe ? tgApp.initDataUnsafe.user : null;
+    if (tgUser) {
+        const nameInput = contactForm.querySelector('input[name="name"]');
+        const fullName = `${tgUser.first_name || ''} ${tgUser.last_name || ''}`.trim();
+        if (nameInput && !nameInput.value && fullName) nameInput.value = fullName;
+    }
+
+    contactForm.addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const submitBtn = contactForm.querySelector('button[type="submit"]');
+        const btnHtmlGoc = submitBtn ? submitBtn.innerHTML : '';
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi...';
         }
+        triggerHaptic('light');
 
-        contactForm.addEventListener('submit', async function (e) {
-            e.preventDefault();
+        const data = new FormData(contactForm);
 
-            const submitBtn = contactForm.querySelector('button[type="submit"]');
-            const originalBtnHTML = submitBtn ? submitBtn.innerHTML : 'Gửi Tin Nhắn';
+        try {
+            const res = await fetch(CONTACT_API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    clientKey: clientKey,
+                    name: data.get('name') || '',
+                    phone: data.get('phone') || '',
+                    address: data.get('address') || '',
+                    need: data.get('need') || 'khac',
+                    message: data.get('message') || ''
+                })
+            });
 
-            if (submitBtn) {
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi...';
+            const ketQua = await res.json().catch(() => ({}));
+
+            if (res.ok && ketQua.ok) {
+                triggerHaptic('success');
+                clientKey = newClientKey();
+                contactForm.reset();
+                thongBaoChoKhach(
+                    `🎉 Cảm ơn bạn!\n\n📋 Mã liên hệ: ${ketQua.enquiryId}\n\n` +
+                    `Chúng tôi sẽ gọi lại trong giờ làm việc (8:00 - 18:00). ` +
+                    `Cần gấp thì gọi ngay ${HOTLINE}.`,
+                    'success'
+                );
+            } else if (ketQua.error) {
+                triggerHaptic('warning');
+                thongBaoChoKhach('⚠️ ' + ketQua.error, 'warning');
+            } else {
+                throw new Error('API tra ve loi ' + res.status);
             }
-
-            triggerHaptic('light');
-
-            // Lấy dữ liệu từ form
-            const formData = new FormData(contactForm);
-            const name = formData.get('name') || '';
-            const email = formData.get('email') || '';
-            const phone = formData.get('phone') || '';
-            const message = formData.get('message') || '';
-
-            const orderData = { name, email, phone, message };
-
-            // 1. Gửi thông báo đến Telegram Bot
-            let teleSent = await sendTelegramNotification(orderData);
-
-            // 2. Gửi dữ liệu tới Formspree nếu có
-            try {
-                const formAction = contactForm.getAttribute('action');
-                if (formAction && formAction.includes('formspree.io')) {
-                    await fetch(formAction, {
-                        method: 'POST',
-                        body: formData,
-                        headers: { 'Accept': 'application/json' }
-                    });
-                }
-            } catch (err) {
-                console.error('Lỗi Formspree:', err);
-            }
-
+        } catch (err) {
+            console.error('Lỗi gửi liên hệ:', err);
+            triggerHaptic('error');
+            thongBaoChoKhach(
+                `❌ Không gửi được do lỗi kết nối.\n\nVui lòng gọi hotline ${HOTLINE} ` +
+                `hoặc nhắn Zalo cùng số này, chúng tôi hỗ trợ bạn ngay.`,
+                'warning'
+            );
+        } finally {
             if (submitBtn) {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = originalBtnHTML;
+                submitBtn.innerHTML = btnHtmlGoc;
             }
-
-            triggerHaptic('success');
-
-            // Hiển thị thông báo thành công (Native alert nếu trong Telegram)
-            const successMsg = `🎉 Cảm ơn ${name}! Thông tin đặt hàng đã được gửi thành công. Chúng tôi sẽ liên hệ lại với bạn sớm nhất!`;
-            if (tgApp && tgApp.showAlert) {
-                tgApp.showAlert(successMsg);
-            } else {
-                showNotification(successMsg, 'success');
-            }
-
-            // Reset form
-            contactForm.reset();
-
-            // Lưu thông tin liên hệ
-            saveContactInfo({ name, email, phone, message });
-        });
-    }
+        }
+    });
 }
 
-// Hàm khởi tạo smooth scroll cho navigation
+function thongBaoChoKhach(message, type) {
+    if (tgApp && tgApp.showAlert && tgApp.initData) {
+        try {
+            tgApp.showAlert(message);
+            return;
+        } catch (e) { /* roi xuong thong bao thuong */ }
+    }
+    showNotification(message, type);
+}
+
 function initSmoothScroll() {
-    const navLinks = document.querySelectorAll('.nav-link');
-
-    navLinks.forEach(link => {
+    document.querySelectorAll('.nav-link').forEach(link => {
         link.addEventListener('click', function (e) {
-            const href = this.getAttribute('href');
+            const href = this.getAttribute('href') || '';
+            if (!href.startsWith('#')) return;
 
-            if (href.startsWith('#')) {
+            const target = document.getElementById(href.substring(1));
+            if (target) {
                 e.preventDefault();
-                const targetId = href.substring(1);
-                const targetElement = document.getElementById(targetId);
-
-                if (targetElement) {
-                    targetElement.scrollIntoView({
-                        behavior: 'smooth'
-                    });
-                }
+                target.scrollIntoView({ behavior: 'smooth' });
             }
         });
     });
 }
 
-// Hàm animation khi tải trang
 function animateOnLoad() {
-    // Animation cho các sản phẩm
-    const productCards = document.querySelectorAll('.product-card');
-    productCards.forEach((card, index) => {
+    document.querySelectorAll('.product-card').forEach((card, i) => {
         setTimeout(() => {
             card.style.opacity = '1';
             card.style.transform = 'translateY(0)';
-        }, index * 200);
+        }, i * 200);
     });
 
-    // Animation cho các testimonial
-    const testimonialCards = document.querySelectorAll('.testimonial-card');
-    testimonialCards.forEach((card, index) => {
+    document.querySelectorAll('.testimonial-card').forEach((card, i) => {
         setTimeout(() => {
             card.style.opacity = '1';
             card.style.transform = 'translateY(0)';
-        }, index * 300 + 500);
+        }, i * 300 + 500);
     });
 }
 
-// Hàm thêm sản phẩm vào giỏ hàng
-function addToCart(productName, price) {
-    // Tìm sản phẩm trong giỏ hàng
-    const existingProduct = cart.find(item => item.name === productName);
-
-    if (existingProduct) {
-        existingProduct.quantity += 1;
-    } else {
-        cart.push({
-            name: productName,
-            price: price,
-            quantity: 1
-        });
-    }
-
-    // Cập nhật tổng tiền
-    cartTotal += price;
-
-    // Lưu giỏ hàng vào localStorage
-    localStorage.setItem('chiliSauceCart', JSON.stringify(cart));
-
-    // Cập nhật hiển thị giỏ hàng
-    updateCartDisplay();
-
-    // Hiển thị thông báo
-    showNotification(`${productName} đã được thêm vào giỏ hàng!`, 'success');
-
-    // Hiệu ứng rung cho nút thêm vào giỏ
-    const buttons = document.querySelectorAll('.btn-buy');
-    buttons.forEach(btn => {
-        btn.style.transform = 'scale(0.95)';
-        setTimeout(() => {
-            btn.style.transform = 'scale(1)';
-        }, 150);
-    });
-}
-
-// Hàm cập nhật hiển thị giỏ hàng
-function updateCartDisplay() {
-    const cartItems = document.getElementById('cartItems');
-    const cartTotalElement = document.getElementById('cartTotal');
-
-    updateCartCount();
-
-    // Gallery và blog không có khối giỏ hàng - thoát sớm thay vì nổ lỗi
-    if (!cartItems || !cartTotalElement) return;
-
-    if (cart.length === 0) {
-        cartItems.innerHTML = '<p>Giỏ hàng trống</p>';
-        cartTotalElement.textContent = '0';
-        return;
-    }
-
-    let cartHTML = '';
-    cart.forEach((item, index) => {
-        cartHTML += `
-            <div class="cart-item">
-                <div class="cart-item-info">
-                    <h4>${item.name}</h4>
-                    <p>₫${item.price.toLocaleString()}</p>
-                </div>
-                <div class="cart-item-controls">
-                    <button class="quantity-btn" onclick="updateQuantity(${index}, -1)">-</button>
-                    <span class="quantity">${item.quantity}</span>
-                    <button class="quantity-btn" onclick="updateQuantity(${index}, 1)">+</button>
-                    <button class="remove-btn" onclick="removeFromCart(${index})">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            </div>
-        `;
-    });
-
-    cartItems.innerHTML = cartHTML;
-    cartTotalElement.textContent = cartTotal.toLocaleString();
-}
-
-// Hàm cập nhật số lượng sản phẩm
-function updateQuantity(index, change) {
-    const item = cart[index];
-
-    if (change === -1 && item.quantity === 1) {
-        removeFromCart(index);
-        return;
-    }
-
-    item.quantity += change;
-    cartTotal += change * item.price;
-
-    localStorage.setItem('chiliSauceCart', JSON.stringify(cart));
-    updateCartDisplay();
-
-    showNotification('Số lượng đã được cập nhật!', 'info');
-}
-
-// Hàm xóa sản phẩm khỏi giỏ hàng
-function removeFromCart(index) {
-    const item = cart[index];
-    cartTotal -= item.price * item.quantity;
-    cart.splice(index, 1);
-
-    localStorage.setItem('chiliSauceCart', JSON.stringify(cart));
-    updateCartDisplay();
-
-    showNotification('Sản phẩm đã được xóa khỏi giỏ hàng!', 'warning');
-}
-
-// Hàm mở giỏ hàng
-function openCart() {
-    document.getElementById('cartModal').style.display = 'block';
-    document.body.style.overflow = 'hidden';
-}
-
-// Hàm đóng giỏ hàng
-function closeCart() {
-    document.getElementById('cartModal').style.display = 'none';
-    document.body.style.overflow = 'auto';
-}
-
-// Hàm thanh toán
-function checkout() {
-    if (cart.length === 0) {
-        showNotification('Giỏ hàng của bạn đang trống!', 'warning');
-        return;
-    }
-
-    // Hiển thị thông tin thanh toán
-    let orderSummary = '📋 ĐƠN HÀNG CỦA BẠN:\n\n';
-    cart.forEach(item => {
-        orderSummary += `• ${item.name} x ${item.quantity} = ₫${(item.price * item.quantity).toLocaleString()}\n`;
-    });
-    orderSummary += `\n💰 TỔNG CỘNG: ₫${cartTotal.toLocaleString()}`;
-    orderSummary += '\n\n📞 Chúng tôi sẽ liên hệ với bạn để xác nhận đơn hàng!';
-
-    showNotification(orderSummary, 'success');
-
-    // Reset giỏ hàng sau khi thanh toán
-    cart = [];
-    cartTotal = 0;
-    localStorage.removeItem('chiliSauceCart');
-    updateCartDisplay();
-    closeCart();
-}
-
-// Hàm hiển thị thông báo
 function showNotification(message, type = 'info') {
-    // Xóa thông báo cũ
-    const existingNotification = document.querySelector('.notification');
-    if (existingNotification) {
-        existingNotification.remove();
-    }
+    const cu = document.querySelector('.notification');
+    if (cu) cu.remove();
 
-    // Tạo thông báo mới
     const notification = document.createElement('div');
     notification.className = `notification notification-${type}`;
-    notification.innerHTML = `
-        <div class="notification-content">
-            <span class="notification-message">${message}</span>
-            <button class="notification-close" onclick="closeNotification(this)">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-    `;
 
-    // Thêm vào body
+    const content = document.createElement('div');
+    content.className = 'notification-content';
+
+    // textContent chu khong phai innerHTML: noi dung co the chua chu khach nhap
+    const span = document.createElement('span');
+    span.className = 'notification-message';
+    span.textContent = message;
+
+    const btn = document.createElement('button');
+    btn.className = 'notification-close';
+    btn.innerHTML = '<i class="fas fa-times"></i>';
+    btn.addEventListener('click', () => closeNotification(btn));
+
+    content.appendChild(span);
+    content.appendChild(btn);
+    notification.appendChild(content);
     document.body.appendChild(notification);
 
-    // Hiển thị thông báo
-    setTimeout(() => {
-        notification.classList.add('show');
-    }, 100);
-
-    // Tự động ẩn sau 5 giây
-    setTimeout(() => {
-        closeNotification(notification.querySelector('.notification-close'));
-    }, 5000);
+    setTimeout(() => notification.classList.add('show'), 100);
+    setTimeout(() => closeNotification(btn), 8000);
 }
 
-// Hàm đóng thông báo
 function closeNotification(button) {
     const notification = button.closest('.notification');
+    if (!notification) return;
     notification.classList.remove('show');
-    setTimeout(() => {
-        notification.remove();
-    }, 300);
+    setTimeout(() => notification.remove(), 300);
 }
 
-// Hàm cuộn đến phần sản phẩm
-function scrollToProducts() {
-    document.querySelector('#products').scrollIntoView({
-        behavior: 'smooth'
-    });
-}
-
-// Hàm cuộn đến phần giới thiệu
 function scrollToAbout() {
-    document.querySelector('#about').scrollIntoView({
-        behavior: 'smooth'
-    });
+    const about = document.querySelector('#about');
+    if (about) about.scrollIntoView({ behavior: 'smooth' });
 }
 
-// Hàm gọi điện thoại trực tiếp
 function callNow() {
-    const phoneNumber = '0982722036';
-    const message = 'Xin chào! Tôi muốn hỏi về sản phẩm tương ớt từ website của bạn.';
-
-    // GA4 Event Tracking - Theo dõi chuyển đổi
     if (typeof gtag !== 'undefined') {
         gtag('event', 'goi_dien_dat_hang', {
             event_category: 'lien_he',
@@ -508,27 +257,10 @@ function callNow() {
             value: 1
         });
     }
-
-    // Hiển thị thông báo và cho phép gọi
-    showNotification(`📞 Gọi ngay: ${phoneNumber}\n\n${message}`, 'success');
-
-    // Mở dialer với số điện thoại (cho mobile)
-    window.location.href = `tel:${phoneNumber}`;
-
-    // Sau 2 giây cuộn đến phần liên hệ để xem thông tin khác
-    setTimeout(() => {
-        document.querySelector('#contact').scrollIntoView({
-            behavior: 'smooth'
-        });
-    }, 2000);
+    window.location.href = `tel:${HOTLINE}`;
 }
 
-// Hàm liên hệ Zalo
 function contactZalo() {
-    const phoneNumber = '0982722036';
-    const message = encodeURIComponent('Xin chào! Tôi muốn hỏi về sản phẩm tương ớt từ website.');
-
-    // GA4 Event Tracking - Theo dõi chuyển đổi
     if (typeof gtag !== 'undefined') {
         gtag('event', 'lien_he_zalo', {
             event_category: 'lien_he',
@@ -536,86 +268,9 @@ function contactZalo() {
             value: 1
         });
     }
-
-    showNotification('🔵 Đang mở Zalo để liên hệ...', 'info');
-
-    // Mở Zalo với số điện thoại
-    window.open(`https://zalo.me/${phoneNumber}`, '_blank');
-
-    // Sau 1 giây hiển thị thông tin liên hệ
-    setTimeout(() => {
-        showNotification(`📱 Zalo: ${phoneNumber}\n\nHoặc gọi trực tiếp: 0982722036`, 'success');
-    }, 1000);
+    window.open(`https://zalo.me/${HOTLINE}`, '_blank');
 }
 
-// Hàm liên hệ mua buôn
-function contactWholesale() {
-    const wholesaleInfo = `
-🏪 MUA BÁN BUÔN - ĐẠI LÝ
-
-📦 Dành cho:
-• Quán bún, phở, bánh mỳ
-• Nhà hàng, quán ăn
-• Đại lý, cửa hàng tạp hóa
-• Quán bia, giải khát
-
-💰 Ưu đãi đặc biệt:
-• Giá tốt cho đơn hàng lớn
-• Chiết khấu theo số lượng
-• Hỗ trợ giao hàng nhanh
-• Tư vấn sản phẩm phù hợp
-
-📞 Liên hệ ngay:
-• SĐT: 0982722036
-• Zalo: 0982722036
-• Email: vietthanh228@gmail.com
-
-Hoặc điền form bên cạnh để được tư vấn chi tiết!
-    `;
-
-    showNotification(wholesaleInfo, 'info');
-
-    // Cuộn đến phần liên hệ
-    setTimeout(() => {
-        document.querySelector('#contact').scrollIntoView({
-            behavior: 'smooth'
-        });
-    }, 1000);
-}
-
-// Hàm lưu thông tin liên hệ
-function saveContactInfo(contactInfo) {
-    // Lấy danh sách liên hệ đã lưu
-    let contacts = JSON.parse(localStorage.getItem('chiliSauceContacts') || '[]');
-
-    // Thêm liên hệ mới
-    contacts.push({
-        ...contactInfo,
-        date: new Date().toISOString(),
-        id: Date.now()
-    });
-
-    // Lưu lại
-    localStorage.setItem('chiliSauceContacts', JSON.stringify(contacts));
-}
-
-// Tiêu đề gốc của CHÍNH trang đang mở (mỗi bài blog một tiêu đề riêng).
-const ORIGINAL_PAGE_TITLE = document.title;
-
-// Hàm hiển thị số lượng sản phẩm trong giỏ hàng trên tiêu đề trang
-//
-// Trước đây hàm này chạy bằng setInterval mỗi giây trên MỌI trang và ghi đè
-// document.title bằng tiêu đề trang chủ - làm 13 bài blog và trang gallery
-// mất tiêu đề thật cả trên tab trình duyệt lẫn với Googlebot (Google có chạy JS).
-// Nay chỉ gọi khi giỏ hàng thay đổi, và luôn giữ nguyên tiêu đề gốc của trang.
-function updateCartCount() {
-    const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
-    document.title = cartCount > 0
-        ? `(${cartCount}) ${ORIGINAL_PAGE_TITLE}`
-        : ORIGINAL_PAGE_TITLE;
-}
-
-// Thêm CSS cho notification
 const notificationCSS = `
 .notification {
     position: fixed;
@@ -677,80 +332,39 @@ const notificationCSS = `
     color: #333;
 }
 
-.cart-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 0;
-    border-bottom: 1px solid #eee;
-}
-
-.cart-item:last-child {
-    border-bottom: none;
-}
-
-.cart-item-info h4 {
-    margin-bottom: 0.3rem;
-    color: #8b0000;
-}
-
-.cart-item-info p {
-    color: #666;
+.form-lead {
     font-size: 0.9rem;
+    line-height: 1.5;
+    color: #555;
+    background: rgba(255, 107, 53, 0.08);
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
 }
 
-.cart-item-controls {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+.form-lead a {
+    color: #8b0000;
+    font-weight: 700;
 }
 
-.quantity-btn {
-    width: 30px;
-    height: 30px;
-    border: 1px solid #ddd;
+.contact-form select {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid #eee;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-family: inherit;
     background: white;
-    border-radius: 50%;
+    color: #333;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
 }
 
-.quantity-btn:hover {
-    background: #ff6b35;
-    color: white;
+.contact-form select:focus {
+    outline: none;
     border-color: #ff6b35;
-}
-
-.quantity {
-    margin: 0 0.5rem;
-    min-width: 20px;
-    text-align: center;
-}
-
-.remove-btn {
-    background: #dc3545;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-}
-
-.remove-btn:hover {
-    background: #c82333;
-    transform: scale(1.1);
 }
 `;
 
-// Thêm CSS vào head của document
 const style = document.createElement('style');
 style.textContent = notificationCSS;
 document.head.appendChild(style);

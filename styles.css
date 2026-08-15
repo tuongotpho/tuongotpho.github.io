@@ -593,6 +593,12 @@ section {
     color: #ff6b35;
 }
 
+.price-unit {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #777;
+}
+
 .btn-buy {
     width: 100%;
     background: #8b0000;

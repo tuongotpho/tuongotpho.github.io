@@ -18,12 +18,12 @@ const { getFirestore } = require('firebase-admin/firestore');
 
 const { buildOrderLines, normalizePhone, formatVnd } = require('./catalog');
 const {
-    CONFIRM_PREFIX, verifyInitData, buildOwnerMessage, buildOwnerKeyboard,
+    CONFIRM_PREFIX, NHU_CAU, buildEnquiryMessage, buildEnquiryKeyboard, verifyInitData, buildOwnerMessage, buildOwnerKeyboard,
     buildCustomerConfirmMessage, webhookSecretFor, safeEquals,
     sendMessage, answerCallbackQuery, editMessageText
 } = require('./telegram');
 const {
-    createOrder, findOrderByClientKey, confirmOrder, checkRateLimit,
+    createOrder, createEnquiry, findOrderByClientKey, confirmOrder, checkRateLimit,
     markNotified, markCustomerNotified
 } = require('./orders');
 
@@ -218,6 +218,109 @@ exports.order = onRequest(
             message: notified
                 ? `Đơn ${order.orderId} đã được gửi tới cửa hàng!`
                 : `Đơn ${order.orderId} đã được ghi nhận. Nếu sau 30 phút chưa có ai gọi lại, vui lòng gọi hotline ${HOTLINE}.`
+        });
+    }
+);
+
+/**
+ * FORM LIEN HE / TU VAN / MUA BUON tren trang chu.
+ *
+ * Truoc day form nay ban thang len Telegram bang token trong script.js va
+ * chi gui ten/email/sdt/loi nhan - chu shop nhan duoc ma khong biet khach
+ * muon gi, o dau. Nay di qua server nhu don hang: co ma LH-YYMMDD-NNN,
+ * co luu lai, va khong con can token o client.
+ */
+exports.contact = onRequest(
+    { cors: ALLOWED_ORIGINS, secrets: [TELEGRAM_BOT_TOKEN] },
+    async (req, res) => {
+        if (req.method !== 'POST') {
+            return fail(res, 405, 'Phương thức không được hỗ trợ.');
+        }
+
+        const body = req.body || {};
+        const botToken = TELEGRAM_BOT_TOKEN.value().trim();
+
+        const ip = (req.headers['x-forwarded-for'] || '').toString().split(',')[0].trim()
+            || req.ip || 'unknown';
+
+        try {
+            const guard = await checkRateLimit(db, `ip:${ip}`, { bucket: 'req', limit: 40 });
+            if (!guard.allowed) {
+                return fail(res, 429,
+                    `Hệ thống ghi nhận quá nhiều yêu cầu từ thiết bị này. Vui lòng gọi hotline ${HOTLINE}.`);
+            }
+        } catch (err) {
+            logger.error('Loi hang rao request form lien he', err);
+        }
+
+        const name = String(body.name || '').trim();
+        const address = String(body.address || '').trim().slice(0, 300);
+        const message = String(body.message || '').trim().slice(0, 1000);
+        const need = NHU_CAU[body.need] ? body.need : 'khac';
+        const phone = normalizePhone(body.phone);
+
+        if (name.length < 2) return fail(res, 400, 'Vui lòng nhập họ tên của bạn.');
+        if (!phone) return fail(res, 400, 'Số điện thoại chưa đúng. Vui lòng kiểm tra lại (ví dụ: 0982722036).');
+
+        const clientKey = String(body.clientKey || '').trim().slice(0, 100)
+            || `lh-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+
+        try {
+            const rl = await checkRateLimit(db, `ip:${ip}`, { bucket: 'enquiry', limit: 5 });
+            if (!rl.allowed) {
+                return fail(res, 429,
+                    `Bạn vừa gửi khá nhiều liên hệ. Vui lòng gọi hotline ${HOTLINE} để được hỗ trợ ngay.`);
+            }
+        } catch (err) {
+            logger.error('Loi gioi han form lien he', err);
+        }
+
+        let created;
+        try {
+            created = await createEnquiry(db, {
+                clientKey,
+                draft: {
+                    need,
+                    customer: { name: name.slice(0, 120), phone, address, message },
+                    source: { ip, userAgent: String(req.headers['user-agent'] || '').slice(0, 300) }
+                }
+            });
+        } catch (err) {
+            logger.error('Khong ghi duoc lien he vao Firestore', err);
+            return fail(res, 500, `Hệ thống đang bận. Vui lòng gọi hotline ${HOTLINE}.`);
+        }
+
+        const enquiry = created.enquiry;
+
+        if (created.duplicated) {
+            return res.json({
+                ok: true, duplicated: true, enquiryId: enquiry.orderId,
+                message: `Liên hệ ${enquiry.orderId} của bạn đã được ghi nhận trước đó rồi nhé!`
+            });
+        }
+
+        let notified = false;
+        try {
+            const result = await sendMessage(botToken, {
+                chat_id: TELEGRAM_OWNER_CHAT_ID.value().trim(),
+                text: buildEnquiryMessage(enquiry),
+                parse_mode: 'HTML',
+                reply_markup: { inline_keyboard: buildEnquiryKeyboard(enquiry) }
+            });
+            notified = !!result.ok;
+            if (!result.ok) logger.error('Telegram tu choi tin lien he', { id: enquiry.orderId, result });
+        } catch (err) {
+            logger.error('Khong goi duoc Telegram cho form lien he', { id: enquiry.orderId, err });
+        }
+
+        markNotified(db, enquiry.orderId, notified, null, 'enquiries')
+            .catch(err => logger.error('Khong cap nhat duoc trang thai lien he', err));
+
+        return res.json({
+            ok: true,
+            enquiryId: enquiry.orderId,
+            notified,
+            message: `Đã nhận liên hệ ${enquiry.orderId}. Chúng tôi sẽ gọi lại cho bạn sớm nhất!`
         });
     }
 );

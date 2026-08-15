@@ -93,6 +93,36 @@ function buildOwnerMessage(order) {
         `⏰ <b>Thời gian:</b> ${order.createdAtText}`;
 }
 
+/** Cac muc dich khach co the chon o form lien he trang chu. */
+const NHU_CAU = {
+    le: 'Mua lẻ / dùng gia đình',
+    buon: 'Mua buôn — quán phở, nhà hàng, đại lý',
+    tuvan: 'Tư vấn sản phẩm',
+    khac: 'Việc khác'
+};
+
+/** Soan tin nhan lien he / xin tu van gui cho chu shop. */
+function buildEnquiryMessage(enquiry) {
+    return `💬 <b>LIÊN HỆ MỚI</b> — <code>${enquiry.orderId}</code>\n\n` +
+        `👤 <b>Họ tên:</b> ${escapeHtml(enquiry.customer.name)}\n` +
+        `📞 <b>Điện thoại:</b> <code>${escapeHtml(enquiry.customer.phone)}</code>\n` +
+        `🎯 <b>Nhu cầu:</b> ${escapeHtml(NHU_CAU[enquiry.need] || NHU_CAU.khac)}\n` +
+        `📍 <b>Địa chỉ:</b> ${escapeHtml(enquiry.customer.address || 'Chưa cung cấp')}\n` +
+        `📝 <b>Lời nhắn:</b> ${escapeHtml(enquiry.customer.message || 'Không có')}\n\n` +
+        `🌐 <b>Nguồn:</b> Form liên hệ trang chủ\n` +
+        `⏰ <b>Thời gian:</b> ${enquiry.createdAtText}`;
+}
+
+/** Nut hanh dong cho tin nhan lien he - khong co nut xac nhan vi day khong phai don hang. */
+function buildEnquiryKeyboard(enquiry) {
+    const actions = [];
+    if (enquiry.customer.phone) {
+        actions.push({ text: '💬 Chat Zalo', url: `https://zalo.me/${enquiry.customer.phone}` });
+    }
+    actions.push({ text: '📍 Vị Trí Shop', url: SHOP_MAP_URL });
+    return [actions];
+}
+
 /** Tien to cua callback_data khi chu shop bam nut xac nhan. */
 const CONFIRM_PREFIX = 'cf:';
 
@@ -194,6 +224,9 @@ function editMessageText(botToken, chatId, messageId, text, inlineKeyboard) {
 
 module.exports = {
     CONFIRM_PREFIX,
+    NHU_CAU,
+    buildEnquiryMessage,
+    buildEnquiryKeyboard,
     escapeHtml,
     verifyInitData,
     buildOwnerMessage,

@@ -104,7 +104,7 @@ Cần file `functions/.secret.local` (đã có trong .gitignore):
 TELEGRAM_BOT_TOKEN=123456:FAKE_TOKEN_FOR_LOCAL_TEST
 ```
 
-Rồi chạy 2 bộ kiểm thử (31 phép thử: tính tiền, chống trùng, chặn spam, xác thực Telegram, luồng xác nhận đơn):
+Rồi chạy các bộ kiểm thử (43 phép thử: tính tiền, chống trùng, chặn spam, xác thực Telegram, luồng xác nhận đơn):
 
 ```bash
 node functions/test-order-api.js
@@ -114,15 +114,26 @@ node functions/test-order-api.js
 node functions/test-webhook.js
 ```
 
+```bash
+node functions/test-contact.js
+```
+
+```bash
+node functions/test-price-consistency.js
+```
+
 Mở `app.html` ở `http://127.0.0.1:5173` thì client tự trỏ vào emulator, đặt thử thoải mái mà không đụng tới đơn thật.
 
 ## Dữ liệu lưu trong Firestore
 
 | Collection | Nội dung |
 |---|---|
-| `orders/{BO-YYMMDD-NNN}` | Toàn bộ đơn: khách, sản phẩm, tổng tiền, kênh đặt, đã báo Telegram chưa |
-| `counters/{YYMMDD}` | Bộ đếm số thứ tự đơn trong ngày |
-| `orderKeys/{clientKey}` | Chống trùng khi khách bấm nhiều lần |
+| `orders/{BO-YYMMDD-NNN}` | Đơn hàng: khách, sản phẩm, tổng tiền, kênh đặt, đã báo Telegram chưa, đã xác nhận chưa |
+| `enquiries/{LH-YYMMDD-NNN}` | Liên hệ / tư vấn / mua buôn từ form trang chủ |
+| `counters/{YYMMDD}` và `counters/LH-{YYMMDD}` | Bộ đếm số thứ tự trong ngày |
+| `orderKeys/` và `enquiryKeys/` | Chống trùng khi khách bấm nhiều lần |
 | `rateLimits/{bucket:danh-tinh}` | Chống spam |
+
+⚠️ Bộ đếm đơn hàng dùng doc id **chỉ có `YYMMDD`** (không có tiền tố `BO-`) vì lý do lịch sử. Đổi nó là số đơn nhảy về `001` và **ghi đè lên đơn thật đã có**. `createRecord` có chốt chặn ném lỗi nếu mã trùng, nhưng đừng thử.
 
 `firestore.rules` chặn mọi truy cập từ trình duyệt — chỉ Cloud Function đọc ghi được.
