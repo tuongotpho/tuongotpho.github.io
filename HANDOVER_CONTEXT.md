@@ -48,25 +48,33 @@ Khi có commit mới trên `tuongotpho`, GitHub Actions (`.github/workflows/depl
 
 ---
 
-## 4. 🤖 CẤU HÌNH TELEGRAM BOT & SERVERLESS ORDERING
-Hệ thống đặt hàng hoạt động theo cơ chế **Serverless 100%** (Gọi trực tiếp Telegram Bot API, không cần server trung gian):
-- **Bot Token:** `8571697852:AAGhE7cw3Sx3vWoX1SF1jovESawYsngBwXo`
+## 4. 🤖 TELEGRAM BOT & LUỒNG ĐẶT HÀNG
+
 - **Bot Username:** `@khachtuongot_bot`
 - **Chat ID Chủ Shop:** `5056715300` (Lê Thanh - `@august8787`)
+- **Bot Token:** nằm trong Google Secret Manager (`TELEGRAM_BOT_TOKEN`), **không có trong mã nguồn**.
 
-### ⚡ Các tính năng Telegram Bot đã hoàn thiện:
-1. **Telegram Mini App (`app.html`)**:
-   - Khách mở bot bấm `[🛍 Đặt Hàng Nhanh]` mở ra trang `app.html`.
-   - Tự động lấy Họ Tên từ Telegram User Profile.
-   - Chọn số lượng chai 350ml, 500ml và số Lít mua buôn (+/-), tự tính tổng tiền trực tiếp.
-   - Nút đặt hàng chuẩn Native Telegram MainButton + Rung Haptic Feedback.
-2. **Thông báo đơn hàng kèm nút bấm thông minh**:
-   - Khi có đơn mới, bot bắn tin nhắn về Chat ID `5056715300` kèm nút:
-     - `[ ✅ Xác Nhận Đơn & Báo Khách ]`
-     - `[ 💬 Chat Zalo ]`
-     - `[ 📍 Vị Trí Shop ]`
-3. **Tự động gửi tin nhắn duyệt đơn cho khách (Auto-Reply)**:
-   - Khi chủ shop bấm `[ ✅ Xác Nhận Đơn & Báo Khách ]`, bot tự động gửi tin nhắn riêng cho Telegram của khách báo đơn đã được duyệt và đang chuẩn bị giao.
+> ⚠️ **Tuyệt đối không đặt bot token vào bất kỳ file HTML/JS nào.** Toàn bộ web là
+> trang tĩnh công khai, ai cũng xem được mã nguồn. Token từng nằm trong `script.js`
+> và `app.html` — nó đã bị lộ và phải revoke. Mọi liên lạc với Telegram đi qua
+> Cloud Function.
+
+### Luồng đặt hàng
+Khách (web hoặc Telegram Mini App) → `POST /api/order` → Cloud Function:
+1. Xác thực chữ ký `initData` nếu đặt từ Telegram
+2. Tính lại tiền từ bảng giá phía server, bỏ qua giá client gửi lên
+3. Ghi đơn vào Firestore, cấp mã `BO-YYMMDD-NNN`
+4. Bắn tin cho chủ shop kèm nút `[✅ Xác Nhận Đơn]` `[💬 Chat Zalo]` `[📍 Vị Trí Shop]`
+
+Đơn được **ghi vào Firestore trước khi gọi Telegram**, nên Telegram lỗi hay bị nhà
+mạng chặn thì đơn vẫn còn nguyên và khách vẫn nhận được mã đơn.
+
+### Xác nhận đơn
+Nút `[✅ Xác Nhận Đơn]` dùng `callback_data`, xử lý bởi function `telegramWebhook`.
+Chốt bằng transaction nên bấm 2 lần chỉ báo khách 1 lần. Tin nhắn đơn tự sửa thành
+`✅ ĐÃ XÁC NHẬN lúc HH:mm`. Đơn đặt từ web cũng bấm được (ghi vào sổ để theo dõi).
+
+Chi tiết vận hành, cách đổi token và cách chạy thử: xem `functions/README.md`.
 
 ---
 

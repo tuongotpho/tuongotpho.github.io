@@ -640,11 +640,10 @@
     </div>
 
     <script>
-        // CẤU HÌNH TELEGRAM BOT
-        // ⚠️ TẠM THỜI: token dưới đây chỉ còn dùng cho luồng dự phòng và màn hình xác nhận.
-        // Sau khi test xong API mới -> revoke token ở @BotFather và xoá 2 dòng này.
-        const TELEGRAM_BOT_TOKEN = '8571697852:AAGhE7cw3Sx3vWoX1SF1jovESawYsngBwXo';
-        const TELEGRAM_CHAT_ID = '5056715300';
+        // KHONG DAT BOT TOKEN O DAY.
+        // File nay chay tren trinh duyet cua khach nen bat ky ai cung doc duoc
+        // ma nguon. Token nam trong Secret Manager, chi Cloud Function truy cap.
+        // Moi lien lac voi Telegram deu di qua /api/order.
 
         // API đặt hàng tập trung (Firebase Function).
         // Trên 2 site Firebase thì gọi cùng domain (/api/order) nên không lo bị nhà mạng chặn;
@@ -787,15 +786,6 @@
             }
         }
 
-        function escapeHtml(text) {
-            if (!text) return '';
-            return text.toString()
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;');
-        }
-
         // Bật/tắt trạng thái "đang gửi", có nhớ nội dung gốc của nút
         // (trước đây ghi đè thẳng innerHTML làm mất luôn ô hiển thị tổng tiền trên nút)
         function setSubmitButtonsBusy(busy) {
@@ -930,46 +920,9 @@
                 return;
             }
 
-            // Tạo danh sách món đã chọn
-            const itemsList = [];
-            if (cartData.p350 > 0) itemsList.push(`• <b>${cartData.p350}</b> chai Siêu Cay 350ml (${(cartData.p350 * PRICES.p350).toLocaleString('vi-VN')}₫)`);
-            if (cartData.p500 > 0) itemsList.push(`• <b>${cartData.p500}</b> chai Truyền Thống 500ml (${(cartData.p500 * PRICES.p500).toLocaleString('vi-VN')}₫)`);
-            if (cartData.pBulk > 0) itemsList.push(`• <b>${cartData.pBulk}</b> Lít Tương Ớt Bán Buôn (${(cartData.pBulk * PRICES.pBulk).toLocaleString('vi-VN')}₫)`);
-
+            // Chi dung de doi chieu voi so server tinh ra. Noi dung tin nhan
+            // gui cho chu shop do server soan, client khong con lam viec do.
             const totalMoney = (cartData.p350 * PRICES.p350) + (cartData.p500 * PRICES.p500) + (cartData.pBulk * PRICES.pBulk);
-            const formattedTotal = totalMoney.toLocaleString('vi-VN') + '₫';
-
-            // Thông tin tài khoản Telegram nếu có
-            const tgUser = tg?.initDataUnsafe?.user;
-            let tgInfo = '';
-            if (tgUser) {
-                tgInfo = `📱 <b>Kênh đặt:</b> Telegram Mini App (@${escapeHtml(tgUser.username || 'ẩn')} - ID: <code>${tgUser.id}</code>)\n`;
-            } else {
-                tgInfo = `🌐 <b>Kênh đặt:</b> Web Mini App\n`;
-            }
-
-            const messageText = `🔥 <b>ĐƠN HÀNG MỚI TỪ TELEGRAM MINI APP!</b>\n\n` +
-                `👤 <b>Khách hàng:</b> ${escapeHtml(name)}\n` +
-                `📞 <b>Điện thoại:</b> ${escapeHtml(phone)}\n` +
-                `📍 <b>Địa chỉ:</b> ${escapeHtml(address)}\n` +
-                `📝 <b>Ghi chú:</b> ${escapeHtml(note || 'Không có')}\n\n` +
-                `📦 <b>Chi tiết sản phẩm:</b>\n${itemsList.join('\n')}\n\n` +
-                `💰 <b>TỔNG CỘNG:</b> <b>${formattedTotal}</b>\n` +
-                tgInfo +
-                `⏰ <b>Thời gian:</b> ${new Date().toLocaleString('vi-VN')}`;
-
-            const cleanPhone = phone.replace(/\D/g, '');
-            const inlineButtons = [];
-
-            // Đơn đi đường dự phòng KHÔNG có bản ghi trên server nên không thể
-            // xác nhận qua webhook được. Không gắn nút xác nhận ở đây để chủ shop
-            // không bấm vào một nút chắc chắn báo "không tìm thấy đơn".
-            const actionRow = [];
-            if (cleanPhone) {
-                actionRow.push({ text: `💬 Chat Zalo`, url: `https://zalo.me/${cleanPhone}` });
-            }
-            actionRow.push({ text: `📍 Vị Trí Shop`, url: `https://maps.app.goo.gl/Kgb7iHMjhNCQFnSu9` });
-            if (actionRow.length > 0) inlineButtons.push(actionRow);
 
             const isRealTelegram = !!(tg && tg.initData && tg.initData.length > 0);
 
@@ -1014,24 +967,16 @@
             } catch (err) {
                 console.error('Lỗi gửi đơn qua API:', err);
 
-                // ĐƯỜNG DỰ PHÒNG: bắn thẳng về Telegram như cơ chế cũ.
-                // (Sẽ ngừng hoạt động sau khi revoke token — lúc đó khách được hướng dẫn gọi hotline.)
-                const sentDirect = await sendOrderDirectFallback(messageText, inlineButtons);
-
-                if (sentDirect) {
-                    handleOrderSuccess({
-                        orderId: 'Chưa cấp mã',
-                        message: 'Đơn đã được gửi tới cửa hàng qua kênh dự phòng.'
-                    }, name, address, isRealTelegram);
-                } else {
-                    triggerHaptic('error');
-                    notifyCustomer(
-                        'Không gửi được đơn do lỗi kết nối mạng.\n\n' +
-                        'Vui lòng gọi hotline hoặc nhắn Zalo cùng số này, ' +
-                        'chúng tôi chốt đơn giúp bạn ngay.',
-                        false, 'hong'
-                    );
-                }
+                // Khong con duong du phong ban thang Telegram: lam vay se phai
+                // de bot token trong ma nguon cong khai. Mat mang thi huong khach
+                // goi hotline - ro rang hon la de khach tuong da dat duoc don.
+                triggerHaptic('error');
+                notifyCustomer(
+                    'Không gửi được đơn do lỗi kết nối mạng.\n\n' +
+                    'Vui lòng gọi hotline hoặc nhắn Zalo cùng số này, ' +
+                    'chúng tôi chốt đơn giúp bạn ngay.',
+                    false, 'hong'
+                );
             } finally {
                 if (isRealTelegram && tg?.MainButton) {
                     try { tg.MainButton.hideProgress(); } catch (e) {}
@@ -1073,26 +1018,6 @@
             }
         }
 
-        // Gửi thẳng Telegram khi API chính không truy cập được.
-        async function sendOrderDirectFallback(messageText, inlineButtons) {
-            try {
-                const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        chat_id: TELEGRAM_CHAT_ID,
-                        text: messageText,
-                        parse_mode: 'HTML',
-                        reply_markup: inlineButtons.length > 0 ? { inline_keyboard: inlineButtons } : undefined
-                    })
-                });
-                const data = await res.json();
-                return !!data.ok;
-            } catch (err) {
-                console.error('Kênh dự phòng cũng lỗi:', err);
-                return false;
-            }
-        }
     </script>
 </body>
 
