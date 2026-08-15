@@ -93,7 +93,7 @@ function buildPrompt(topic, style, extraNotes) {
     const today = new Date().toLocaleDateString('vi-VN');
     return `Bạn là chuyên gia viết blog SEO cho website bán tương ớt "Tương Ớt Siêu Cay Bông Ớt".
 Sản phẩm: tương ớt nguyên chất 100% từ ớt tươi, KHÔNG tỏi, KHÔNG cà chua, không chất bảo quản, lên men tự nhiên với muối biển.
-SĐT: 0982 722 036. Địa chỉ: Số 8 phố 135 Núi Trúc, Ba Đình, Hà Nội.
+SĐT: 0982 722 036. Địa chỉ: Số 8 phố 135 Núi Trúc, Giảng Võ, Hà Nội.
 
 Hãy viết một bài blog HOÀN CHỈNH về chủ đề: "${topic}"
 Phong cách: ${style}

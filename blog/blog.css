@@ -882,8 +882,11 @@
 /* Lien ket trong than bai.
    Truoc day khong co CSS nen dung mau xanh mac dinh cua trinh duyet
    rgb(0,0,238) tren nen xanh den: do tuong phan 1.69:1, duoi chuan
-   WCAG AA (4.5:1) rat xa - gan nhu khong doc duoc. */
-.article-body a:not(.article-cta-btn):not(.back-to-blog) {
+   WCAG AA (4.5:1) rat xa - gan nhu khong doc duoc.
+   Chi ap dung cho lien ket trong doan van va danh sach, khong dung cho
+   muc luc hay nut - nhung cho do da co kieu rieng. */
+.article-body p a:not(.article-cta-btn),
+.article-body li a:not(.article-cta-btn) {
     color: #ff9673;
     text-decoration: underline;
     text-underline-offset: 3px;
@@ -891,7 +894,20 @@
     transition: color 0.2s ease, text-decoration-color 0.2s ease;
 }
 
-.article-body a:not(.article-cta-btn):not(.back-to-blog):hover {
+.article-body p a:not(.article-cta-btn):hover,
+.article-body li a:not(.article-cta-btn):hover {
     color: #ffb499;
     text-decoration-color: #ffb499;
+}
+
+/* Muc luc dung trong <li> nen dinh luon kieu lien ket cua doan van.
+   Dat lai o cuoi file de thang ve do uu tien. */
+.article-body .article-toc-list li a {
+    color: rgba(255, 255, 255, 0.88);
+    text-decoration: none;
+}
+
+.article-body .article-toc-list li a:hover {
+    color: #ff7e5f;
+    text-decoration: underline;
 }

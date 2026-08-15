@@ -21,7 +21,7 @@ function check(label, cond, detail) {
 const baseOrder = {
     name: 'Lê Văn Thành',
     phone: '0982 722 036',
-    address: 'Số 8, ngõ 135 Núi Trúc, Ba Đình, Hà Nội',
+    address: 'Số 8, ngõ 135 Núi Trúc, Giảng Võ, Hà Nội',
     note: 'Giao giờ hành chính'
 };
 

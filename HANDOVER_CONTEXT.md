@@ -10,7 +10,7 @@
   - Chai Truyền Thống 500ml: **45.000₫**
   - Mua Buôn / Quán Phở (Can theo Lít): **60.000₫ / Lít** (Can từ 5L trở lên)
 - **Hotline / Zalo:** 0982.722.036
-- **Địa chỉ Shop:** Số 8, ngõ 135 Núi Trúc, Giảng Võ, Ba Đình, Hà Nội.
+- **Địa chỉ Shop:** Số 8, ngõ 135 Núi Trúc, Giảng Võ, Hà Nội.
 - **Link Google Maps:** `https://maps.app.goo.gl/Kgb7iHMjhNCQFnSu9`
 
 ---

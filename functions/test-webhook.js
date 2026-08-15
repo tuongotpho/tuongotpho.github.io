@@ -36,7 +36,7 @@ async function taoDon(extra = {}) {
         body: JSON.stringify({
             name: 'Khach Kiem Thu',
             phone: '0912345678',
-            address: '1 Duong Test, Ba Dinh, Ha Noi',
+            address: '1 Duong Test, Giang Vo, Ha Noi',
             items: { p350: 1 },
             clientKey: 'wh-' + Math.random(),
             ...extra

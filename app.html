@@ -367,6 +367,21 @@
             text-decoration: none;
         }
 
+        /* Nut gui don trong form: an di nhung van nam trong DOM de phim Enter
+           van submit duoc. Khong dung display:none/hidden vi mot so trinh duyet
+           bo qua nut submit bi an hoan toan khi bam Enter. */
+        .btn-submit-an {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0 0 0 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
         /* Modal thong bao - thay cho alert() cua trinh duyet */
         .modal-backdrop {
             position: fixed;
@@ -562,7 +577,11 @@
             <label class="form-label">Ghi chú đơn hàng (nếu có)</label>
             <textarea id="custNote" class="form-input" placeholder="Ví dụ: Giao giờ hành chính, gọi trước khi ship..."></textarea>
         </div>
-        <button type="submit" class="btn-submit-order" style="width: 100%; justify-content: center; margin-top: 14px; padding: 14px; font-size: 1.05rem;">
+        <!-- Nut nay bi an bang CSS: hanh dong dat hang da co o thanh co dinh duoi
+             cung (tren web) va o MainButton cua Telegram (trong Mini App). De hai
+             nut cung mot viec voi hai ten khac nhau chi lam khach phan van.
+             Van giu lai trong DOM de bam Enter trong o nhap van gui duoc don. -->
+        <button type="submit" class="btn-submit-order btn-submit-an">
             <i class="fas fa-paper-plane"></i> GỬI ĐƠN HÀNG NGAY (<span id="formBtnTotal">0₫</span>)
         </button>
     </form>
@@ -577,7 +596,7 @@
 
     <div class="form-card" id="mapCard" style="padding: 12px; overflow: hidden;">
         <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-color); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
-            <i class="fas fa-store" style="color: #8b0000;"></i> Số 8 phố 135 Núi Trúc, Ba Đình, Hà Nội
+            <i class="fas fa-store" style="color: #8b0000;"></i> Số 8 phố 135 Núi Trúc, Giảng Võ, Hà Nội
         </div>
         <div style="border-radius: 12px; overflow: hidden; height: 180px; box-shadow: inset 0 0 10px rgba(0,0,0,0.1);">
             <iframe

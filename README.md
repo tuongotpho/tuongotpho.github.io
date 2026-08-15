@@ -55,4 +55,4 @@ Mã nguồn được quản lý tập trung duy nhất tại repository này (`t
 ## 📞 Liên Hệ
 
 - **Hotline / Zalo:** 0982.722.036
-- **Địa chỉ:** Số 8, ngõ 135 Núi Trúc, Giảng Võ, Ba Đình, Hà Nội
+- **Địa chỉ:** Số 8, ngõ 135 Núi Trúc, Giảng Võ, Hà Nội

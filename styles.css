@@ -90,6 +90,70 @@ body {
     width: 100%;
 }
 
+/* Nut "Dat Mua" tren menu - truoc day la style inline chi co o index.html,
+   nay dung chung cho ca 17 trang */
+.nav-link-cta {
+    color: #ffe135;
+    font-weight: 700;
+    padding: 6px 14px;
+    border: 1px solid rgba(255, 225, 53, 0.5);
+    border-radius: 50px;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.nav-link-cta:hover {
+    background: #ffe135;
+    color: #8b0000;
+}
+
+/* Gach chan dong khong hop voi nut vien */
+.nav-link-cta::after {
+    display: none;
+}
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Nut 3 gach - chi hien tren dien thoai */
+.nav-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.nav-toggle span {
+    display: block;
+    width: 24px;
+    height: 2px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 2px;
+    transition: transform 0.25s ease, opacity 0.2s ease;
+}
+
+/* Ba gach bien thanh dau X khi menu dang mo */
+.nav-toggle[aria-expanded="true"] span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+}
+
+.nav-toggle[aria-expanded="true"] span:nth-child(2) {
+    opacity: 0;
+}
+
+.nav-toggle[aria-expanded="true"] span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+}
+
 /* Hero Section */
 .hero {
     min-height: 100vh;
@@ -1025,12 +1089,21 @@ section {
 
 .map-container {
     display: flex;
-    justify-content: center;
-    align-items: flex-start;
+    /* Truoc day la flex hang ngang nen tieu de "Vi Tri Cua Hang" va ban do
+       nam canh nhau, cong lai vuot be rong -> tran ngang tren dien thoai.
+       Xep doc: tieu de tren, ban do duoi. */
+    flex-direction: column;
+    align-items: center;
     padding: 2rem;
     background: linear-gradient(135deg, #f8f9fa, #e9ecef);
     border-radius: 25px;
     position: relative;
+    /* Chan moi thu ben trong tran ra ngoai khung */
+    overflow: hidden;
+}
+
+.map-container iframe {
+    max-width: 100%;
 }
 
 .map-container::before {
@@ -1422,14 +1495,60 @@ section {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+    /* Tren dien thoai: chi giu thuong hieu va nut "Dat Mua" tren thanh,
+       7 muc con lai thu vao nut 3 gach. Truoc day 8 muc nam mot hang lam
+       "Trang Chu" bi cat ben trai va "Dat Mua" bi cat ben phai. */
     .navbar {
-        flex-direction: column;
-        gap: 1rem;
-        padding: 1rem;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.85rem 1rem;
+        flex-wrap: wrap;
     }
 
+    .nav-brand {
+        font-size: 1.15rem;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .nav-toggle {
+        display: flex;
+    }
+
+    .nav-link-cta {
+        padding: 7px 14px;
+        font-size: 0.9rem;
+        white-space: nowrap;
+    }
+
+    /* Bang menu xo xuong duoi thanh dieu huong */
     .nav-menu {
-        gap: 1rem;
+        display: none;
+        order: 3;
+        width: 100%;
+        flex-direction: column;
+        gap: 0;
+        padding-top: 0.5rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .nav-menu.open {
+        display: flex;
+    }
+
+    .nav-menu .nav-link {
+        padding: 13px 4px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .nav-menu .nav-link:last-child {
+        border-bottom: none;
+    }
+
+    /* Gach chan chay ngang khong hop voi danh sach doc */
+    .nav-menu .nav-link::after {
+        display: none;
     }
 
     .hero-content {

@@ -46,7 +46,7 @@ firebase deploy --only functions,firestore:rules --project tuongot-sieucay
 **5. Kiểm tra endpoint sống chưa**
 
 ```bash
-curl https://tuongot-sieucay.web.app/api/order -X POST -H "Content-Type: application/json" -d "{\"name\":\"Test\",\"phone\":\"0982722036\",\"address\":\"So 8 ngo 135 Nui Truc, Ba Dinh, Ha Noi\",\"items\":{\"p350\":1},\"clientKey\":\"test-1\"}"
+curl https://tuongot-sieucay.web.app/api/order -X POST -H "Content-Type: application/json" -d "{\"name\":\"Test\",\"phone\":\"0982722036\",\"address\":\"So 8 ngo 135 Nui Truc, Giang Vo, Ha Noi\",\"items\":{\"p350\":1},\"clientKey\":\"test-1\"}"
 ```
 
 Kết quả mong đợi: `{"ok":true,"orderId":"BO-...","notified":true}` và Telegram của shop nhận được tin.

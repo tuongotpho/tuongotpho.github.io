@@ -28,8 +28,37 @@ if (tgApp) {
 document.addEventListener('DOMContentLoaded', function () {
     initScrollEffects();
     initSmoothScroll();
+    initNavToggle();
     animateOnLoad();
 });
+
+// Nut 3 gach tren dien thoai.
+// Nut "Dat Mua" nam ngoai .nav-menu nen luon hien, khong bi thu vao day.
+function initNavToggle() {
+    const nut = document.getElementById('navToggle');
+    const menu = document.getElementById('navMenu');
+    if (!nut || !menu) return;
+
+    const dat = mo => {
+        menu.classList.toggle('open', mo);
+        nut.setAttribute('aria-expanded', String(mo));
+        nut.setAttribute('aria-label', mo ? 'Đóng menu' : 'Mở menu');
+    };
+
+    nut.addEventListener('click', () => dat(!menu.classList.contains('open')));
+
+    // Chon xong mot muc thi dong menu lai
+    menu.querySelectorAll('.nav-link').forEach(a => a.addEventListener('click', () => dat(false)));
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && menu.classList.contains('open')) dat(false);
+    });
+
+    // Quay ve man hinh rong thi bo trang thai mo de menu hien binh thuong
+    window.matchMedia('(min-width: 769px)').addEventListener('change', e => {
+        if (e.matches) dat(false);
+    });
+}
 
 function initScrollEffects() {
     const header = document.querySelector('.header');
