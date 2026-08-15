@@ -248,16 +248,21 @@ exports.telegramWebhook = onRequest(
             return res.status(200).send('ok'); // su kien khac -> bo qua
         }
 
-        // Luon tra 200 that nhanh, neu khong Telegram se gui lai lien tuc.
-        res.status(200).send('ok');
-
         const ownerId = TELEGRAM_OWNER_CHAT_ID.value().trim();
         const orderId = cq.data.slice(CONFIRM_PREFIX.length);
 
+        // QUAN TRONG: lam xong het viec ROI moi tra 200.
+        //
+        // Truoc day ham nay tra 200 ngay tu dau roi xu ly sau. Tren Cloud
+        // Functions v2 (chay tren Cloud Run) CPU bi cat ngay khi response da
+        // gui, nen phan viec con lai co the khong chay xong: nut tren may chu
+        // shop quay mai, hoac don duoc chot ma khach khong nhan duoc tin.
+        // Toan bo cong viec duoi day chi mat 1-3 giay, thoai mai trong han
+        // 60 giay cua Telegram.
         try {
             if (String(cq.from && cq.from.id) !== ownerId) {
                 await answerCallbackQuery(botToken, cq.id, '⛔ Bạn không có quyền duyệt đơn này.', true);
-                return;
+                return res.status(200).send('ok');
             }
 
             const result = await confirmOrder(db, orderId, cq.from.id);
@@ -265,13 +270,13 @@ exports.telegramWebhook = onRequest(
             if (!result.found) {
                 await answerCallbackQuery(botToken, cq.id,
                     `Không tìm thấy đơn ${orderId} trong hệ thống.`, true);
-                return;
+                return res.status(200).send('ok');
             }
 
             if (result.already) {
                 await answerCallbackQuery(botToken, cq.id,
                     `Đơn ${orderId} đã được xác nhận lúc ${result.order.confirmedAtText || 'trước đó'}.`, true);
-                return;
+                return res.status(200).send('ok');
             }
 
             const order = result.order;
@@ -287,10 +292,10 @@ exports.telegramWebhook = onRequest(
                 customerMsg = sent.ok
                     ? 'Đã xác nhận và nhắn báo khách thành công!'
                     : `Đã xác nhận, nhưng KHÔNG nhắn được cho khách (${sent.description || 'lỗi'}). Hãy gọi điện.`;
-                markCustomerNotified(db, orderId, !!sent.ok, sent.description || null)
+                await markCustomerNotified(db, orderId, !!sent.ok, sent.description || null)
                     .catch(err => logger.error('Khong ghi duoc trang thai bao khach', err));
             } else {
-                markCustomerNotified(db, orderId, false, 'khach dat tu web')
+                await markCustomerNotified(db, orderId, false, 'khach dat tu web')
                     .catch(err => logger.error('Khong ghi duoc trang thai bao khach', err));
             }
 
@@ -313,6 +318,9 @@ exports.telegramWebhook = onRequest(
                     'Có lỗi khi xác nhận đơn. Vui lòng thử lại.', true);
             } catch (e) { /* het cach */ }
         }
+
+        // Luon bao 200 du ket qua the nao, de Telegram khong gui lai lien tuc.
+        return res.status(200).send('ok');
     }
 );
 

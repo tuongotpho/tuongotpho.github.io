@@ -62,23 +62,24 @@ function bamNutXacNhan(orderId, { secret = SECRET, fromId = OWNER_ID } = {}) {
 }
 
 const doc = id => db.collection('orders').doc(id).get().then(s => s.data());
-const doi = ms => new Promise(r => setTimeout(r, ms));
 
 (async () => {
     console.log('\n=== 1. Chu shop bam nut xac nhan ===');
     const id1 = await taoDon();
     const r1 = await bamNutXacNhan(id1);
-    check('webhook tra 200 ngay lap tuc', r1.status === 200, r1.status);
-    await doi(2500);
+    check('webhook tra 200', r1.status === 200, r1.status);
+
+    // Khong ngu cho. Cong viec PHAI xong truoc khi tra 200, neu khong tren
+    // Cloud Run CPU bi cat va phan viec con lai co the khong bao gio chay.
     const d1 = await doc(id1);
-    check('don chuyen sang trang thai confirmed', d1.status === 'confirmed', d1.status);
+    check('don da confirmed NGAY khi webhook tra ve', d1.status === 'confirmed', d1.status);
     check('co ghi lai thoi diem xac nhan', !!d1.confirmedAtText, d1.confirmedAtText);
     check('co ghi lai nguoi xac nhan', d1.confirmedBy === String(OWNER_ID), d1.confirmedBy);
+    check('co ghi nhan ket qua bao khach', d1.customerNotified !== undefined, d1.customerNotified);
 
     console.log('\n=== 2. Bam lai lan 2 (khong duoc bao khach 2 lan) ===');
     const mocCu = d1.confirmedAtText;
     await bamNutXacNhan(id1);
-    await doi(2000);
     const d2 = await doc(id1);
     check('thoi diem xac nhan KHONG bi ghi de', d2.confirmedAtText === mocCu, d2.confirmedAtText);
 
@@ -86,13 +87,11 @@ const doi = ms => new Promise(r => setTimeout(r, ms));
     const id3 = await taoDon();
     const r3 = await bamNutXacNhan(id3, { secret: 'sai-be-bet' });
     check('tra ve 403', r3.status === 403, r3.status);
-    await doi(1500);
     check('don KHONG bi xac nhan', (await doc(id3)).status === 'new', (await doc(id3)).status);
 
     console.log('\n=== 4. Nguoi la bam nut (secret dung nhung khong phai chu shop) ===');
     const id4 = await taoDon();
     await bamNutXacNhan(id4, { fromId: 99999999 });
-    await doi(2000);
     check('don KHONG bi xac nhan', (await doc(id4)).status === 'new', (await doc(id4)).status);
 
     console.log('\n=== 5. Ma don khong ton tai ===');
