@@ -7,23 +7,28 @@
     <meta name="google-site-verification" content="H-1uGYQBFn_CIx4O_Q3IoRNPm06vMAwyE72Rwy6Dzlk">
     <title>Bộ Sưu Tập Ảnh - Tương Ớt Siêu Cay Bông Ớt | Sản Phẩm & Món Ăn</title>
     <meta name="description"
-        content="Bộ sưu tập ảnh tương ớt siêu cay nguyên chất Bông Ớt. Xem ảnh sản phẩm thực tế, món ăn kèm tương ớt và quy trình sản xuất thủ công.">
+        content="Bộ sưu tập ảnh tương ớt siêu cay nguyên chất Bông Ớt. Xem ảnh sản phẩm thực tế, món ăn kèm tương ớt và quy trình sản xuất thủ công gia truyền Hà Nội.">
     <meta name="keywords" content="ảnh tương ớt, tương ớt nguyên chất, sản phẩm tương ớt, Bông Ớt, tương ớt siêu cay">
+    
+    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://tuongotcay.github.io/gallery.html">
+    <meta property="og:url" content="https://tuongotsieucay.web.app/gallery.html">
     <meta property="og:title" content="Bộ Sưu Tập Ảnh - Tương Ớt Siêu Cay Bông Ớt">
     <meta property="og:description"
-        content="Xem ảnh sản phẩm thực tế, món ăn kèm tương ớt và quy trình sản xuất thủ công.">
-    <meta property="og:image" content="https://cdn-icons-png.flaticon.com/512/5495/5495490.png">
-    <link rel="canonical" href="https://tuongotcay.github.io/gallery.html">
+        content="Xem ảnh sản phẩm thực tế, món ăn kèm tương ớt và quy trình sản xuất thủ công gia truyền Hà Nội.">
+    <meta property="og:image" content="https://tuongotsieucay.web.app/images/og-image-tosc.jpeg">
+    <link rel="canonical" href="https://tuongotsieucay.web.app/gallery.html">
+    
+    <!-- CSS & Favicon -->
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/5495/5495490.png" type="image/png">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Dancing+Script:wght@700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-6JHML7VMEB"></script>
     <script>window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments); } gtag('js', new Date()); gtag('config', 'G-6JHML7VMEB');</script>
+    
     <style>
         /* ===== Gallery Page Styles ===== */
         .gallery-page {
@@ -125,7 +130,7 @@
             left: 0;
             right: 0;
             padding: 20px;
-            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.85));
             transform: translateY(100%);
             transition: transform 0.3s ease;
         }
@@ -141,36 +146,9 @@
         }
 
         .overlay span {
-            color: rgba(255, 255, 255, 0.7);
+            color: #ffaa88;
             font-size: 0.85rem;
-        }
-
-        /* Placeholder khi chưa có ảnh */
-        .gallery-placeholder {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 80px 20px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 20px;
-            border: 2px dashed rgba(255, 255, 255, 0.15);
-        }
-
-        .gallery-placeholder i {
-            font-size: 4rem;
-            color: rgba(255, 87, 51, 0.4);
-            margin-bottom: 20px;
-        }
-
-        .gallery-placeholder h3 {
-            color: #fff;
-            font-size: 1.5rem;
-            margin-bottom: 10px;
-        }
-
-        .gallery-placeholder p {
-            color: rgba(255, 255, 255, 0.6);
-            max-width: 400px;
-            margin: 0 auto;
+            font-weight: 500;
         }
 
         /* Lightbox */
@@ -321,8 +299,7 @@
     <header class="header">
         <nav class="navbar">
             <div class="nav-brand">
-                <a href="index.html"
-                    style="text-decoration:none;color:inherit;display:flex;align-items:center;gap:10px;">
+                <a href="index.html" style="text-decoration:none;color:inherit;display:flex;align-items:center;gap:10px;">
                     <i class="fas fa-pepper-hot"></i>
                     <span>Tương Ớt Siêu Cay</span>
                 </a>
@@ -371,9 +348,9 @@
     <div class="gallery-container">
         <div class="gallery-grid" id="galleryGrid">
 
+            <!-- Category: Sản Phẩm (Products) -->
             <div class="gallery-item" data-category="products">
-                <img src="images/gallery/TOSC-1.jpg"
-                    alt="Tương ớt siêu cay nguyên chất Bông Ớt - Hũ thủy tinh với ớt tươi trên nền gỗ" loading="lazy">
+                <img src="images/TOSC-1.jpg" alt="Tương ớt siêu cay nguyên chất Bông Ớt" loading="lazy">
                 <div class="overlay">
                     <h4>Tương Ớt Siêu Cay Nguyên Chất</h4>
                     <span>Sản phẩm</span>
@@ -381,8 +358,7 @@
             </div>
 
             <div class="gallery-item" data-category="products">
-                <img src="images/gallery/TOSC-2.jpg" alt="Chai tương ớt Bông Ớt siêu cay nguyên chất - Close-up nền tối"
-                    loading="lazy">
+                <img src="images/TOSC-2.jpg" alt="Chai tương ớt Bông Ớt siêu cay nguyên chất" loading="lazy">
                 <div class="overlay">
                     <h4>Bông Ớt - Siêu Cay Nguyên Chất</h4>
                     <span>Sản phẩm</span>
@@ -390,8 +366,7 @@
             </div>
 
             <div class="gallery-item" data-category="products">
-                <img src="images/gallery/TOSC-3.jpg"
-                    alt="Chai tương ớt Bông Ớt bên cạnh quả ớt tươi - Phong cách tối giản" loading="lazy">
+                <img src="images/TOSC-3.jpg" alt="Chai tương ớt Bông Ớt bên cạnh quả ớt tươi" loading="lazy">
                 <div class="overlay">
                     <h4>Tương Ớt & Ớt Tươi</h4>
                     <span>Sản phẩm</span>
@@ -399,8 +374,7 @@
             </div>
 
             <div class="gallery-item" data-category="products">
-                <img src="images/gallery/TOSC-4.png" alt="Chai tương ớt nguyên chất Bông Ớt trên đế gỗ - Nền trắng"
-                    loading="lazy">
+                <img src="images/TOSC-4.png" alt="Chai tương ớt nguyên chất Bông Ớt trên đế gỗ" loading="lazy">
                 <div class="overlay">
                     <h4>Tương Ớt Nguyên Chất Bông Ớt</h4>
                     <span>Sản phẩm</span>
@@ -408,8 +382,7 @@
             </div>
 
             <div class="gallery-item" data-category="products">
-                <img src="images/gallery/TOSC-5.jpg"
-                    alt="Chai tương ớt Bông Ớt bên cửa sổ với ớt tươi - Ánh sáng tự nhiên" loading="lazy">
+                <img src="images/TOSC-5.jpg" alt="Chai tương ớt Bông Ớt bên cửa sổ với ớt tươi" loading="lazy">
                 <div class="overlay">
                     <h4>Bông Ớt - Ánh Sáng Tự Nhiên</h4>
                     <span>Sản phẩm</span>
@@ -417,8 +390,7 @@
             </div>
 
             <div class="gallery-item" data-category="products">
-                <img src="images/gallery/TOSC-6.jpg" alt="Tương ớt Bông Ớt siêu cay - Chai mở nắp với ớt khô và ớt tươi"
-                    loading="lazy">
+                <img src="images/TOSC-6.jpg" alt="Tương ớt Bông Ớt siêu cay mở nắp" loading="lazy">
                 <div class="overlay">
                     <h4>Siêu Cay - Mở Nắp Là Cay!</h4>
                     <span>Sản phẩm</span>
@@ -426,17 +398,15 @@
             </div>
 
             <div class="gallery-item" data-category="products">
-                <img src="images/gallery/TOSC-7.jpg" alt="Chai tương ớt Bông Ớt mở nắp với ớt tươi xung quanh"
-                    loading="lazy">
+                <img src="images/TOSC-7.jpg" alt="Chai tương ớt Bông Ớt với ớt tươi xung quanh" loading="lazy">
                 <div class="overlay">
-                    <h4>Bông Ớt - 100% Ớt Tươi</h4>
+                    <h4>Bông Ớt - Ớt Tươi Lên Men</h4>
                     <span>Sản phẩm</span>
                 </div>
             </div>
 
             <div class="gallery-item" data-category="products">
-                <img src="images/gallery/TOSC-8.jpg" alt="Chai tương ớt Bông Ớt giữa vòng tròn ớt tươi và ngọn lửa"
-                    loading="lazy">
+                <img src="images/TOSC-8.jpg" alt="Chai tương ớt Bông Ớt giữa vòng tròn ớt tươi" loading="lazy">
                 <div class="overlay">
                     <h4>Bông Ớt - Siêu Cay Rực Lửa</h4>
                     <span>Sản phẩm</span>
@@ -444,8 +414,7 @@
             </div>
 
             <div class="gallery-item" data-category="products">
-                <img src="images/gallery/TOSC-9.jpg"
-                    alt="Hũ tương ớt Bông Ớt thủ công với muỗng gỗ - Không tỏi, không cà chua" loading="lazy">
+                <img src="images/TOSC-9.jpg" alt="Hũ tương ớt Bông Ớt thủ công với muỗng gỗ" loading="lazy">
                 <div class="overlay">
                     <h4>Thủ Công - Không Tỏi, Không Cà Chua</h4>
                     <span>Sản phẩm</span>
@@ -453,8 +422,7 @@
             </div>
 
             <div class="gallery-item" data-category="products">
-                <img src="images/gallery/TOSC-10.jpg" alt="Chai tương ớt Bông Ớt trong căn bếp Việt truyền thống"
-                    loading="lazy">
+                <img src="images/TOSC-10.jpg" alt="Chai tương ớt Bông Ớt trong căn bếp Việt" loading="lazy">
                 <div class="overlay">
                     <h4>Bông Ớt Trong Bếp Việt</h4>
                     <span>Sản phẩm</span>
@@ -462,8 +430,7 @@
             </div>
 
             <div class="gallery-item" data-category="products">
-                <img src="images/gallery/TOSC-11.jpg" alt="Hũ tương ớt Bông Ớt nắp gỗ trên kệ bếp ấm cúng"
-                    loading="lazy">
+                <img src="images/TOSC-11.jpg" alt="Hũ tương ớt Bông Ớt nắp gỗ" loading="lazy">
                 <div class="overlay">
                     <h4>Nguyên Chất - Nắp Gỗ Thủ Công</h4>
                     <span>Sản phẩm</span>
@@ -471,8 +438,7 @@
             </div>
 
             <div class="gallery-item" data-category="products">
-                <img src="images/gallery/TOSC-12.jpg" alt="Hũ tương ớt Bông Ớt với ớt tươi dưới ánh hoàng hôn"
-                    loading="lazy">
+                <img src="images/TOSC-12.jpg" alt="Hũ tương ớt Bông Ớt dưới ánh hoàng hôn" loading="lazy">
                 <div class="overlay">
                     <h4>Bông Ớt - Hoàng Hôn Rực Cay</h4>
                     <span>Sản phẩm</span>
@@ -480,26 +446,23 @@
             </div>
 
             <div class="gallery-item" data-category="products">
-                <img src="images/gallery/TOSC-13.jpg"
-                    alt="Hũ tương ớt Bông Ớt pure chili sauce với muỗng gỗ trên vải linen" loading="lazy">
+                <img src="images/TOSC-13.jpg" alt="Hũ tương ớt Bông Ớt trên vải linen" loading="lazy">
                 <div class="overlay">
-                    <h4>Pure Chili Sauce - Bông Ớt</h4>
+                    <h4>Bông Ớt Nguyên Chất</h4>
                     <span>Sản phẩm</span>
                 </div>
             </div>
 
             <div class="gallery-item" data-category="products">
-                <img src="images/gallery/TOSC-14.jpg" alt="Hũ tương ớt cay nguyên chất Bông Ớt với muỗng gỗ và gia vị"
-                    loading="lazy">
+                <img src="images/TOSC-14.jpg" alt="Hũ tương ớt cay nguyên chất Bông Ớt" loading="lazy">
                 <div class="overlay">
-                    <h4>Không Tỏi, Không Cà Chua, Không Bảo Quản</h4>
+                    <h4>Không Tỏi, Không Cà Chua</h4>
                     <span>Sản phẩm</span>
                 </div>
             </div>
 
             <div class="gallery-item" data-category="products">
-                <img src="images/gallery/TOSC-15.jpg" alt="Hũ tương ớt Bông Ớt trên mặt đá cẩm thạch trong bếp hiện đại"
-                    loading="lazy">
+                <img src="images/TOSC-15.jpg" alt="Hũ tương ớt Bông Ớt trên mặt đá" loading="lazy">
                 <div class="overlay">
                     <h4>Bông Ớt - Bếp Hiện Đại</h4>
                     <span>Sản phẩm</span>
@@ -507,8 +470,7 @@
             </div>
 
             <div class="gallery-item" data-category="products">
-                <img src="images/gallery/TOSC-16.jpg" alt="Hũ tương ớt Bông Ớt trên đĩa trắng trong bếp ấm áp"
-                    loading="lazy">
+                <img src="images/TOSC-16.jpg" alt="Hũ tương ớt Bông Ớt trên đĩa trắng" loading="lazy">
                 <div class="overlay">
                     <h4>Nguyên Chất - Bếp Ấm Áp</h4>
                     <span>Sản phẩm</span>
@@ -516,8 +478,7 @@
             </div>
 
             <div class="gallery-item" data-category="products">
-                <img src="images/gallery/TOSC-17.jpg" alt="Chai tương ớt Bông Ớt mở nắp với ớt tươi bên cửa sổ"
-                    loading="lazy">
+                <img src="images/TOSC-17.jpg" alt="Chai tương ớt Bông Ớt mở nắp bên cửa sổ" loading="lazy">
                 <div class="overlay">
                     <h4>Bông Ớt - Tươi Mỗi Ngày</h4>
                     <span>Sản phẩm</span>
@@ -525,73 +486,95 @@
             </div>
 
             <div class="gallery-item" data-category="products">
-                <img src="images/gallery/TOSC-18.jpg" alt="Hũ tương ớt Bông Ớt pure chili sauce với muỗng gỗ nhỏ"
-                    loading="lazy">
+                <img src="images/TOSC-18.jpg" alt="Hũ tương ớt Bông Ớt với muỗng gỗ nhỏ" loading="lazy">
                 <div class="overlay">
-                    <h4>Không Tỏi, Không Cà Chua, Không Bảo Quản</h4>
+                    <h4>Bông Ớt Thủ Công</h4>
                     <span>Sản phẩm</span>
                 </div>
             </div>
 
             <div class="gallery-item" data-category="products">
-                <img src="images/gallery/TOSC-19.jpg"
-                    alt="Hũ tương ớt Bông Ớt mở nắp với ớt tươi trên bàn gỗ - 8 ngõ 135 Núi Trúc" loading="lazy">
+                <img src="images/TOSC-19.jpg" alt="Hũ tương ớt Bông Ớt mở nắp trên bàn gỗ" loading="lazy">
                 <div class="overlay">
-                    <h4>Bông Ớt - 8 Ngõ 135 Núi Trúc</h4>
+                    <h4>Bông Ớt - Số 8 Ngõ 135 Núi Trúc</h4>
                     <span>Sản phẩm</span>
                 </div>
             </div>
 
-
-
+            <!-- Category: Món Ăn (Food) -->
             <div class="gallery-item" data-category="food">
-                <img src="images/gallery/new_logo.png" alt="Tương ớt Bông Ớt - new logo" loading="lazy">
+                <img src="images/ad_pho_tuong_ot.jpg" alt="Phở bò tái lăn nóng hổi cùng tương ớt Bông Ớt gia truyền" loading="lazy">
                 <div class="overlay">
-                    <h4>new logo</h4>
+                    <h4>Phở Bò Hà Nội & Tương Ớt Bông Ớt</h4>
                     <span>Món ăn</span>
                 </div>
             </div>
 
             <div class="gallery-item" data-category="food">
-                <img src="images/gallery/f35a895bba2cabf6198fcb4d86b96e00.jfif" alt="Tương ớt Bông Ớt - f35a895bba2cabf6198fcb4d86b96e00" loading="lazy">
+                <img src="images/ad_bbq_tuong_ot.jpg" alt="Mâm đồ nướng BBQ xèo xèo chấm tương ớt Bông Ớt cay nồng" loading="lazy">
                 <div class="overlay">
-                    <h4>f35a895bba2cabf6198fcb4d86b96e00</h4>
+                    <h4>Đồ Nướng BBQ Chấm Tương Ớt</h4>
                     <span>Món ăn</span>
                 </div>
             </div>
 
             <div class="gallery-item" data-category="food">
-                <img src="images/gallery/1 (2).jpg" alt="Tương ớt Bông Ớt - 1 (2)" loading="lazy">
+                <img src="images/ad_bun_ca_tuong_ot.jpg" alt="Bún cá chiên giòn rụm chấm tương ớt cay nồng đậm đà" loading="lazy">
                 <div class="overlay">
-                    <h4>1 (2)</h4>
+                    <h4>Bún Cá Cay Phố Cổ</h4>
                     <span>Món ăn</span>
                 </div>
             </div>
 
             <div class="gallery-item" data-category="food">
-                <img src="images/gallery/insta (3).jpg" alt="Tương ớt Bông Ớt - insta (3)" loading="lazy">
+                <img src="images/insta (1).jpg" alt="Món ngon phố cổ thưởng thức cùng tương ớt cay nguyên chất" loading="lazy">
                 <div class="overlay">
-                    <h4>insta (3)</h4>
+                    <h4>Món Ngon Phố Cổ</h4>
                     <span>Món ăn</span>
                 </div>
             </div>
 
             <div class="gallery-item" data-category="food">
-                <img src="images/gallery/insta (1).jpg" alt="Tương ớt Bông Ớt - insta (1)" loading="lazy">
+                <img src="images/insta (3).jpg" alt="Thưởng thức vị cay gia truyền trong từng bữa ăn" loading="lazy">
                 <div class="overlay">
-                    <h4>insta (1)</h4>
+                    <h4>Thưởng Thức Vị Cay Gia Truyền</h4>
                     <span>Món ăn</span>
+                </div>
+            </div>
+
+            <!-- Category: Quy Trình (Process) -->
+            <div class="gallery-item" data-category="process">
+                <img src="images/ad_organic_chili.jpg" alt="Ớt tươi chín đỏ tuyển chọn và muối biển lên men tự nhiên" loading="lazy">
+                <div class="overlay">
+                    <h4>Ớt Tươi & Ủ Lên Men Tự Nhiên</h4>
+                    <span>Quy trình</span>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="process">
+                <img src="images/ad_can5l_workshop.jpg" alt="Xưởng sản xuất tương ớt gia truyền Bông Ớt và can 5L quán phở" loading="lazy">
+                <div class="overlay">
+                    <h4>Xưởng Sản Xuất & Can 5L Quán Phở</h4>
+                    <span>Quy trình</span>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="process">
+                <img src="images/og-image-tosc.jpeg" alt="Quy trình nấu tương ớt thủ công gia truyền Bông Ớt" loading="lazy">
+                <div class="overlay">
+                    <h4>Nấu Thủ Công Gia Truyền Hà Nội</h4>
+                    <span>Quy trình</span>
                 </div>
             </div>
 
         </div>
     </div>
 
-    <!-- CTA -->
+    <!-- CTA Section -->
     <section class="gallery-cta">
         <div style="max-width:800px;margin:0 auto;">
             <h2><i class="fas fa-fire"></i> Muốn thử ngay tương ớt siêu cay?</h2>
-            <p>100% ớt tươi nguyên chất, lên men tự nhiên, không chất bảo quản</p>
+            <p>Ớt tươi nguyên chất, lên men tự nhiên, không chất bảo quản</p>
             <div class="cta-buttons">
                 <a href="index.html#products" class="btn btn-primary" style="text-decoration:none;">
                     <i class="fas fa-shopping-cart"></i> Xem Sản Phẩm
@@ -615,8 +598,7 @@
                         <i class="fas fa-pepper-hot"></i>
                         <span>Tương Ớt Siêu Cay</span>
                     </div>
-                    <p class="footer-description">Mang đến những sản phẩm tương ớt chất lượng cao với vị cay thuần khiết
-                        từ thiên nhiên.</p>
+                    <p class="footer-description">Mang đến những sản phẩm tương ớt chất lượng cao với vị cay thuần khiết từ thiên nhiên.</p>
                 </div>
                 <div class="footer-section">
                     <h4 class="footer-title">Liên Kết Nhanh</h4>
@@ -645,11 +627,9 @@
     <!-- Lightbox -->
     <div class="lightbox" id="lightbox">
         <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
-        <button class="lightbox-nav lightbox-prev" onclick="navigateLightbox(-1)"><i
-                class="fas fa-chevron-left"></i></button>
+        <button class="lightbox-nav lightbox-prev" onclick="navigateLightbox(-1)"><i class="fas fa-chevron-left"></i></button>
         <img id="lightboxImg" src="" alt="">
-        <button class="lightbox-nav lightbox-next" onclick="navigateLightbox(1)"><i
-                class="fas fa-chevron-right"></i></button>
+        <button class="lightbox-nav lightbox-next" onclick="navigateLightbox(1)"><i class="fas fa-chevron-right"></i></button>
         <div class="lightbox-caption" id="lightboxCaption"></div>
     </div>
 
@@ -696,6 +676,7 @@
 
         function openLightbox() {
             const item = visibleItems[currentIndex];
+            if (!item) return;
             const img = item.querySelector('img');
             const caption = item.querySelector('.overlay h4');
             document.getElementById('lightboxImg').src = img.src;
@@ -710,6 +691,7 @@
         }
 
         function navigateLightbox(dir) {
+            if (!visibleItems.length) return;
             currentIndex = (currentIndex + dir + visibleItems.length) % visibleItems.length;
             openLightbox();
         }
