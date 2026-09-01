@@ -93,13 +93,48 @@ async function createPost({ message, link, imagePath, scheduledTime }) {
     }
 
     console.log('🎉 ĐĂNG BÀI THÀNH CÔNG!');
-    console.log(`🆔 Mã bài viết (Post ID): ${result.id}`);
-    console.log(`🔗 Xem bài viết: https://facebook.com/${result.id}`);
+/**
+ * 2b. Đăng bài viết kèm Ảnh trực tiếp (Photo Post tràn viền cực đẹp)
+ */
+async function createPhotoPost({ caption, imageUrl, imagePath }) {
+  console.log('🚀 Đang chuẩn bị đăng bài kèm ảnh lên Fanpage...');
+
+  const params = new URLSearchParams();
+  params.append('access_token', config.access_token);
+  params.append('caption', caption);
+
+  if (imageUrl) {
+    params.append('url', imageUrl);
+  } else if (imagePath) {
+    // Nếu truyền ảnh local, dùng URL online tương ứng hoặc tải lên
+    const basename = path.basename(imagePath);
+    params.append('url', `https://tuongotsieucay.web.app/images/${basename}`);
+  } else {
+    // Mặc định dùng ảnh banner đẹp của shop
+    params.append('url', 'https://tuongotsieucay.web.app/images/tuong-ot-bong-ot-banner.jpg');
+  }
+
+  try {
+    const res = await fetch(`${API_BASE}/${config.page_id}/photos`, {
+      method: 'POST',
+      body: params
+    });
+    const result = await res.json();
+
+    if (result.error) {
+      console.error('❌ Đăng bài kèm ảnh thất bại:', result.error.message);
+      return result;
+    }
+
+    console.log('🎉 ĐĂNG BÀI KÈM ẢNH BÌA THÀNH CÔNG!');
+    console.log(`🆔 Mã bài viết (Post ID): ${result.post_id || result.id}`);
+    console.log(`🔗 Xem bài viết: https://facebook.com/${result.post_id || result.id}`);
     return result;
   } catch (err) {
     console.error('❌ Lỗi kết nối mạng:', err);
   }
 }
+
 
 /**
  * 3. Tự động chuyển bài viết Blog SEO thành Post Fanpage
@@ -166,6 +201,19 @@ async function main() {
       const link = linkIndex !== -1 ? args[linkIndex + 1] : null;
       await createPost({ message, link });
       break;
+
+    case 'post-photo':
+      const capIndex = args.indexOf('--caption') !== -1 ? args.indexOf('--caption') : args.indexOf('--message');
+      const imgIndex = args.indexOf('--image');
+      if (capIndex === -1 || !args[capIndex + 1]) {
+        console.log('Cách dùng: node facebook-manager.js post-photo --caption "Nội dung" [--image "ten_anh.jpg"]');
+        return;
+      }
+      const caption = args[capIndex + 1];
+      const img = imgIndex !== -1 ? args[imgIndex + 1] : null;
+      await createPhotoPost({ caption, imageUrl: img && img.startsWith('http') ? img : null, imagePath: img && !img.startsWith('http') ? img : null });
+      break;
+
 
     case 'post-blog':
       const blogName = args[1];
