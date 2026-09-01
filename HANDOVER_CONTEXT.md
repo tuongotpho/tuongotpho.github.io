@@ -19,11 +19,14 @@
 Mã nguồn được quản lý tập trung duy nhất tại repository Master:
 👉 **`tuongotpho/tuongotpho.github.io`** (nhánh `main`)
 
-Khi có commit mới trên `tuongotpho`, GitHub Actions (`.github/workflows/deploy.yml`) sẽ tự động xuất bản lên cả 4 website:
-1. **GitHub Pages 1:** `https://tuongotpho.github.io/`
-2. **GitHub Pages 2:** `https://tuongotcay.github.io/` (Tự động sync qua PAT Token)
-3. **Firebase Hosting 1:** `https://tuongot-sieucay.web.app` (Project: `tuongot-sieucay`)
-4. **Firebase Hosting 2:** `https://tuongotsieucay.web.app`
+- 🌐 **ĐỊA CHỈ WEB CHÍNH THỨC:** 👉 **`https://tuongotsieucay.web.app/`**
+- 🛒 **TRANG ĐẶT HÀNG NHANH 30 GIÂY:** 👉 **`https://tuongotsieucay.web.app/app.html`**
+- Hệ thống mạng lưới 4 website đồng bộ tự động qua GitHub Actions (`.github/workflows/deploy.yml`):
+  1. **Website Chính thức (Firebase):** `https://tuongotsieucay.web.app/`
+  2. **Trang Đặt Mua Trực Tuyến:** `https://tuongotsieucay.web.app/app.html`
+  3. **Firebase Hosting 2:** `https://tuongot-sieucay.web.app` (Project: `tuongot-sieucay`)
+  4. **GitHub Pages 1:** `https://tuongotpho.github.io/`
+  5. **GitHub Pages 2:** `https://tuongotcay.github.io/` (Tự động sync qua PAT Token)
 
 ---
 
@@ -86,7 +89,16 @@ Chi tiết vận hành, cách đổi token và cách chạy thử: xem `function
 
 ---
 
-## 6. 🔐 SECRETS TRÊN GITHUB ACTIONS
-Đã cấu hình tại `tuongotpho/tuongotpho.github.io` ➔ Settings ➔ Secrets:
-- `PAT_TOKEN`: Token quyền `repo` để đẩy code sang `tuongotcay.github.io`.
-- `FIREBASE_SERVICE_ACCOUNT_TUONGOT_SIECAY`: Private Key JSON triển khai Firebase Hosting.
+
+---
+
+## 7. 📘 FANPAGE FACEBOOK & CÔNG CỤ TỰ ĐỘNG ĐĂNG BÀI
+- **Tên Fanpage:** `Tương ớt Cay Nguyên chất Bông Ớt`
+- **Page ID:** `1128561193950526`
+- **Link Fanpage:** `https://www.facebook.com/1128561193950526` (hoặc `tuongotcaynguyenchatbongot`)
+- **Công cụ tự động hóa:** `facebook-manager.js` (quản lý trạng thái, đăng bài tự động, đăng tự động từ 13 bài Blog SEO).
+  - Kiểm tra trạng thái Fanpage: `node facebook-manager.js status`
+  - Đăng bài viết tức thì: `node facebook-manager.js post --message "..." [--link "..."]`
+  - Đăng bài viết từ Blog: `node facebook-manager.js post-blog <ten-bai-viet>`
+- **Bảo mật:** Token lưu tại `fb-config.json` (đã thêm vào `.gitignore`, không commit lên GitHub công khai).
+
