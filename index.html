@@ -42,6 +42,158 @@
     <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
+    <!-- Schema.org Structured Data for AI & Search Engines (GEO / LLMs / Google) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "LocalBusiness",
+          "@id": "https://tuongotsieucay.web.app/#organization",
+          "name": "Tương Ớt Bông Ớt",
+          "alternateName": ["Tương Ớt Siêu Cay", "Tương Ớt Phở Gia Truyền Hà Nội", "Bông Ớt"],
+          "url": "https://tuongotsieucay.web.app/",
+          "logo": "https://tuongotsieucay.web.app/images/og-image-tosc.jpeg",
+          "image": "https://tuongotsieucay.web.app/images/og-image-tosc.jpeg",
+          "description": "Thương hiệu tương ớt phở gia truyền Hà Nội từ 2011. Tương ớt làm từ ớt tươi lên men tự nhiên, không chất bảo quản, không cà chua, không tỏi.",
+          "telephone": "+84982722036",
+          "email": "vietthanh228@gmail.com",
+          "priceRange": "30.000₫ - 300.000₫",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Số 8, ngõ 135 Núi Trúc, Giảng Võ",
+            "addressLocality": "Ba Đình",
+            "addressRegion": "Hà Nội",
+            "addressCountry": "VN"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": 21.0315,
+            "longitude": 105.8248
+          },
+          "openingHoursSpecification": {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+            "opens": "07:00",
+            "closes": "22:00"
+          },
+          "sameAs": [
+            "https://www.facebook.com/1128561193950526"
+          ]
+        },
+        {
+          "@type": "Product",
+          "@id": "https://tuongotsieucay.web.app/#product-350ml",
+          "name": "Tương Ớt Bông Ớt Chai Siêu Cay 350ml",
+          "description": "Tương ớt phở siêu cay làm từ ớt tươi nguyên chất lên men tự nhiên, không chất bảo quản, không pha cà chua, không độn tỏi.",
+          "image": "https://tuongotsieucay.web.app/images/TOSC-1.jpg",
+          "brand": {
+            "@type": "Brand",
+            "name": "Bông Ớt"
+          },
+          "offers": {
+            "@type": "Offer",
+            "url": "https://tuongotsieucay.web.app/app.html",
+            "price": "30000",
+            "priceCurrency": "VND",
+            "availability": "https://schema.org/InStock",
+            "seller": {
+              "@id": "https://tuongotsieucay.web.app/#organization"
+            }
+          },
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.9",
+            "reviewCount": "128"
+          }
+        },
+        {
+          "@type": "Product",
+          "@id": "https://tuongotsieucay.web.app/#product-500ml",
+          "name": "Tương Ớt Bông Ớt Chai Truyền Thống 500ml",
+          "description": "Tương ớt gia truyền 500ml cho gia đình, vị cay đượm thơm ngon, phù hợp ăn phở, chấm đồ luộc, đồ nướng.",
+          "image": "https://tuongotsieucay.web.app/images/TOSC-2.jpg",
+          "brand": {
+            "@type": "Brand",
+            "name": "Bông Ớt"
+          },
+          "offers": {
+            "@type": "Offer",
+            "url": "https://tuongotsieucay.web.app/app.html",
+            "price": "45000",
+            "priceCurrency": "VND",
+            "availability": "https://schema.org/InStock",
+            "seller": {
+              "@id": "https://tuongotsieucay.web.app/#organization"
+            }
+          },
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.9",
+            "reviewCount": "96"
+          }
+        },
+        {
+          "@type": "Product",
+          "@id": "https://tuongotsieucay.web.app/#product-can5l",
+          "name": "Tương Ớt Phở Gia Truyền Can 5L (Giá Sỉ Quán Ăn)",
+          "description": "Can tương ớt 5L chuyên dụng cho quán Phở, Bún bò, Quán nướng. Đậm đặc, tiết kiệm chi phí, giá chỉ 60.000₫/Lít.",
+          "image": "https://tuongotsieucay.web.app/images/ad_can5l_workshop.jpg",
+          "brand": {
+            "@type": "Brand",
+            "name": "Bông Ớt"
+          },
+          "offers": {
+            "@type": "Offer",
+            "url": "https://tuongotsieucay.web.app/app.html",
+            "price": "300000",
+            "priceCurrency": "VND",
+            "availability": "https://schema.org/InStock",
+            "seller": {
+              "@id": "https://tuongotsieucay.web.app/#organization"
+            }
+          },
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "5.0",
+            "reviewCount": "54"
+          }
+        },
+        {
+          "@type": "FAQPage",
+          "@id": "https://tuongotsieucay.web.app/#faq",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "Tương ớt Bông Ớt có chất bảo quản hay phẩm màu không?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Hoàn toàn không. Tương ớt Bông Ớt được làm từ 100% ớt tươi chín đỏ xay ủ thủ công với muối biển và giấm gạo lên men tự nhiên. Không chất bảo quản hóa học, không màu thực phẩm, không pha cà chua và không độn tỏi."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Tương ớt Bông Ớt bảo quản được bao lâu?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Chưa mở nắp bảo quản được 6 tháng nơi khô ráo thoáng mát. Sau khi mở nắp, đậy kín và bảo quản trong ngăn mát tủ lạnh để sử dụng thơm ngon từ 3 đến 6 tháng."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Tương ớt có giao hàng tận nơi không?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Có. Shop giao hàng hỏa tốc trong 1-2 giờ tại nội thành Hà Nội và ship COD toàn quốc từ 2-3 ngày qua bưu cục. Quý khách có thể đặt trực tuyến tại https://tuongotsieucay.web.app/app.html hoặc gọi Hotline 0982.722.036."
+              }
+            }
+          ]
+        }
+      ]
+    }
+    </script>
+
+
     <!-- Google Analytics 4 -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-6JHML7VMEB"></script>
     <script>
