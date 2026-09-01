@@ -111,7 +111,7 @@ async function createPhotoPost({ caption, imageUrl, imagePath }) {
     params.append('url', `https://tuongotsieucay.web.app/images/${basename}`);
   } else {
     // Mặc định dùng ảnh banner đẹp của shop
-    params.append('url', 'https://tuongotsieucay.web.app/images/tuong-ot-bong-ot-banner.jpg');
+    params.append('url', 'https://tuongotsieucay.web.app/images/og-image-tosc.jpeg');
   }
 
   try {
