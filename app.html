@@ -24,8 +24,9 @@
     <meta name="twitter:description" content="Đặt mua tương ớt phở nguyên chất gia truyền Hà Nội trực tiếp trong 30 giây.">
     <meta name="twitter:image" content="https://tuongotsieucay.web.app/images/og-image-tosc.jpeg">
 
-    <!-- Telegram WebApp SDK -->
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/5495/5495490.png" type="image/png">
 
+    <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <!-- Google Fonts & FontAwesome -->
@@ -62,7 +63,53 @@
             margin: 0 auto;
         }
 
+        /* Top Nav Bar / Home Button */
+        .app-top-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .nav-btn-home, .nav-btn-gallery, .nav-btn-call {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn-home {
+            background: rgba(139, 0, 0, 0.08);
+            color: #8b0000;
+            border: 1px solid rgba(139, 0, 0, 0.25);
+        }
+
+        .nav-btn-home:hover {
+            background: #8b0000;
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+        .nav-btn-call {
+            background: #e6fcf5;
+            color: #0ca678;
+            border: 1px solid rgba(12, 166, 120, 0.25);
+            margin-left: auto;
+        }
+
+        .nav-btn-call:hover {
+            background: #0ca678;
+            color: #ffffff;
+        }
+
         /* App Header */
+
         .app-header {
             text-align: center;
             padding: 16px 12px;
@@ -485,6 +532,16 @@
 </head>
 
 <body>
+    <!-- Top Action Bar (Nút Home Về Trang Chủ) -->
+    <div class="app-top-nav">
+        <a href="index.html" class="nav-btn-home" title="Về Trang Chủ">
+            <i class="fas fa-arrow-left"></i> <i class="fas fa-home"></i> Trang Chủ
+        </a>
+        <a href="tel:0982722036" class="nav-btn-call" title="Gọi Hotline Đặt Hàng">
+            <i class="fas fa-phone"></i> Hotline: 0982.722.036
+        </a>
+    </div>
+
     <!-- App Header -->
     <div class="app-header">
         <div class="app-title">
