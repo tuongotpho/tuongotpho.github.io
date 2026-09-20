@@ -93,22 +93,42 @@ async function createPost({ message, link, imagePath, scheduledTime }) {
     }
 
     console.log('🎉 ĐĂNG BÀI THÀNH CÔNG!');
+    console.log(`🆔 Mã bài viết (Post ID): ${result.id}`);
+    console.log(`🔗 Xem bài viết: https://facebook.com/${result.id}`);
+    return result;
+  } catch (err) {
+    console.error('❌ Lỗi kết nối mạng:', err);
+  }
+}
+
 /**
  * 2b. Đăng bài viết kèm Ảnh trực tiếp (Photo Post tràn viền cực đẹp)
  */
-async function createPhotoPost({ caption, imageUrl, imagePath }) {
+async function createPhotoPost({ caption, imageUrl, imagePath, scheduledTime }) {
   console.log('🚀 Đang chuẩn bị đăng bài kèm ảnh lên Fanpage...');
 
-  const params = new URLSearchParams();
+  // Dùng FormData để có thể tải file ảnh từ máy lên thẳng Facebook (không cần ảnh có trên web)
+  const params = new FormData();
   params.append('access_token', config.access_token);
   params.append('caption', caption);
 
+  if (scheduledTime) {
+    const timestamp = Math.floor(new Date(scheduledTime).getTime() / 1000);
+    params.append('published', 'false');
+    params.append('scheduled_publish_time', timestamp.toString());
+    console.log(`⏰ Lên lịch đăng vào lúc: ${new Date(scheduledTime).toLocaleString('vi-VN')}`);
+  }
+
+  const localFile = imagePath && path.resolve(__dirname, imagePath);
   if (imageUrl) {
     params.append('url', imageUrl);
+  } else if (localFile && fs.existsSync(localFile)) {
+    const ext = path.extname(localFile).toLowerCase();
+    const mime = ext === '.png' ? 'image/png' : 'image/jpeg';
+    params.append('source', new Blob([fs.readFileSync(localFile)], { type: mime }), path.basename(localFile));
   } else if (imagePath) {
-    // Nếu truyền ảnh local, dùng URL online tương ứng hoặc tải lên
-    const basename = path.basename(imagePath);
-    params.append('url', `https://tuongotsieucay.web.app/images/${basename}`);
+    // Không có file trên máy: dùng URL online tương ứng
+    params.append('url', `https://tuongotsieucay.web.app/${imagePath.split(/[\/]/).map(encodeURIComponent).join('/')}`);
   } else {
     // Mặc định dùng ảnh banner đẹp của shop
     params.append('url', 'https://tuongotsieucay.web.app/images/og-image-tosc.jpeg');
@@ -181,6 +201,59 @@ ${desc}
 }
 
 // Xử lý CLI Arguments
+/**
+ * 4. Lên lịch hàng loạt từ file JSON (content_schedule_30days.json)
+ *    - photo  -> /photos  (ảnh lấy từ https://tuongotsieucay.web.app/images/...)
+ *    - link   -> /feed    (bài kèm link blog, FB tự lấy ảnh og:image)
+ *    - video  -> bỏ qua, in ra việc cần quay và đăng tay
+ *    Ghi post_id + status ngược lại vào file để chạy lại không đăng trùng.
+ */
+async function scheduleFromFile(file, { dryRun = false, only = null } = {}) {
+  const filePath = path.resolve(__dirname, file);
+  const posts = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  const now = Date.now();
+  let ok = 0, skip = 0, fail = 0;
+
+  for (const p of posts) {
+    if (only && !only.includes(p.stt)) continue;
+    const when = new Date(p.schedule_time.replace(' ', 'T') + '+07:00'); // giờ Việt Nam
+    const tag = `#${String(p.stt).padStart(2, '0')} ${p.schedule_time} [${p.type}] ${p.title}`;
+
+    if (p.post_id) { console.log(`⏭  ${tag} — đã lên lịch (${p.post_id})`); skip++; continue; }
+    if (p.type === 'video') { console.log(`🎬 ${tag} — CẦN QUAY & ĐĂNG TAY: ${p.video_todo}`); skip++; continue; }
+    if (p.can_duyet) { console.log(`✋ ${tag} — CHỜ DUYỆT: ${p.can_duyet}`); skip++; continue; }
+    const minutesAhead = (when - now) / 60000;
+    if (minutesAhead < 15) { console.log(`⏭  ${tag} — giờ đăng đã qua/quá gần, bỏ qua`); skip++; continue; }
+    if (minutesAhead > 30 * 24 * 60) { console.log(`⏭  ${tag} — xa hơn 30 ngày, FB không nhận`); skip++; continue; }
+
+    if (dryRun) { console.log(`✅ ${tag} — sẽ lên lịch`); ok++; continue; }
+
+    let result;
+    if (p.type === 'photo') {
+      result = await createPhotoPost({ caption: p.caption, imagePath: p.image, scheduledTime: when.toISOString() });
+    } else {
+      result = await createPost({ message: p.caption, link: p.link, scheduledTime: when.toISOString() });
+    }
+    if (result && !result.error) {
+      p.post_id = result.post_id || result.id;
+      p.status = 'ĐÃ LÊN LỊCH';
+      fs.writeFileSync(filePath, JSON.stringify(posts, null, 2), 'utf8');
+      ok++;
+    } else {
+      fail++;
+    }
+  }
+  console.log(`\n📊 Kết quả: ${ok} lên lịch, ${skip} bỏ qua, ${fail} lỗi`);
+}
+
+function printPlan(file) {
+  const posts = JSON.parse(fs.readFileSync(path.resolve(__dirname, file), 'utf8'));
+  for (const p of posts) {
+    const media = p.image || p.link || '(video: quay tay)';
+    console.log(`${String(p.stt).padStart(2, '0')} | ${p.schedule_time} | ${p.type.padEnd(5)} | ${p.status || (p.can_duyet ? 'CHỜ DUYỆT' : '')} | ${p.title} | ${media}`);
+  }
+}
+
 async function main() {
   const args = process.argv.slice(2);
   const command = args[0] || 'status';
@@ -215,6 +288,19 @@ async function main() {
       break;
 
 
+    case 'schedule': {
+      const file = (args[1] && !args[1].startsWith('--')) ? args[1] : 'content_schedule_30days.json';
+      const dryRun = args.includes('--dry-run');
+      const onlyIdx = args.indexOf('--only');
+      const only = onlyIdx !== -1 ? args[onlyIdx + 1].split(',').map(Number) : null;
+      await scheduleFromFile(file, { dryRun, only });
+      break;
+    }
+
+    case 'plan':
+      printPlan((args[1] && !args[1].startsWith('--')) ? args[1] : 'content_schedule_30days.json');
+      break;
+
     case 'post-blog':
       const blogName = args[1];
       if (!blogName) {
@@ -231,6 +317,9 @@ async function main() {
       console.log('  node facebook-manager.js status');
       console.log('  node facebook-manager.js post --message "..."');
       console.log('  node facebook-manager.js post-blog <ten-bai-blog>');
+      console.log('  node facebook-manager.js plan [file.json]                 # xem lịch');
+      console.log('  node facebook-manager.js schedule [file.json] --dry-run   # thử, không đăng');
+      console.log('  node facebook-manager.js schedule [file.json] [--only 1,2,3]');
       break;
   }
 }
