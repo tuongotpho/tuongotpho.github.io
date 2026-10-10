@@ -1,11 +1,16 @@
 // Admin Panel - AI Blog Generator
 // Uses Gemini API for content + GitHub API for publishing
+//
+// Bai blog gio la file Markdown trong astro/src/content/blog/ (nguon Astro).
+// GitHub Actions tu build ra blog/*.html, cap nhat trang danh sach + sitemap roi deploy.
+// Repo ghi vao la repo GOC (tuongotpho) - repo tuongotcay chi la ban sao bi ghi de moi lan deploy.
 
 const CONFIG = {
-    REPO_OWNER: 'tuongotcay',
-    REPO_NAME: 'tuongotcay.github.io',
+    REPO_OWNER: 'tuongotpho',
+    REPO_NAME: 'tuongotpho.github.io',
     BLOG_PATH: 'blog',
-    SITE_URL: 'https://tuongotcay.github.io',
+    POSTS_PATH: 'astro/src/content/blog',
+    SITE_URL: 'https://tuongotsieucay.web.app',
     GA_ID: 'G-6JHML7VMEB',
     BRAND: 'Tương Ớt Siêu Cay',
     PHONE: '0982 722 036',
@@ -145,7 +150,8 @@ YÊU CẦU NỘI DUNG:
 - Giọng văn thân thiện, chuyên gia
 - PHẢI có ít nhất 1 bảng so sánh
 - Có info-box tips hoặc warning
-- QUAN TRỌNG: Trong nội dung bài viết, hãy chèn 2-3 internal link đến các bài viết liên quan đã có trên website, dùng thẻ <a href="ten-bai.html">tiêu đề bài</a>. Các bài đã có: cach-lam-tuong-ot-tai-nha, tac-dung-tac-hai-cua-ot, cac-loai-ot-cay-nhat-the-gioi, cac-loai-ot-lam-tuong-ot, cach-bao-quan-tuong-ot, mon-an-khong-the-thieu-tuong-ot, phan-biet-tuong-ot-cong-nghiep-va-thu-cong, lich-su-ot-tu-mexico-den-vn, 7-nhom-nguoi-khong-nen-an-ot, an-ot-co-giup-giam-can-khong
+- QUAN TRỌNG: Trong nội dung bài viết, hãy chèn 2-3 internal link đến các bài viết liên quan đã có trên website, dùng thẻ <a href="ten-bai.html">tiêu đề bài</a>. Các bài đã có: ${(state.knownSlugs || DEFAULT_SLUGS).join(', ')}
+- relatedSlugs CHỈ được chọn trong danh sách bài đã có ở trên
 - CHỈ trả về JSON, không có text khác`;
 }
 
@@ -172,7 +178,8 @@ async function callGemini(prompt) {
 function renderPreview(data) {
     const body = document.getElementById('previewBody');
     const url = document.getElementById('previewUrl');
-    url.textContent = `tuongotcay.github.io/blog/${data.slug}.html`;
+    data.slug = createSlug(data.slug || data.title);
+    url.textContent = `${CONFIG.SITE_URL.replace('https://', '')}/blog/${data.slug}.html`;
     state.articleSlug = data.slug;
     state.articleTitle = data.title;
 
@@ -200,7 +207,7 @@ function renderPreview(data) {
         }
     }
     body.innerHTML = html;
-    state.generatedHTML = buildFullHTML(data);
+    state.generatedHTML = buildMarkdown(data);
 }
 
 function showPreviewLoading() {
@@ -210,119 +217,62 @@ function showPreviewPlaceholder() {
     document.getElementById('previewBody').innerHTML = '<div class="placeholder"><i class="fas fa-newspaper"></i><p>Nhập chủ đề và nhấn "Tạo Bài Viết"<br>để xem preview tại đây</p></div>';
 }
 
-// ============ BUILD FULL HTML ============
-function buildFullHTML(data) {
-    const today = new Date().toLocaleDateString('vi-VN');
-    const todayISO = new Date().toISOString().split('T')[0];
-    const fullUrl = `${CONFIG.SITE_URL}/blog/${data.slug}.html`;
+// ============ BUILD MARKDOWN (nguon Astro) ============
+// Danh sach bai mac dinh khi chua tai duoc tu GitHub (dung trong prompt cho AI)
+const DEFAULT_SLUGS = ['cach-lam-tuong-ot-tai-nha', 'tac-dung-tac-hai-cua-ot', 'cac-loai-ot-cay-nhat-the-gioi', 'cac-loai-ot-lam-tuong-ot', 'cach-bao-quan-tuong-ot', 'mon-an-khong-the-thieu-tuong-ot', 'phan-biet-tuong-ot-cong-nghiep-va-thu-cong', 'lich-su-ot-tu-mexico-den-vn', '7-nhom-nguoi-khong-nen-an-ot', 'an-ot-co-giup-giam-can-khong'];
 
-    let articleBody = '';
+function buildMarkdown(data) {
+    const todayISO = new Date().toISOString().split('T')[0];
+    const grad = data.headerGradient || 'rgba(220,53,69,0.2) 0%, rgba(255,107,107,0.1) 100%';
+    const q = (s) => JSON.stringify(String(s ?? '')); // chuoi JSON cung la YAML hop le
+
+    let body = '';
     for (const s of data.sections) {
         switch (s.type) {
             case 'intro':
-                articleBody += `<p>${s.content}</p>\n`;
+                body += `<p>${s.content}</p>\n`;
                 break;
             case 'heading':
-                articleBody += `<h2><i class="${s.icon}"></i> ${s.title}</h2>\n<div>${s.content}</div>\n`;
+                body += `<h2><i class="${s.icon}"></i> ${s.title}</h2>\n<div>${s.content}</div>\n`;
                 break;
             case 'infobox': {
                 const v = s.variant || 'default';
                 const cls = v === 'default' ? 'info-box' : `info-box ${v}`;
-                articleBody += `<div class="${cls}">\n<h4><i class="${s.icon}"></i> ${s.title}</h4>\n<p>${s.content}</p>\n</div>\n`;
+                body += `<div class="${cls}">\n<h4><i class="${s.icon}"></i> ${s.title}</h4>\n<p>${s.content}</p>\n</div>\n`;
                 break;
             }
             case 'table':
-                articleBody += '<table class="article-table"><thead><tr>';
-                s.headers.forEach(h => articleBody += `<th>${h}</th>`);
-                articleBody += '</tr></thead><tbody>';
-                s.rows.forEach(r => { articleBody += '<tr>'; r.forEach(c => articleBody += `<td>${c}</td>`); articleBody += '</tr>'; });
-                articleBody += '</tbody></table>\n';
+                body += '<table class="article-table"><thead><tr>';
+                s.headers.forEach(h => body += `<th>${h}</th>`);
+                body += '</tr></thead><tbody>';
+                s.rows.forEach(r => { body += '<tr>'; r.forEach(c => body += `<td>${c}</td>`); body += '</tr>'; });
+                body += '</tbody></table>\n';
                 break;
         }
     }
+    // Bo dong trong + thut dau dong: de Markdown giu nguyen khoi HTML, khong bien thanh "code"
+    body = body.split('\n').map(l => l.trim()).filter(Boolean).join('\n');
 
-    // Related articles
-    let relatedHTML = '';
-    if (data.relatedSlugs && data.relatedSlugs.length) {
-        data.relatedSlugs.forEach((slug, i) => {
-            relatedHTML += `<a href="${slug}.html" class="related-card"><i class="${data.relatedIcons?.[i] || 'fas fa-newspaper'}"></i><span>${data.relatedTitles?.[i] || slug}</span></a>\n`;
-        });
+    const fm = [
+        '---',
+        `title: ${q(data.title + ' | Blog ' + CONFIG.BRAND)}`,
+        `description: ${q(data.metaDescription)}`,
+        `keywords: ${q(data.keywords)}`,
+        `heading: ${q(data.title)}`,
+        `headingIcon: ${q(data.icon || 'fas fa-pepper-hot')}`,
+        `date: ${q(todayISO)}`,
+        `readTime: ${parseInt(data.readTime, 10) || 5}`,
+        `headerStyle: ${q(`background:linear-gradient(135deg,${grad});`)}`,
+    ];
+    const related = (data.relatedSlugs || []).map((slug, i) => ({
+        slug: createSlug(slug), icon: data.relatedIcons?.[i] || 'fas fa-newspaper', title: data.relatedTitles?.[i] || slug,
+    }));
+    if (related.length) {
+        fm.push('related:');
+        related.forEach(r => fm.push(`  - slug: ${q(r.slug)}`, `    icon: ${q(r.icon)}`, `    title: ${q(r.title)}`));
     }
-
-    return `<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="google-site-verification" content="H-1uGYQBFn_CIx4O_Q3IoRNPm06vMAwyE72Rwy6Dzlk">
-    <title>${data.title} | Blog ${CONFIG.BRAND}</title>
-    <meta name="description" content="${data.metaDescription}">
-    <meta name="keywords" content="${data.keywords}">
-    <meta property="og:type" content="article">
-    <meta property="og:url" content="${fullUrl}">
-    <meta property="og:title" content="${data.title}">
-    <meta property="og:description" content="${data.metaDescription}">
-    <meta property="og:image" content="https://cdn-icons-png.flaticon.com/512/5495/5495490.png">
-    <meta name="twitter:card" content="summary_large_image">
-    <link rel="canonical" href="${fullUrl}">
-    <link rel="stylesheet" href="../styles.min.css">
-    <link rel="stylesheet" href="blog.min.css">
-    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/5495/5495490.png" type="image/png">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script async src="https://www.googletagmanager.com/gtag/js?id=${CONFIG.GA_ID}"></script>
-    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${CONFIG.GA_ID}');</script>
-    <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"Article","headline":"${data.title}","author":{"@type":"Organization","name":"${CONFIG.BRAND}"},"datePublished":"${todayISO}","dateModified":"${todayISO}","publisher":{"@type":"Organization","name":"${CONFIG.BRAND}"}}
-    </script>
-</head>
-<body class="blog-page">
-    <header class="header"><nav class="navbar"><div class="nav-brand"><a href="../index.html" style="text-decoration:none;color:inherit;display:flex;align-items:center;gap:10px;"><i class="fas fa-pepper-hot"></i><span>Tương Ớt Siêu Cay</span></a></div><div class="nav-menu"><a href="../index.html" class="nav-link">Trang Chủ</a><a href="../index.html#products" class="nav-link">Sản Phẩm</a><a href="index.html" class="nav-link active">Blog</a><a href="../index.html#contact" class="nav-link">Liên Hệ</a></div></nav></header>
-
-    <section class="blog-header" style="background:linear-gradient(135deg,${data.headerGradient || 'rgba(220,53,69,0.2) 0%, rgba(255,107,107,0.1) 100%'});">
-        <div class="blog-header-content">
-            <nav class="breadcrumb"><a href="../index.html">Trang chủ</a><span>/</span><a href="index.html">Blog</a><span>/</span><span class="current">${data.title}</span></nav>
-            <h1><i class="${data.icon}"></i> ${data.title}</h1>
-            <div class="article-meta">
-                <span class="article-meta-item"><i class="far fa-calendar-alt"></i> ${today}</span>
-                <span class="article-meta-item"><i class="far fa-clock"></i> ${data.readTime}</span>
-                <span class="article-meta-item"><i class="far fa-user"></i> ${CONFIG.BRAND}</span>
-            </div>
-        </div>
-    </section>
-
-    <article class="article-content">
-        <a href="index.html" class="back-to-blog"><i class="fas fa-arrow-left"></i> Quay lại danh sách bài viết</a>
-        <div class="article-body">
-            ${articleBody}
-            <div class="share-buttons">
-                <span>Chia sẻ bài viết:</span>
-                <a href="javascript:void(0)" class="share-btn facebook" onclick="shareToFacebook()" title="Chia sẻ lên Facebook"><i class="fab fa-facebook-f"></i></a>
-                <a href="javascript:void(0)" class="share-btn twitter" onclick="shareToTwitter()" title="Chia sẻ lên Twitter"><i class="fab fa-twitter"></i></a>
-                <button class="share-btn copy" onclick="copyLink()" title="Sao chép liên kết"><i class="fas fa-link"></i></button>
-            </div>
-        </div>
-        <div class="related-articles"><h3>Bài viết liên quan</h3><div class="related-grid">${relatedHTML}</div></div>
-    </article>
-
-    <section style="background:linear-gradient(135deg,rgba(220,53,69,0.2) 0%,rgba(255,107,107,0.1) 100%);padding:60px 20px;text-align:center;">
-        <div style="max-width:800px;margin:0 auto;">
-            <h2 style="color:#fff;font-size:2rem;margin-bottom:15px;"><i class="fas fa-fire"></i> Thử Ngay Tương Ớt Siêu Cay Nguyên Chất!</h2>
-            <p style="color:#fff;margin-bottom:25px;">100% ớt tươi, lên men tự nhiên, không chất bảo quản</p>
-            <div style="display:flex;justify-content:center;gap:15px;flex-wrap:wrap;">
-                <a href="../index.html#products" class="btn btn-primary" style="text-decoration:none;"><i class="fas fa-shopping-cart"></i> Xem Sản Phẩm</a>
-                <button class="btn btn-primary" onclick="callNow()"><i class="fas fa-phone"></i> Gọi: ${CONFIG.PHONE}</button>
-                <button class="btn btn-zalo" onclick="contactZalo()"><i class="fas fa-comment-dots"></i> Chat Zalo</button>
-            </div>
-        </div>
-    </section>
-
-    <footer class="footer"><div class="container"><div class="footer-content"><div class="footer-section"><div class="footer-brand"><i class="fas fa-pepper-hot"></i><span>Tương Ớt Siêu Cay</span></div><p class="footer-description">Mang đến những sản phẩm tương ớt chất lượng cao với vị cay thuần khiết từ thiên nhiên.</p></div><div class="footer-section"><h4 class="footer-title">Liên Kết Nhanh</h4><ul class="footer-links"><li><a href="../index.html">Trang Chủ</a></li><li><a href="../index.html#products">Sản Phẩm</a></li><li><a href="index.html">Blog</a></li><li><a href="../index.html#contact">Liên Hệ</a></li></ul></div><div class="footer-section"><h4 class="footer-title">Liên Hệ</h4><ul class="footer-links"><li><i class="fas fa-phone"></i> ${CONFIG.PHONE}</li><li><i class="fas fa-envelope"></i> ${CONFIG.EMAIL}</li></ul></div></div><div class="footer-bottom"><p>&copy; 2012 Tương Ớt Siêu Cay nguyên chất Bông Ớt. Tất cả quyền được bảo lưu.</p></div></div></footer>
-
-    <script src="../script.min.js"></script>
-    <script src="blog.min.js"></script>
-</body>
-</html>`;
+    fm.push('card:', `  category: "Blog"`, `  bg: ${q(`background: linear-gradient(135deg, ${grad});`)}`, '---');
+    return fm.join('\n') + '\n' + body + '\n';
 }
 
 // ============ PUBLISH TO GITHUB ============
@@ -336,20 +286,17 @@ async function publishArticle() {
     addLog('Bắt đầu publish lên GitHub...');
 
     try {
-        // 1. Create article file
-        const filePath = `${CONFIG.BLOG_PATH}/${state.articleSlug}.html`;
+        const filePath = `${CONFIG.POSTS_PATH}/${state.articleSlug}.md`;
+        // Khong ghi de bai cu trung ten
+        const exists = await fetch(`https://api.github.com/repos/${CONFIG.REPO_OWNER}/${CONFIG.REPO_NAME}/contents/${filePath}`,
+            { headers: { 'Authorization': `token ${state.githubToken}` } });
+        if (exists.ok) throw new Error(`Đã có bài trùng địa chỉ "${state.articleSlug}". Đổi chủ đề hoặc sửa bài cũ ở tab Bài viết.`);
+
         await githubCreateFile(filePath, state.generatedHTML, `Thêm bài viết: ${state.articleTitle}`);
         addLog(`✅ Đã tạo file: ${filePath}`);
+        addLog('⏳ GitHub đang tự build blog, thêm vào trang danh sách + sitemap rồi đưa lên web (~3-5 phút)');
 
-        // 2. Update blog index - add card
-        await updateBlogIndex();
-        addLog('✅ Đã cập nhật blog index');
-
-        // 3. Update sitemap
-        await updateSitemap();
-        addLog('✅ Đã cập nhật sitemap');
-
-        showToast('🎉 Publish thành công! Bài viết sẽ live sau ~1 phút.', 'success');
+        showToast('🎉 Đã gửi bài! Bài sẽ lên web sau khoảng 3-5 phút.', 'success');
         addLog(`🔗 URL: ${CONFIG.SITE_URL}/blog/${state.articleSlug}.html`);
     } catch (err) {
         showToast('Lỗi publish: ' + err.message, 'error');
@@ -395,56 +342,6 @@ async function githubCreateFile(path, content, message) {
     return res.json();
 }
 
-async function updateBlogIndex() {
-    const url = `https://api.github.com/repos/${CONFIG.REPO_OWNER}/${CONFIG.REPO_NAME}/contents/${CONFIG.BLOG_PATH}/index.html`;
-    const res = await fetch(url, { headers: { 'Authorization': `token ${state.githubToken}` } });
-    if (!res.ok) throw new Error('Không đọc được blog index');
-
-    const fileData = await res.json();
-    let html = decodeURIComponent(escape(atob(fileData.content)));
-
-    const data = state.generatedContent;
-    const today = new Date().toLocaleDateString('vi-VN');
-    const newCard = `
-                <article class="blog-card">
-                    <div class="blog-card-image" style="background: linear-gradient(135deg, ${data.headerGradient || 'rgba(220,53,69,0.2), rgba(255,107,107,0.1)'});">
-                        <i class="${data.icon}"></i>
-                        <i class="fas fa-pepper-hot floating-peppers"></i>
-                        <i class="fas fa-pepper-hot floating-peppers"></i>
-                        <i class="fas fa-pepper-hot floating-peppers"></i>
-                    </div>
-                    <div class="blog-card-content">
-                        <span class="blog-card-category">Blog</span>
-                        <h3 class="blog-card-title">${data.title}</h3>
-                        <p class="blog-card-excerpt">${data.metaDescription}</p>
-                        <a href="${data.slug}.html" class="blog-card-link">Đọc tiếp <i class="fas fa-arrow-right"></i></a>
-                        <div class="blog-card-meta">
-                            <span><i class="far fa-calendar-alt"></i> ${today}</span>
-                            <span><i class="far fa-clock"></i> ${data.readTime}</span>
-                        </div>
-                    </div>
-                </article>`;
-
-    // Insert after <div class="blog-grid">
-    html = html.replace(/<div class="blog-grid">/, `<div class="blog-grid">${newCard}`);
-
-    await githubCreateFile(`${CONFIG.BLOG_PATH}/index.html`, html, `Thêm card blog: ${data.title}`);
-}
-
-async function updateSitemap() {
-    const url = `https://api.github.com/repos/${CONFIG.REPO_OWNER}/${CONFIG.REPO_NAME}/contents/sitemap.xml`;
-    const res = await fetch(url, { headers: { 'Authorization': `token ${state.githubToken}` } });
-    if (!res.ok) return; // Skip if no sitemap
-
-    const fileData = await res.json();
-    let xml = decodeURIComponent(escape(atob(fileData.content)));
-    const todayISO = new Date().toISOString().split('T')[0];
-    const newEntry = `\n  <url>\n    <loc>${CONFIG.SITE_URL}/blog/${state.articleSlug}.html</loc>\n    <lastmod>${todayISO}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.7</priority>\n  </url>`;
-
-    xml = xml.replace('</urlset>', newEntry + '\n</urlset>');
-    await githubCreateFile('sitemap.xml', xml, `Sitemap: thêm ${state.articleSlug}`);
-}
-
 // ============ UTILS ============
 function createSlug(text) {
     const map = { 'á': 'a', 'à': 'a', 'ả': 'a', 'ã': 'a', 'ạ': 'a', 'ă': 'a', 'ắ': 'a', 'ằ': 'a', 'ẳ': 'a', 'ẵ': 'a', 'ặ': 'a', 'â': 'a', 'ấ': 'a', 'ầ': 'a', 'ẩ': 'a', 'ẫ': 'a', 'ậ': 'a', 'đ': 'd', 'é': 'e', 'è': 'e', 'ẻ': 'e', 'ẽ': 'e', 'ẹ': 'e', 'ê': 'e', 'ế': 'e', 'ề': 'e', 'ể': 'e', 'ễ': 'e', 'ệ': 'e', 'í': 'i', 'ì': 'i', 'ỉ': 'i', 'ĩ': 'i', 'ị': 'i', 'ó': 'o', 'ò': 'o', 'ỏ': 'o', 'õ': 'o', 'ọ': 'o', 'ô': 'o', 'ố': 'o', 'ồ': 'o', 'ổ': 'o', 'ỗ': 'o', 'ộ': 'o', 'ơ': 'o', 'ớ': 'o', 'ờ': 'o', 'ở': 'o', 'ỡ': 'o', 'ợ': 'o', 'ú': 'u', 'ù': 'u', 'ủ': 'u', 'ũ': 'u', 'ụ': 'u', 'ư': 'u', 'ứ': 'u', 'ừ': 'u', 'ử': 'u', 'ữ': 'u', 'ự': 'u', 'ý': 'y', 'ỳ': 'y', 'ỷ': 'y', 'ỹ': 'y', 'ỵ': 'y' };
@@ -480,42 +377,36 @@ function switchTab(tab) {
 }
 
 // ============ ARTICLE LIST ============
-const KNOWN_ARTICLES = [
-    { slug: 'cach-lam-tuong-ot-tai-nha', title: 'Cách Làm Tương Ớt Tại Nhà', icon: 'fas fa-mortar-pestle' },
-    { slug: 'mon-an-khong-the-thieu-tuong-ot', title: 'Món Ăn Không Thể Thiếu Tương Ớt', icon: 'fas fa-utensils' },
-    { slug: 'phan-biet-tuong-ot-cong-nghiep-va-thu-cong', title: 'Phân Biệt Tương Ớt Công Nghiệp và Thủ Công', icon: 'fas fa-balance-scale-right' },
-    { slug: 'cach-bao-quan-tuong-ot', title: 'Cách Bảo Quản Tương Ớt Đúng Cách', icon: 'fas fa-snowflake' },
-    { slug: 'lich-su-ot-tu-mexico-den-vn', title: 'Lịch Sử Ớt Từ Mexico Đến Việt Nam', icon: 'fas fa-globe-americas' },
-    { slug: 'tac-dung-tac-hai-cua-ot', title: 'Tác Dụng và Tác Hại Của Ớt', icon: 'fas fa-heartbeat' },
-    { slug: 'an-ot-co-giup-giam-can-khong', title: 'Ăn Ớt Có Giúp Giảm Cân Không?', icon: 'fas fa-weight' },
-    { slug: 'cac-loai-ot-cay-nhat-the-gioi', title: 'Các Loại Ớt Cay Nhất Thế Giới', icon: 'fas fa-fire' },
-    { slug: 'cac-loai-ot-lam-tuong-ot', title: 'Các Loại Ớt Làm Tương Ớt', icon: 'fas fa-pepper-hot' },
-    { slug: '7-nhom-nguoi-khong-nen-an-ot', title: '7 Nhóm Người Không Nên Ăn Ớt', icon: 'fas fa-exclamation-triangle' },
-];
-
+// Doc danh sach bai tu thu muc nguon Astro tren GitHub, lay tieu de tu dong "heading:" trong moi file
 async function refreshArticleList() {
     const list = document.getElementById('articleList');
+    if (!state.githubToken) {
+        list.innerHTML = '<div class="placeholder"><i class="fas fa-key"></i><p>Cấu hình GitHub Token để xem danh sách bài.</p></div>';
+        return;
+    }
     list.innerHTML = '<div class="placeholder"><i class="fas fa-spinner fa-spin"></i><p>Đang tải...</p></div>';
 
-    let articles = [...KNOWN_ARTICLES];
-
-    // Try fetching from GitHub for any new articles
-    if (state.githubToken) {
-        try {
-            const url = `https://api.github.com/repos/${CONFIG.REPO_OWNER}/${CONFIG.REPO_NAME}/contents/${CONFIG.BLOG_PATH}`;
-            const res = await fetch(url, { headers: { 'Authorization': `token ${state.githubToken}` } });
-            if (res.ok) {
-                const files = await res.json();
-                const htmlFiles = files.filter(f => f.name.endsWith('.html') && f.name !== 'index.html' && f.name !== 'admin.html');
-                const knownSlugs = new Set(KNOWN_ARTICLES.map(a => a.slug));
-                htmlFiles.forEach(f => {
-                    const slug = f.name.replace('.html', '');
-                    if (!knownSlugs.has(slug)) {
-                        articles.push({ slug, title: slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()), icon: 'fas fa-file-alt' });
-                    }
-                });
-            }
-        } catch (e) { /* use known list */ }
+    let articles = [];
+    try {
+        const headers = { 'Authorization': `token ${state.githubToken}` };
+        const res = await fetch(`https://api.github.com/repos/${CONFIG.REPO_OWNER}/${CONFIG.REPO_NAME}/contents/${CONFIG.POSTS_PATH}`, { headers });
+        if (!res.ok) throw new Error('Không đọc được thư mục bài viết: ' + res.status);
+        const files = (await res.json()).filter(f => f.name.endsWith('.md'));
+        articles = await Promise.all(files.map(async f => {
+            const slug = f.name.replace(/\.md$/, '');
+            let title = slug, icon = 'fas fa-file-alt';
+            try {
+                const r = await fetch(f.download_url, { headers });
+                const text = await r.text();
+                title = JSON.parse(text.match(/^heading:\s*(".*")\s*$/m)?.[1] || JSON.stringify(slug));
+                icon = JSON.parse(text.match(/^headingIcon:\s*(".*")\s*$/m)?.[1] || JSON.stringify(icon));
+            } catch (e) { /* giu ten file */ }
+            return { slug, title, icon };
+        }));
+        state.knownSlugs = articles.map(a => a.slug);
+    } catch (e) {
+        list.innerHTML = `<div class="placeholder"><i class="fas fa-exclamation-triangle"></i><p>${e.message}</p></div>`;
+        return;
     }
 
     document.getElementById('articleCount').textContent = articles.length;
@@ -525,17 +416,17 @@ async function refreshArticleList() {
         return;
     }
 
-    list.innerHTML = articles.map((a, i) => `
+    list.innerHTML = articles.map(a => `
         <div class="article-item">
-            <div class="article-icon"><i class="${a.icon}"></i></div>
+            <div class="article-icon"><i class="${escHtml(a.icon)}"></i></div>
             <div class="article-info">
-                <h4>${a.title}</h4>
-                <span>${a.slug}.html</span>
+                <h4>${escHtml(a.title)}</h4>
+                <span>${a.slug}.md</span>
             </div>
             <div class="article-actions">
                 <a href="${CONFIG.SITE_URL}/blog/${a.slug}.html" target="_blank" title="Xem bài viết"><i class="fas fa-external-link-alt"></i></a>
                 <button onclick="openEditor('${a.slug}')" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>
-                <button onclick="useTopic('${a.title.replace(/'/g, "\\'")}')" title="Tạo bài tương tự"><i class="fas fa-copy"></i></button>
+                <button onclick="useTopic('${a.title.replace(/'/g, "\\'").replace(/"/g, '&quot;')}')" title="Tạo bài tương tự"><i class="fas fa-copy"></i></button>
             </div>
         </div>
     `).join('');
@@ -659,7 +550,7 @@ async function aiSuggestTopics() {
     btn.innerHTML = '<span class="loading-spinner"></span> AI đang suy nghĩ...';
     document.getElementById('suggestResult').innerHTML = '<div class="generating-anim"><span class="loading-spinner"></span> Đang phân tích và gợi ý...</div>';
 
-    const existingTitles = KNOWN_ARTICLES.map(a => a.title).join(', ');
+    const existingTitles = (state.knownSlugs || DEFAULT_SLUGS).map(s => s.replace(/-/g, ' ')).join(', ');
     const planTitles = getPlan().map(p => p.title).join(', ');
 
     const prompt = `Bạn là chuyên gia SEO và content marketing cho website bán tương ớt "Tương Ớt Siêu Cay Bông Ớt".
@@ -768,11 +659,11 @@ async function openEditor(slug) {
 
     modal.style.display = 'flex';
     textarea.value = 'Đang tải nội dung...';
-    fileName.textContent = slug + '.html';
+    fileName.textContent = slug + '.md';
     status.textContent = 'Đang tải...';
 
     try {
-        const url = `https://api.github.com/repos/${CONFIG.REPO_OWNER}/${CONFIG.REPO_NAME}/contents/${CONFIG.BLOG_PATH}/${slug}.html`;
+        const url = `https://api.github.com/repos/${CONFIG.REPO_OWNER}/${CONFIG.REPO_NAME}/contents/${CONFIG.POSTS_PATH}/${slug}.md`;
         const res = await fetch(url, { headers: { 'Authorization': `token ${state.githubToken}` } });
         if (!res.ok) throw new Error('Không tải được file: ' + res.status);
 
@@ -806,12 +697,12 @@ async function saveEditedArticle() {
     document.getElementById('editorStatus').textContent = 'Đang push lên GitHub...';
 
     try {
-        const url = `https://api.github.com/repos/${CONFIG.REPO_OWNER}/${CONFIG.REPO_NAME}/contents/${CONFIG.BLOG_PATH}/${editorState.slug}.html`;
+        const url = `https://api.github.com/repos/${CONFIG.REPO_OWNER}/${CONFIG.REPO_NAME}/contents/${CONFIG.POSTS_PATH}/${editorState.slug}.md`;
         const res = await fetch(url, {
             method: 'PUT',
             headers: { 'Authorization': `token ${state.githubToken}`, 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                message: `Chỉnh sửa: ${editorState.slug}.html`,
+                message: `Chỉnh sửa: ${editorState.slug}.md`,
                 content: btoa(unescape(encodeURIComponent(content))),
                 sha: editorState.sha,
                 branch: 'main'
@@ -822,7 +713,7 @@ async function saveEditedArticle() {
         editorState.sha = result.content.sha;
         editorState.originalContent = content;
         document.getElementById('editorStatus').textContent = `✅ Đã lưu | SHA: ${result.content.sha.substring(0, 7)}`;
-        showToast('🎉 Đã lưu thành công! Thay đổi sẽ live sau ~1 phút.', 'success');
+        showToast('🎉 Đã lưu! GitHub tự build, thay đổi lên web sau khoảng 3-5 phút.', 'success');
     } catch (err) {
         document.getElementById('editorStatus').textContent = '❌ Lỗi lưu';
         showToast('Lỗi: ' + err.message, 'error');
@@ -1054,16 +945,13 @@ async function updateGalleryHTML(newEntries) {
                 </div>
             </div>`).join('\n');
 
-    // Insert before </div> </div> (closing gallery-grid and gallery-container)
-    const insertPoint = content.lastIndexOf('        </div>\n    </div>\n\n    <!-- CTA -->');
-    if (insertPoint === -1) {
-        // Fallback: insert before last </div> of gallery-grid
-        const altPoint = content.indexOf('</div>', content.indexOf('id="galleryGrid"'));
-        if (altPoint === -1) throw new Error('Không tìm được vị trí chèn trong gallery.html');
-        content = content.slice(0, altPoint) + '\n' + newHTML + '\n' + content.slice(altPoint);
-    } else {
-        content = content.slice(0, insertPoint) + '\n' + newHTML + '\n\n' + content.slice(insertPoint);
+    // Chen ngay truoc the dong cua luoi anh: "</div>" (galleryGrid) + "</div>" (container) + <!-- CTA ...
+    // Khong co cach chen "du phong": tim sai cho thi dung lai, khong lam vo trang that.
+    const m = content.match(/\n[ \t]*<\/div>\s*\n[ \t]*<\/div>\s*\n\s*<!-- CTA/);
+    if (!m || m.index < content.indexOf('id="galleryGrid"')) {
+        throw new Error('Không tìm được vị trí chèn trong gallery.html (cấu trúc trang đã đổi). Chưa sửa gì.');
     }
+    content = content.slice(0, m.index) + '\n' + newHTML + content.slice(m.index);
 
     // Push updated file
     await githubCreateFile('gallery.html', content, `📸 Thêm ${newEntries.length} ảnh vào gallery`);
@@ -1099,7 +987,7 @@ async function refreshGalleryList() {
 
         grid.innerHTML = images.map(img => `
             <div class="gallery-admin-item">
-                <img src="https://tuongotcay.github.io/images/gallery/${img.name}" alt="${img.name}" loading="lazy">
+                <img src="${CONFIG.SITE_URL}/images/gallery/${img.name}" alt="${img.name}" loading="lazy">
                 <div class="item-name">${img.name}</div>
                 <button class="delete-btn" onclick="deleteGalleryImage('${img.name}', '${img.sha}')" title="Xóa ảnh">
                     <i class="fas fa-trash"></i>
@@ -1177,6 +1065,7 @@ function parseProducts(html) {
         const desc = card.querySelector('.product-description')?.textContent?.trim() || '';
         const priceOrig = card.querySelector('.price-original')?.textContent?.trim() || '';
         const priceSale = card.querySelector('.price-sale')?.textContent?.trim() || '';
+        const priceUnit = card.querySelector('.price-unit')?.textContent?.trim() || '';
         const badge = card.querySelector('.product-badge')?.textContent?.trim() || '';
         const labelHeader = card.querySelector('.label-header')?.textContent?.trim() || '';
         const labelText = card.querySelector('.label-text')?.textContent?.trim() || '';
@@ -1195,7 +1084,7 @@ function parseProducts(html) {
         const peppers = card.querySelectorAll('.spicy-level .fa-pepper-hot').length;
 
         products.push({
-            name, desc, priceOrig, priceSale, badge, labelHeader, labelText,
+            name, desc, priceOrig, priceSale, priceUnit, badge, labelHeader, labelText,
             color, peppers: peppers || 3, isFeatured, isWholesale
         });
     });
@@ -1228,12 +1117,12 @@ function renderProductEditor() {
                     <textarea rows="2" onchange="productList[${i}].desc=this.value">${escHtml(p.desc)}</textarea>
                 </div>
                 <div class="form-group">
-                    <label>Giá gốc (VD: ₫50,000)</label>
-                    <input type="text" value="${escHtml(p.priceOrig)}" onchange="productList[${i}].priceOrig=this.value">
+                    <label>Giá gốc <small>(khoá)</small></label>
+                    <input type="text" value="${escHtml(p.priceOrig)}" readonly title="Đổi giá phải sửa functions/catalog.js">
                 </div>
                 <div class="form-group">
-                    <label>Giá bán (VD: ₫45,000)</label>
-                    <input type="text" value="${escHtml(p.priceSale)}" onchange="productList[${i}].priceSale=this.value">
+                    <label>Giá bán <small>(khoá)</small></label>
+                    <input type="text" value="${escHtml(p.priceSale)}" readonly title="Đổi giá phải sửa functions/catalog.js">
                 </div>
                 <div class="form-group">
                     <label>Badge (VD: Bán Chạy Nhất)</label>
@@ -1277,6 +1166,8 @@ function escHtml(str) {
 }
 
 function addNewProduct() {
+    // San pham moi phai co trong functions/catalog.js + app.html thi moi dat hang duoc
+    return showToast(PRICE_LOCK_MSG, 'error');
     if (productList.length >= 6) { showToast('Tối đa 6 sản phẩm!', 'error'); return; }
     productList.push({
         name: 'Sản Phẩm Mới',
@@ -1296,11 +1187,16 @@ function addNewProduct() {
 }
 
 function removeProduct(index) {
+    return showToast(PRICE_LOCK_MSG, 'error');
     if (!confirm(`Xóa sản phẩm "${productList[index].name}"?`)) return;
     productList.splice(index, 1);
     renderProductEditor();
     showToast('Đã xóa sản phẩm', 'info');
 }
+
+// Gia + danh sach san pham bi khoa: gia tinh tien that nam o functions/catalog.js (server),
+// app.html va index.html chi hien thi. Doi o day ma khong doi catalog = khach thay mot gia, bi tinh gia khac.
+const PRICE_LOCK_MSG = 'Giá và danh sách sản phẩm đang khoá: giá tính tiền thật nằm ở functions/catalog.js. Muốn đổi giá/thêm sản phẩm phải sửa catalog + app.html + trang chủ cùng lúc.';
 
 function buildProductsHTML(products) {
     return products.map(p => {
@@ -1315,6 +1211,7 @@ function buildProductsHTML(products) {
                         <div class="product-price">
                             ${p.priceOrig ? `<span class="price-original">${p.priceOrig}</span>` : ''}
                             ${p.priceSale ? `<span class="price-sale">${p.priceSale}</span>` : ''}
+                            ${p.priceUnit ? `<span class="price-unit">${p.priceUnit}</span>` : ''}
                         </div>` : '';
 
         return `                <div class="${cardClass}">
@@ -1334,13 +1231,14 @@ function buildProductsHTML(products) {
                         <h3 class="product-name">${p.name}</h3>
                         <p class="product-description">${p.desc}</p>${priceHTML}
                         <div class="product-buttons">
+                            <a href="app.html" class="btn btn-primary" style="justify-content: center; width: 100%;">
+                                <i class="fas fa-shopping-cart"></i> ${p.isWholesale ? 'Đặt Mua Buôn' : 'Đặt Mua Nhanh'}
+                            </a>
                             <button class="btn btn-buy" onclick="callNow()">
-                                <i class="fas fa-phone"></i>
-                                Gọi Ngay
+                                <i class="fas fa-phone"></i> Gọi Ngay
                             </button>
                             <button class="btn btn-zalo" onclick="contactZalo()">
-                                <i class="fab fa-zalo"></i>
-                                Zalo
+                                <i class="fab fa-zalo"></i> Zalo
                             </button>
                         </div>
                     </div>

@@ -46,8 +46,16 @@ npm run build      # sinh lại blog/*.html + cập nhật sitemap.xml
 npm run dev        # xem thử bài trong lúc viết (http://localhost:4321/blog/)
 ```
 
-Sau khi build thì commit cả `astro/` lẫn `blog/`. GitHub có job **"Kiem tra blog Astro"**:
-nếu sửa `.md` mà quên build, job này báo đỏ.
+Sau khi build thì commit cả `astro/` lẫn `blog/`. Quên build cũng không sao: khi lên nhánh
+`main`, job GitHub **"Build blog Astro"** tự build, tự commit `blog/` và tự gọi deploy.
+Job này cũng chạy bài test giá (catalog ↔ app.html ↔ trang chủ ↔ khối đặt hàng blog).
+
+## Đăng bài từ trang admin (`blog/admin.html`)
+
+Trang admin (AI Gemini viết bài) giờ ghi file `.md` vào `astro/src/content/blog/` của repo
+gốc `tuongotpho/tuongotpho.github.io`. Job "Build blog Astro" tự lo phần còn lại; bài lên web
+sau khoảng 3-5 phút. Token GitHub dán vào admin cần quyền **Contents: Read and write** trên
+repo `tuongotpho/tuongotpho.github.io`.
 
 `npm run dev` chỉ để xem nội dung; CSS dùng chung của web (`../styles.min.css`) không có ở
 chế độ này nên giao diện sẽ thiếu màu — xem đúng giao diện thì build rồi mở file trong `blog/`.
