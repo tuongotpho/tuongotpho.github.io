@@ -45,7 +45,7 @@ card:
     <i class="fas fa-pepper-hot floating-peppers"></i>
     <i class="fas fa-pepper-hot floating-peppers"></i>
 schema:
-  - {"@context":"https://schema.org","@type":"Article","headline":"Các Loại Ớt Phổ Biến Nhất Để Làm Tương Ớt Ngon","author":{"@type":"Organization","name":"Tương Ớt Siêu Cay - Bông Ớt"},"datePublished":"2026-05-26","dateModified":"2026-05-26","description":"Tìm hiểu các loại ớt phổ biến nhất được sử dụng để làm tương ớt ngon. Bí quyết chọn ớt và đặc điểm của từng giống ớt Việt Nam.","mainEntityOfPage":{"@type":"WebPage","@id":"https://tuongotcay.github.io/blog/cac-loai-ot-lam-tuong-ot.html"},"publisher":{"@type":"Organization","name":"Tương Ớt Siêu Cay - Bông Ớt","logo":{"@type":"ImageObject","url":"https://cdn-icons-png.flaticon.com/512/5495/5495490.png"}}}
+  - {"@context":"https://schema.org","@type":"Article","headline":"Các Loại Ớt Phổ Biến Nhất Để Làm Tương Ớt Ngon","author":{"@type":"Organization","name":"Tương Ớt Siêu Cay - Bông Ớt"},"datePublished":"2026-05-26","dateModified":"2026-05-26","description":"Tìm hiểu các loại ớt phổ biến nhất được sử dụng để làm tương ớt ngon. Bí quyết chọn ớt và đặc điểm của từng giống ớt Việt Nam.","mainEntityOfPage":{"@type":"WebPage","@id":"https://tuongotsieucay.web.app/blog/cac-loai-ot-lam-tuong-ot.html"},"publisher":{"@type":"Organization","name":"Tương Ớt Siêu Cay - Bông Ớt","logo":{"@type":"ImageObject","url":"https://cdn-icons-png.flaticon.com/512/5495/5495490.png"}}}
 ---
 <p>
 <strong>Tương ớt</strong> là gia vị không thể thiếu trong bữa ăn của người Việt. Tuy nhiên, không phải

@@ -46,7 +46,7 @@ card:
     <i class="fas fa-hand-holding-heart floating-peppers"></i>
     <i class="fas fa-leaf floating-peppers"></i>
 schema:
-  - {"@context":"https://schema.org","@type":"Article","headline":"Phân Biệt Tương Ớt Công Nghiệp và Tương Ớt Thủ Công Nguyên Chất","author":{"@type":"Organization","name":"Tương Ớt Siêu Cay - Bông Ớt"},"datePublished":"2026-06-16","dateModified":"2026-06-16","description":"So sánh chi tiết tương ớt công nghiệp và tương ớt thủ công nguyên chất. Tại sao tương ớt thủ công đắt hơn nhưng đáng giá hơn cho sức khỏe?","mainEntityOfPage":{"@type":"WebPage","@id":"https://tuongotcay.github.io/blog/phan-biet-tuong-ot-cong-nghiep-va-thu-cong.html"},"publisher":{"@type":"Organization","name":"Tương Ớt Siêu Cay - Bông Ớt","logo":{"@type":"ImageObject","url":"https://cdn-icons-png.flaticon.com/512/5495/5495490.png"}}}
+  - {"@context":"https://schema.org","@type":"Article","headline":"Phân Biệt Tương Ớt Công Nghiệp và Tương Ớt Thủ Công Nguyên Chất","author":{"@type":"Organization","name":"Tương Ớt Siêu Cay - Bông Ớt"},"datePublished":"2026-06-16","dateModified":"2026-06-16","description":"So sánh chi tiết tương ớt công nghiệp và tương ớt thủ công nguyên chất. Tại sao tương ớt thủ công đắt hơn nhưng đáng giá hơn cho sức khỏe?","mainEntityOfPage":{"@type":"WebPage","@id":"https://tuongotsieucay.web.app/blog/phan-biet-tuong-ot-cong-nghiep-va-thu-cong.html"},"publisher":{"@type":"Organization","name":"Tương Ớt Siêu Cay - Bông Ớt","logo":{"@type":"ImageObject","url":"https://cdn-icons-png.flaticon.com/512/5495/5495490.png"}}}
 ---
 <p>
 Trên thị trường hiện nay có hàng trăm loại tương ớt khác nhau, từ những chai giá vài nghìn đồng đến vài

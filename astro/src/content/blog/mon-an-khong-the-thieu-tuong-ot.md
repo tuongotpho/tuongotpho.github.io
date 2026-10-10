@@ -45,7 +45,7 @@ card:
     <i class="fas fa-hamburger floating-peppers"></i>
     <i class="fas fa-drumstick-bite floating-peppers"></i>
 schema:
-  - {"@context":"https://schema.org","@type":"Article","headline":"Top 10 Món Ăn Việt Nam Không Thể Thiếu Tương Ớt","author":{"@type":"Organization","name":"Tương Ớt Siêu Cay - Bông Ớt"},"datePublished":"2026-06-02","dateModified":"2026-06-02","description":"Khám phá 10 món ăn Việt Nam ngon nhất khi ăn kèm tương ớt: phở, bún bò, bánh mì, cơm tấm... Cách kết hợp tương ớt hoàn hảo cho từng món.","mainEntityOfPage":{"@type":"WebPage","@id":"https://tuongotcay.github.io/blog/mon-an-khong-the-thieu-tuong-ot.html"},"publisher":{"@type":"Organization","name":"Tương Ớt Siêu Cay - Bông Ớt","logo":{"@type":"ImageObject","url":"https://cdn-icons-png.flaticon.com/512/5495/5495490.png"}}}
+  - {"@context":"https://schema.org","@type":"Article","headline":"Top 10 Món Ăn Việt Nam Không Thể Thiếu Tương Ớt","author":{"@type":"Organization","name":"Tương Ớt Siêu Cay - Bông Ớt"},"datePublished":"2026-06-02","dateModified":"2026-06-02","description":"Khám phá 10 món ăn Việt Nam ngon nhất khi ăn kèm tương ớt: phở, bún bò, bánh mì, cơm tấm... Cách kết hợp tương ớt hoàn hảo cho từng món.","mainEntityOfPage":{"@type":"WebPage","@id":"https://tuongotsieucay.web.app/blog/mon-an-khong-the-thieu-tuong-ot.html"},"publisher":{"@type":"Organization","name":"Tương Ớt Siêu Cay - Bông Ớt","logo":{"@type":"ImageObject","url":"https://cdn-icons-png.flaticon.com/512/5495/5495490.png"}}}
 ---
 <p>
 Ẩm thực Việt Nam nổi tiếng với sự cân bằng hương vị: chua, cay, mặn, ngọt. Trong đó, <strong>tương

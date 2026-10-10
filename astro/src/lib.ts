@@ -1,6 +1,6 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 
-export const SITE = 'https://tuongotcay.github.io';
+export const SITE = 'https://tuongotsieucay.web.app';
 export const postUrl = (slug: string) => `${SITE}/blog/${slug}.html`;
 
 // dd/mm/yyyy nhu cach hien thi cu

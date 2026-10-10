@@ -30,7 +30,7 @@ card:
     <i class="fas fa-pepper-hot floating-peppers"></i>
     <i class="fas fa-pepper-hot floating-peppers"></i>
 schema:
-  - {"@context":"https://schema.org","@type":"Article","headline":"Top 10 Loại Ớt Cay Nhất Thế Giới - Bảng Xếp Hạng Scoville","author":{"@type":"Organization","name":"Tương Ớt Siêu Cay - Bông Ớt"},"datePublished":"2026-05-19","dateModified":"2026-05-19","description":"Khám phá top 10 loại ớt cay nhất thế giới với độ cay lên đến hàng triệu SHU. Từ Carolina Reaper đến Pepper X - bạn dám thử không?","mainEntityOfPage":{"@type":"WebPage","@id":"https://tuongotcay.github.io/blog/cac-loai-ot-cay-nhat-the-gioi.html"},"publisher":{"@type":"Organization","name":"Tương Ớt Siêu Cay - Bông Ớt","logo":{"@type":"ImageObject","url":"https://cdn-icons-png.flaticon.com/512/5495/5495490.png"}}}
+  - {"@context":"https://schema.org","@type":"Article","headline":"Top 10 Loại Ớt Cay Nhất Thế Giới - Bảng Xếp Hạng Scoville","author":{"@type":"Organization","name":"Tương Ớt Siêu Cay - Bông Ớt"},"datePublished":"2026-05-19","dateModified":"2026-05-19","description":"Khám phá top 10 loại ớt cay nhất thế giới với độ cay lên đến hàng triệu SHU. Từ Carolina Reaper đến Pepper X - bạn dám thử không?","mainEntityOfPage":{"@type":"WebPage","@id":"https://tuongotsieucay.web.app/blog/cac-loai-ot-cay-nhat-the-gioi.html"},"publisher":{"@type":"Organization","name":"Tương Ớt Siêu Cay - Bông Ớt","logo":{"@type":"ImageObject","url":"https://cdn-icons-png.flaticon.com/512/5495/5495490.png"}}}
 ---
 <p>
 Trong thế giới ẩm thực, có những loại ớt với độ cay "khủng khiếp" đến mức có thể khiến ngay cả những

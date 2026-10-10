@@ -37,7 +37,7 @@ card:
     <i class="fas fa-pepper-hot floating-peppers"></i>
 schema:
   - {"@context":"https://schema.org","@type":"Recipe","name":"Tương Ớt Nguyên Chất Tại Nhà","author":{"@type":"Organization","name":"Tương Ớt Siêu Cay - Bông Ớt"},"datePublished":"2026-06-09","description":"Công thức làm tương ớt nguyên chất tại nhà, từ ớt tươi, không tỏi, không cà chua, không chất bảo quản","prepTime":"PT30M","cookTime":"PT20M","totalTime":"PT50M","recipeYield":"500ml","recipeIngredient":["500g ớt tươi (ớt hiểm hoặc ớt sừng trâu)","2 thìa muối biển","1 thìa đường (tùy chọn)","50ml giấm gạo"],"recipeInstructions":["Rửa sạch và phơi khô ớt","Xay nhuyễn ớt","Thêm muối, đường, giấm","Nấu sôi để tiệt trùng","Đóng hũ và bảo quản"]}
-  - {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Trang Chủ","item":"https://tuongotcay.github.io/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://tuongotcay.github.io/blog/"},{"@type":"ListItem","position":3,"name":"Cách Làm Tương Ớt Tại Nhà","item":"https://tuongotcay.github.io/blog/cach-lam-tuong-ot-tai-nha.html"}]}
+  - {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Trang Chủ","item":"https://tuongotsieucay.web.app/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://tuongotsieucay.web.app/blog/"},{"@type":"ListItem","position":3,"name":"Cách Làm Tương Ớt Tại Nhà","item":"https://tuongotsieucay.web.app/blog/cach-lam-tuong-ot-tai-nha.html"}]}
 ---
 <p>
 Bạn muốn tự tay làm <strong>tương ớt nguyên chất tại nhà</strong>, không chất bảo quản, không phẩm màu?
