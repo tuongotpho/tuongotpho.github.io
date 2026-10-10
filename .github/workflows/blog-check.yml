@@ -1,0 +1,37 @@
+name: Kiem tra blog Astro
+
+# Ro-le bao ve: neu ai sua bai trong astro/src/content/blog ma quen chay "npm run build",
+# thu muc blog/ se lech voi nguon -> job nay bao do.
+on:
+  push:
+    paths: ['astro/**', 'blog/**', 'sitemap.xml']
+  pull_request:
+    paths: ['astro/**', 'blog/**', 'sitemap.xml']
+  workflow_dispatch:
+
+jobs:
+  build-and-compare:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: astro/package-lock.json
+
+      - name: Cai thu vien
+        working-directory: astro
+        run: npm ci
+
+      - name: Build blog
+        working-directory: astro
+        run: npm run build
+
+      - name: blog/ phai khop voi nguon Astro
+        run: |
+          if ! git diff --exit-code --stat -- blog sitemap.xml; then
+            echo "::error::Trang blog chua duoc build lai. Chay 'npm run build' trong thu muc astro roi commit."
+            exit 1
+          fi
