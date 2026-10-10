@@ -1,0 +1,16 @@
+{
+  "name": "tuongot-blog",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build && node scripts/publish.mjs",
+    "compare": "node scripts/compare.mjs"
+  },
+  "description": "Blog Tuong Ot Sieu Cay (Astro) - sinh ra cac trang trong ../blog/",
+  "devDependencies": {
+    "astro": "^7.3.8",
+    "cheerio": "^1.2.0"
+  },
+  "private": true,
+  "type": "module"
+}

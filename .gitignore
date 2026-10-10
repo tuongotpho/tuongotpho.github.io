@@ -13,4 +13,7 @@ firestore-debug*.log
 .env
 fb-config.json
 fb_token.json
+gsc-*.json
+service-account*.json
+
 

@@ -53,10 +53,18 @@ for (const [key, spec] of Object.entries(PRODUCTS)) {
 console.log('\n=== JSON-LD (gia Google doc duoc) ===');
 const giaJsonLd = [...indexHtml.matchAll(/"price":\s*"(\d+)"/g)].map(m => Number(m[1]));
 check('co it nhat 1 gia trong JSON-LD', giaJsonLd.length > 0, 'khong co');
-const giaHopLe = Object.values(PRODUCTS).map(p => p.price);
+// Hang ban theo buoc (vd can 5L) duoc phep ghi gia ca buoc: 5 x 60.000 = 300.000
+const giaHopLe = Object.values(PRODUCTS).flatMap(p => p.step > 1 ? [p.price, p.price * p.step] : [p.price]);
 for (const g of giaJsonLd) {
     check(`gia ${g} co trong bang gia`, giaHopLe.includes(g),
         `JSON-LD ghi ${g}, bang gia chi co ${giaHopLe.join(', ')}`);
+}
+
+console.log('\n=== khoi dat hang cuoi moi bai blog (astro/src/components/OrderBox.astro) ===');
+const orderBox = doc('astro/src/components/OrderBox.astro');
+for (const key of ['p350', 'p500']) {
+    const kieuVn = PRODUCTS[key].price.toLocaleString('vi-VN');
+    check(`blog ghi gia ${key} = ${kieuVn}`, orderBox.includes(kieuVn), `khong thay "${kieuVn}" trong OrderBox.astro`);
 }
 
 console.log(`\n========= KET QUA: ${pass} dat / ${fail} loi =========\n`);

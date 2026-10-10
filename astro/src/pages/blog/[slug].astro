@@ -1,0 +1,53 @@
+---
+import { render } from 'astro:content';
+import BlogLayout from '../../layouts/BlogLayout.astro';
+import OrderBox from '../../components/OrderBox.astro';
+import BottomCta from '../../components/BottomCta.astro';
+import { getPosts, postUrl, vnDate, defaultSchema } from '../../lib';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+const { post } = Astro.props;
+const d = post.data;
+const { Content } = await render(post);
+---
+<BlogLayout
+  title={d.title} description={d.description} keywords={d.keywords}
+  canonical={postUrl(post.id)} ogType="article"
+  ogTitle={d.ogTitle ?? d.heading} ogDescription={d.ogDescription ?? d.description}
+  twitterTitle={d.twitterTitle} twitterDescription={d.twitterDescription}
+  schema={d.schema ?? defaultSchema(post)}
+>
+  <section class="blog-header" style={d.headerStyle}>
+    <div class="blog-header-content">
+      <nav class="breadcrumb"><a href="../index.html">Trang chủ</a><span>/</span><a href="index.html">Blog</a><span>/</span><span class="current">{d.breadcrumb ?? d.heading}</span></nav>
+      <h1><i class={d.headingIcon}></i> {d.heading}</h1>
+      {d.subtitle && <p style="color: rgba(255,255,255,0.8); font-size: 1.1rem;">{d.subtitle}</p>}
+      <div class="article-meta">
+        <span class="article-meta-item"><i class="far fa-calendar-alt"></i> {vnDate(d.date)}</span>
+        <span class="article-meta-item"><i class="far fa-clock"></i> {d.readTime} phút đọc</span>
+        <span class="article-meta-item"><i class="far fa-user"></i> Tương Ớt Siêu Cay</span>
+      </div>
+    </div>
+  </section>
+
+  <article class="article-content">
+    <a href="index.html" class="back-to-blog"><i class="fas fa-arrow-left"></i> Quay lại danh sách bài viết</a>
+    <div class="article-body">
+      <Content />
+      <OrderBox />
+    </div>
+    {d.related.length > 0 && (
+      <div class="related-articles">
+        <h3>Bài viết liên quan</h3>
+        <div class="related-grid">
+          {d.related.map((r) => <a href={`${r.slug}.html`} class="related-card"><i class={r.icon}></i><span>{r.title}</span></a>)}
+        </div>
+      </div>
+    )}
+  </article>
+
+  {d.bottomCta === 'default' ? <BottomCta /> : d.bottomCta !== 'none' && <Fragment set:html={d.bottomCta} />}
+</BlogLayout>

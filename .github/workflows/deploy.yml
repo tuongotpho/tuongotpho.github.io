@@ -27,6 +27,7 @@ jobs:
             git checkout -b sync-release
             git rm -rf .github || true
             git rm -rf functions || true
+            git rm -rf astro || true
             git commit -m "sync: cap nhat ma nguon website moi nhat" || true
             git push -f "https://${PAT_TOKEN}@github.com/tuongotcay/tuongotcay.github.io.git" sync-release:main
             echo "✅ Successfully synced content to tuongotcay/tuongotcay.github.io!"

@@ -1,0 +1,69 @@
+name: Build blog Astro
+
+# Nguon bai viet nam o astro/src/content/blog/*.md. Job nay:
+#  - Tren nhanh main: build lai blog/*.html + sitemap.xml. Neu co thay doi (vd bai moi
+#    dang tu trang admin) thi tu commit va goi lai workflow deploy de dua len web.
+#  - Tren PR / nhanh khac: chi kiem tra, bao do neu blog/ lech voi nguon.
+#  - Luon chay bai test gia (catalog.js <-> app.html <-> trang chu <-> blog).
+on:
+  push:
+    paths: ['astro/**', 'blog/**', 'sitemap.xml', 'index.html', 'app.html', 'functions/catalog.js', 'functions/test-price-consistency.js', '.github/workflows/blog-build.yml']
+  pull_request:
+    paths: ['astro/**', 'blog/**', 'sitemap.xml', 'index.html', 'app.html', 'functions/catalog.js']
+  workflow_dispatch:
+
+concurrency:
+  group: blog-build-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write   # commit trang blog vua build
+  actions: write    # goi lai workflow deploy
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Kiem tra gia khop nhau o moi noi
+        run: node functions/test-price-consistency.js
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: astro/package-lock.json
+
+      - name: Cai thu vien
+        working-directory: astro
+        run: npm ci
+
+      - name: Build blog
+        working-directory: astro
+        run: npm run build
+
+      - name: Tu commit trang blog (chi tren main)
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git add -A blog sitemap.xml
+          if git diff --cached --quiet; then
+            echo "blog/ da khop voi nguon, khong can commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore(blog): build lai trang blog tu nguon Astro"
+          git push
+          # Commit bang GITHUB_TOKEN khong tu kich hoat workflow khac -> goi deploy thu cong
+          gh workflow run deploy.yml --ref main
+
+      - name: blog/ phai khop voi nguon (PR / nhanh khac)
+        if: github.event_name == 'pull_request' || github.ref != 'refs/heads/main'
+        run: |
+          if ! git diff --exit-code --stat -- blog sitemap.xml; then
+            echo "::error::Trang blog chua duoc build lai. Chay 'npm run build' trong thu muc astro roi commit."
+            exit 1
+          fi

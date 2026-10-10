@@ -1,0 +1,71 @@
+---
+// Trang danh sach blog: the bai viet tu sinh tu cac file trong src/content/blog/
+import BlogLayout from '../../layouts/BlogLayout.astro';
+import { getPosts, SITE, vnDate } from '../../lib';
+
+const posts = await getPosts();
+const DEFAULT_BG = 'background: linear-gradient(135deg, rgba(220,38,38,0.2), rgba(245,158,11,0.1));';
+const pepper = '<i class="fas fa-pepper-hot floating-peppers"></i>';
+const schema = [{
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Trang Chủ', item: `${SITE}/` },
+    { '@type': 'ListItem', position: 2, name: 'Blog', item: `${SITE}/blog/` },
+  ],
+}];
+---
+<BlogLayout
+  title="Blog Về Ớt - Tương Ớt Siêu Cay Nguyên Chất"
+  description="Khám phá thế giới ớt cay - từ các loại ớt cay nhất thế giới đến tác dụng của ớt đối với sức khỏe. Blog chia sẻ kiến thức về ớt và tương ớt nguyên chất."
+  keywords="blog ớt, kiến thức về ớt, ớt cay nhất thế giới, tác dụng của ớt, tương ớt nguyên chất"
+  canonical={`${SITE}/blog/`} ogType="website"
+  ogTitle="Blog Về Ớt - Tương Ớt Siêu Cay Nguyên Chất"
+  ogDescription="Khám phá thế giới ớt cay - từ các loại ớt cay nhất thế giới đến tác dụng của ớt đối với sức khỏe."
+  twitterTitle="Blog Về Ớt - Tương Ớt Siêu Cay"
+  twitterDescription="Khám phá thế giới ớt cay - kiến thức, bí quyết về ớt và tương ớt."
+  schema={schema}
+>
+  <section class="blog-header">
+    <div class="blog-header-content">
+      <h1><i class="fas fa-book-open"></i> Blog Về Ớt</h1>
+      <p>Khám phá thế giới ớt cay - Kiến thức, bí quyết và những điều thú vị về ớt mà bạn chưa biết!</p>
+    </div>
+  </section>
+
+  <section class="blog-listing">
+    <div class="blog-container">
+      <div class="blog-grid">
+        {posts.map((p) => {
+          const d = p.data, c = d.card;
+          return (
+            <article class="blog-card">
+              <div class="blog-card-image" style={c.bg ?? DEFAULT_BG} set:html={c.icons ?? `<i class="${d.headingIcon}"></i>${pepper.repeat(3)}`} />
+              <div class="blog-card-content">
+                {c.category && <span class="blog-card-category">{c.category}</span>}
+                <h3 class="blog-card-title">{c.title ?? d.heading}</h3>
+                <p class="blog-card-excerpt">{c.excerpt ?? d.description}</p>
+                <div class="blog-card-footer">
+                  <div class="blog-card-meta"><span><i class="far fa-calendar-alt"></i> {vnDate(d.date)}</span> <span><i class="far fa-clock"></i> {d.readTime} phút đọc</span></div>
+                  <a href={`${p.id}.html`} class="blog-card-link">Đọc tiếp <i class="fas fa-arrow-right"></i></a>
+                </div>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <section style="background: linear-gradient(135deg, rgba(255,87,51,0.2) 0%, rgba(255,126,95,0.1) 100%); padding: 60px 20px; text-align: center;">
+    <div style="max-width: 800px; margin: 0 auto;">
+      <h2 style="color: #fff; font-size: 2rem; margin-bottom: 15px;">Muốn thử ngay tương ớt siêu cay?</h2>
+      <p style="color: #fff; margin-bottom: 25px;">Đặt hàng ngay hôm nay để trải nghiệm vị cay nguyên chất từ ớt tươi!</p>
+      <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+        <a href="../index.html#products" class="btn btn-primary" style="text-decoration: none;"><i class="fas fa-shopping-cart"></i> Xem Sản Phẩm</a>
+        <button class="btn btn-primary" onclick="callNow()"><i class="fas fa-phone"></i> Gọi Ngay: 0982722036</button>
+        <button class="btn btn-zalo" onclick="contactZalo()"><i class="fab fa-zalo"></i> Liên Hệ Zalo</button>
+      </div>
+    </div>
+  </section>
+</BlogLayout>

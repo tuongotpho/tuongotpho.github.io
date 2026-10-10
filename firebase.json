@@ -24,7 +24,8 @@
         "firestore.rules",
         "**/.*",
         "**/node_modules/**",
-        "functions/**"
+        "functions/**",
+        "astro/**"
       ],
       "rewrites": [
         {
@@ -44,7 +45,8 @@
         "firestore.rules",
         "**/.*",
         "**/node_modules/**",
-        "functions/**"
+        "functions/**",
+        "astro/**"
       ],
       "rewrites": [
         {
