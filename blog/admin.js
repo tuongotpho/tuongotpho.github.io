@@ -11,7 +11,7 @@ const CONFIG = {
     BLOG_PATH: 'blog',
     POSTS_PATH: 'astro/src/content/blog',
     SITE_URL: 'https://tuongotsieucay.web.app',
-    GA_ID: 'G-6JHML7VMEB',
+    GA_ID: 'G-536YB7K3WV',
     BRAND: 'Tương Ớt Siêu Cay',
     PHONE: '0982 722 036',
     EMAIL: 'vietthanh228@gmail.com',
