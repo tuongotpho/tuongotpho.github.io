@@ -1,4 +1,4 @@
-name: Auto Deploy 4 Web Apps (GitHub Pages & Firebase Hosting Multi-site)
+name: Auto Deploy (Firebase Hosting + chuyen huong GitHub Pages)
 
 on:
   push:
@@ -7,33 +7,57 @@ on:
   workflow_dispatch:
 
 jobs:
+  # Chi giu MOT dia chi la tuongotsieucay.web.app. Hai ban GitHub Pages
+  # (tuongotpho.github.io, tuongotcay.github.io) chi con trang chuyen huong ve do,
+  # de link cu tren Facebook/Zalo van dung ma Google khong thay ban sao.
+  pages_redirect:
+    name: GitHub Pages tuongotpho.github.io (chuyen huong ve web.app)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Tao trang chuyen huong
+        run: node .github/scripts/make-redirect-site.mjs "$RUNNER_TEMP/redirect"
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ runner.temp }}/redirect
+
+      - uses: actions/deploy-pages@v4
+
   sync_to_tuongotcay:
-    name: Sync to tuongotcay.github.io
+    name: Sync to tuongotcay.github.io (chuyen huong ve web.app)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
           persist-credentials: false
 
-      - name: Push to tuongotcay/tuongotcay.github.io
+      - name: Push trang chuyen huong to tuongotcay/tuongotcay.github.io
         env:
           PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
-          if [ -n "$PAT_TOKEN" ]; then
-            git config --global user.name "tuongotpho"
-            git config --global user.email "vietthanh228@gmail.com"
-            git checkout -b sync-release
-            git rm -rf .github || true
-            git rm -rf functions || true
-            git rm -rf astro || true
-            git commit -m "sync: cap nhat ma nguon website moi nhat" || true
-            git push -f "https://${PAT_TOKEN}@github.com/tuongotcay/tuongotcay.github.io.git" sync-release:main
-            echo "✅ Successfully synced content to tuongotcay/tuongotcay.github.io!"
-          else
+          if [ -z "$PAT_TOKEN" ]; then
             echo "ℹ️ PAT_TOKEN secret not set yet. Skipping cross-repo sync."
+            exit 0
           fi
+          OUT="$RUNNER_TEMP/redirect"
+          node .github/scripts/make-redirect-site.mjs "$OUT"
+          cd "$OUT"
+          git init -q -b main
+          git config user.name "tuongotpho"
+          git config user.email "vietthanh228@gmail.com"
+          git add -A
+          git commit -q -m "chuyen huong ve tuongotsieucay.web.app"
+          git push -f "https://${PAT_TOKEN}@github.com/tuongotcay/tuongotcay.github.io.git" main
+          echo "✅ tuongotcay.github.io gio chi chuyen huong ve tuongotsieucay.web.app"
 
   deploy_order_api:
     name: Deploy API Dat Hang (Cloud Functions + Firestore Rules)
