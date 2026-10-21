@@ -1,0 +1,104 @@
+---
+// Khung chung cho MOI trang blog: dau trang, menu, chan trang, script.
+// Sua o day = sua tren tat ca cac trang.
+interface Props {
+  title: string;
+  description: string;
+  keywords?: string;
+  canonical: string;
+  ogType: 'article' | 'website';
+  ogTitle: string;
+  ogDescription: string;
+  twitterTitle?: string;
+  twitterDescription?: string;
+  schema: Record<string, unknown>[];
+}
+const p = Astro.props;
+const LOGO = 'https://cdn-icons-png.flaticon.com/512/5495/5495490.png';
+const GA = 'G-536YB7K3WV';
+---
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="H-1uGYQBFn_CIx4O_Q3IoRNPm06vMAwyE72Rwy6Dzlk">
+  <title>{p.title}</title>
+  <meta name="description" content={p.description}>
+  {p.keywords && <meta name="keywords" content={p.keywords}>}
+  <meta property="og:type" content={p.ogType}>
+  <meta property="og:url" content={p.canonical}>
+  <meta property="og:title" content={p.ogTitle}>
+  <meta property="og:description" content={p.ogDescription}>
+  <meta property="og:image" content={LOGO}>
+  <meta name="twitter:card" content="summary_large_image">
+  {p.twitterTitle && <meta name="twitter:title" content={p.twitterTitle}>}
+  {p.twitterDescription && <meta name="twitter:description" content={p.twitterDescription}>}
+  <link rel="canonical" href={p.canonical}>
+  <link rel="stylesheet" href="../styles.min.css">
+  <link rel="stylesheet" href="blog.min.css">
+  <link rel="icon" href={LOGO} type="image/png">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${GA}`}></script>
+  <script is:inline>window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments); } gtag('js', new Date()); gtag('config', 'G-536YB7K3WV');</script>
+  {p.schema.map((s) => <script is:inline type="application/ld+json" set:html={JSON.stringify(s)} />)}
+</head>
+<body class="blog-page">
+  <header class="header">
+    <nav class="navbar">
+      <div class="nav-brand"><a href="../index.html" style="text-decoration:none;color:inherit;display:flex;align-items:center;gap:10px;"><i class="fas fa-pepper-hot"></i><span>Tương Ớt Siêu Cay</span></a></div>
+      <div class="nav-menu" id="navMenu">
+        <a href="../index.html#home" class="nav-link">Trang Chủ</a>
+        <a href="../index.html#products" class="nav-link">Sản Phẩm</a>
+        <a href="../index.html#about" class="nav-link">Giới Thiệu</a>
+        <a href="../index.html#faq" class="nav-link">Hỏi Đáp</a>
+        <a href="../gallery.html" class="nav-link">Bộ Sưu Tập</a>
+        <a href="index.html" class="nav-link active">Blog</a>
+        <a href="../index.html#contact" class="nav-link">Liên Hệ</a>
+      </div>
+      <div class="nav-actions">
+        <a href="../app.html" class="nav-link-cta"><i class="fas fa-shopping-bag"></i> Đặt Mua</a>
+        <button type="button" class="nav-toggle" id="navToggle" aria-label="Mở menu" aria-expanded="false" aria-controls="navMenu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <slot />
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <div class="footer-brand"><i class="fas fa-pepper-hot"></i><span>Tương Ớt Siêu Cay</span></div>
+          <p class="footer-description">Mang đến những sản phẩm tương ớt chất lượng cao với vị cay thuần khiết từ thiên nhiên.</p>
+        </div>
+        <div class="footer-section">
+          <h4 class="footer-title">Liên Kết Nhanh</h4>
+          <ul class="footer-links">
+            <li><a href="../index.html">Trang Chủ</a></li>
+            <li><a href="../index.html#products">Sản Phẩm</a></li>
+            <li><a href="index.html">Blog</a></li>
+            <li><a href="../index.html#contact">Liên Hệ</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h4 class="footer-title">Liên Hệ</h4>
+          <ul class="footer-links">
+            <li><i class="fas fa-phone"></i> 0982 722 036</li>
+            <li><i class="fas fa-envelope"></i> vietthanh228@gmail.com</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2011 Tương Ớt Siêu Cay nguyên chất Bông Ớt. Tất cả quyền được bảo lưu.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script is:inline src="../script.min.js"></script>
+  <script is:inline src="blog.min.js"></script>
+</body>
+</html>
